@@ -5,21 +5,21 @@
  *      Author: Carsten Uphoff (uphoff@mytum.de)
  */
 #include "Legend.hpp"
+#include "Statistics.hpp"
 
 #include <GL/glld.h>
-#include <tools/Statistics.hpp>
 #include <cstdio>
 #include <algorithm>
 
-namespace plot
+namespace hpl
 {
-Legend::Legend(Font* font, Uint n, Doub const* x, Doub const* y, float left, float top, float width, float height)
+Legend::Legend(Font* font, int n, double const* x, double const* y, float left, float top, float width, float height)
 	: font(font), Plot(left, top, width, height)
 {
-	xmin = tools::min(n, x);
-	xmax = tools::max(n, x);	
-	ymin = tools::min(n, y);
-	ymax = tools::max(n, y);
+	xmin = hpl::min(n, x);
+	xmax = hpl::max(n, x);	
+	ymin = hpl::min(n, y);
+	ymax = hpl::max(n, y);
 }
 	
 void Legend::init(GLuint lineprogram, GLuint textprogram)

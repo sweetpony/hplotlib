@@ -4,12 +4,12 @@
  *  Created on: Oct 14, 2014
  *      Author: Carsten Uphoff (uphoff@mytum.de)
  */
-#ifndef PLOT_WINDOW_HPP
-#define PLOT_WINDOW_HPP
+#ifndef HPLOTLIB_WINDOW_HPP
+#define HPLOTLIB_WINDOW_HPP
 
 #include <pthread.h>
 
-namespace plot
+namespace hpl
 {
 	class Window {
 	public:

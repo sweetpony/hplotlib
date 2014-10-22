@@ -9,7 +9,7 @@
 #include <cmath>
 #include <iostream>
 
-namespace plot
+namespace hpl
 {
 void showCompileLog(GLuint id)
 {
@@ -43,7 +43,7 @@ void showLinkLog(GLuint id)
     }
 }
 
-void Canvas::addLinesPlot(Uint n, Doub const* x, Doub const* y, float r, float g, float b, float left, float top, float width, float height) {
+void Canvas::addLinesPlot(int n, double const* x, double const* y, float r, float g, float b, float left, float top, float width, float height) {
 	pthread_mutex_lock(&mutex);
 	Plot* l = new Legend(&font, n, x, y, left, top, width, height);
 	float xo = width*Legend::XOffset;

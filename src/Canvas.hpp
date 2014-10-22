@@ -4,8 +4,8 @@
  *  Created on: Oct 14, 2014
  *      Author: Carsten Uphoff (uphoff@mytum.de)
  */
-#ifndef PLOT_CANVAS_HPP
-#define PLOT_CANVAS_HPP
+#ifndef HPLOTLIB_CANVAS_HPP
+#define HPLOTLIB_CANVAS_HPP
 
 #include <vector>
 
@@ -14,13 +14,13 @@
 #include "Legend.hpp"
 #include "Font.hpp"
 
-namespace plot
+namespace hpl
 {
 class Canvas : public Window {
 public:
 	Canvas(std::string const& fontFile) : fontFile(fontFile) {}
 	~Canvas();
-	void addLinesPlot(Uint n, Doub const* x, Doub const* y, float r, float g, float b, float left, float top, float width, float height);
+	void addLinesPlot(int n, double const* x, double const* y, float r, float g, float b, float left, float top, float width, float height);
 
 protected:
 	virtual void init();

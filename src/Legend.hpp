@@ -4,16 +4,15 @@
  *  Created on: Oct 15, 2014
  *      Author: Carsten Uphoff (uphoff@mytum.de)
  */
-#ifndef PLOT_LEGEND_HPP
-#define PLOT_LEGEND_HPP
+#ifndef HPLOTLIB_LEGEND_HPP
+#define HPLOTLIB_LEGEND_HPP
 
-#include <types.hpp>
 #include <GL/glld.h>
 
 #include "Plot.hpp"
 #include "Font.hpp"
 
-namespace plot
+namespace hpl
 {
 class Legend : public Plot {
 public:
@@ -21,7 +20,7 @@ public:
 	static constexpr float YOffset = 0.08f;
 	static constexpr int Ticks = 8;
 	static constexpr float TickLength = 0.02f;
-	Legend(Font* font, Uint n, Doub const* x, Doub const* y, float left, float top, float width, float height);
+	Legend(Font* font, int n, double const* x, double const* y, float left, float top, float width, float height);
 
 	virtual void init(GLuint lineprogram, GLuint textprogram);
 	virtual void destroy();
@@ -30,10 +29,10 @@ public:
 private:
 	Font* font;
 
-	Doub xmin;
-	Doub xmax;
-	Doub ymin;
-	Doub ymax;
+	double xmin;
+	double xmax;
+	double ymin;
+	double ymax;
 
     GLuint lineBuffer;
     GLuint textBuffer;

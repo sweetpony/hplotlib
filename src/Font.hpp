@@ -1,10 +1,10 @@
-#ifndef PLOT_FONT_HPP
-#define PLOT_FONT_HPP
+#ifndef HPLOTLIB_FONT_HPP
+#define HPLOTLIB_FONT_HPP
 
 #include <string>
 #include <GL/glld.h>
 
-namespace plot
+namespace hpl
 {
 struct Header {
 	float lineHeight;

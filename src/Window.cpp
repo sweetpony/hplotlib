@@ -8,7 +8,7 @@
 #include <GL/glld.h>
 #include <iostream>
 
-namespace plot {
+namespace hpl {
 #if defined(_WIN32)
 #include <windows.h>
 #include <windowsx.h>

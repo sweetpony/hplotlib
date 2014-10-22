@@ -5,17 +5,17 @@
  *      Author: Carsten Uphoff (uphoff@mytum.de)
  */
 #include "Lines.hpp"
-#include <tools/Statistics.hpp>
+#include "Statistics.hpp"
 
-namespace plot
+namespace hpl
 {
-Lines::Lines(Uint n, Doub const* x, Doub const* y, float r, float g, float b, float left, float top, float width, float height)
+Lines::Lines(int n, double const* x, double const* y, float r, float g, float b, float left, float top, float width, float height)
 	: n(n), r(r), g(g), b(b), Plot(left, top, width, height)
 {
-	Doub xmin = tools::min(n, x);
-	Doub xmax = tools::max(n, x);	
-	Doub ymin = tools::min(n, y);
-	Doub ymax = tools::max(n, y);
+	double xmin = hpl::min(n, x);
+	double xmax = hpl::max(n, x);
+	double ymin = hpl::min(n, y);
+	double ymax = hpl::max(n, y);
 	
     interleave = new float[2*n];
     for (int i = 0; i < n; ++i) {

@@ -1,7 +1,7 @@
 #include "Font.hpp"
 #include <cstdio>
 
-namespace plot {
+namespace hpl {
 void Font::init(std::string const& path)
 {
     FILE* in = fopen(path.c_str(), "rb");

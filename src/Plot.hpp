@@ -4,12 +4,12 @@
  *  Created on: Oct 15, 2014
  *      Author: Carsten Uphoff (uphoff@mytum.de)
  */
-#ifndef PLOT_PLOT_HPP
-#define PLOT_PLOT_HPP
+#ifndef HPLOTLIB_PLOT_HPP
+#define HPLOTLIB_PLOT_HPP
 
 #include <GL/glld.h>
 
-namespace plot
+namespace hpl
 {
 class Plot {
 public:
