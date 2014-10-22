@@ -1,5 +1,5 @@
 /*
- * Canvas.hpp
+ * Window.hpp
  *
  *  Created on: Oct 14, 2014
  *      Author: Carsten Uphoff (uphoff@mytum.de)
@@ -12,6 +12,8 @@
 namespace hpl
 {
 	class Window {
+		friend class Win32Window;
+		friend class X11Window;
 	public:
 		void wait() {
 			pthread_join(windowThread, nullptr);			
@@ -31,14 +33,9 @@ namespace hpl
 		double height = 0.0;
 		
 	private:
-		pthread_t windowThread;
-		
-		#if defined(_WIN32)
-			static VOID CALLBACK TimerProc(HWND hWnd, UINT uMsg, UINT_PTR idEvent, DWORD dwTime);
-			static LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam);
-			HGLRC glcontext;
-		#endif
-		
+		bool loadOpenGL();
+	
+		pthread_t windowThread;		
 		bool needsRepaint = false;
 		double lastx = 0.0;
 		double lasty = 0.0;
