@@ -4,12 +4,9 @@
  *  Created on: Oct 14, 2014
  *      Author: Carsten Uphoff (uphoff@mytum.de)
  */
-#include "Window.hpp"
+#include "../Window.hpp"
 #include <GL/glld.h>
 #include <iostream>
-
-namespace hpl {
-#if defined(_WIN32)
 #include <windows.h>
 #include <windowsx.h>
 
@@ -36,6 +33,7 @@ typedef BOOL (WINAPI * PFNWGLCHOOSEPIXELFORMATARBPROC) (HDC hdc, const int *piAt
 
 #define IDT_TIMER1 1001
 
+namespace hpl {
 VOID CALLBACK Window::TimerProc(HWND hWnd, UINT uMsg, UINT_PTR idEvent, DWORD dwTime)
 {
 	Window* win = reinterpret_cast<Window*>(GetWindowLongPtr(hWnd, GWL_USERDATA));
@@ -259,5 +257,3 @@ void* Window::run(void* self)
     return nullptr;
 }
 }
-
-#endif
