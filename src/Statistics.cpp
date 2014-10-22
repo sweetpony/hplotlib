@@ -1,4 +1,5 @@
 #include "Statistics.hpp"
+#include <cmath>
 
 namespace hpl {
 double min(int size, double const* x)
