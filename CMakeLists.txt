@@ -2,6 +2,7 @@ cmake_minimum_required (VERSION 2.8)
 
 project (hplotlib)
 
+find_package (OpenGL REQUIRED)
 find_package (Threads REQUIRED)
 if (NOT CMAKE_USE_PTHREADS_INIT)
 	error ("Could NOT find pthreads.")
