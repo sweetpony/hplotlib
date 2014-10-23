@@ -9,10 +9,10 @@ class FixedLayout : public Layout
 {
 
 public:
-    FixedLayout() {}
-    virtual ~FixedLayout() {}
+    FixedLayout();
+    virtual ~FixedLayout();
 
-    virtual inline void recalculate() {}
+    virtual void recalculate();
 
 };
 }

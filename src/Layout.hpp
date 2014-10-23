@@ -14,7 +14,7 @@ public:
     Layout();
     virtual ~Layout();
 
-    void addPlot(Geometry* plotBox);
+    void addPlot(Geometry* legendBox, Geometry* plotBox);
 
     inline void setXMargins(double left, double right) {
         margins[0] = left;

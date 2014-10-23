@@ -10,8 +10,9 @@ Layout::~Layout()
 {
 }
 
-void Layout::addPlot(Geometry* plotBox)
+void Layout::addPlot(Geometry* legendBox, Geometry* plotBox)
 {
+    plotBoxes.push_back(legendBox);
     plotBoxes.push_back(plotBox);
     recalculate();
     redraw();

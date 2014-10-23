@@ -57,15 +57,12 @@ LinePlot* Canvas::addLinesPlot(int n, double const* x, double const* y, const Ge
     Geometry* lGeo = new Geometry(geometry);
     Legend* l = new Legend(&font, n, x, y, lGeo);
     plot->addLegend(l);
-    layout->addPlot(lGeo);
 
-    //! @todo this should be done in Layout
-    float xo = geometry.width*Legend::XOffset;
-    float yo = geometry.height*Legend::YOffset;
-    Geometry* pGeo = new Geometry(geometry.leftOffset+xo, geometry.topOffset+yo, geometry.width-xo, geometry.height-yo);
+    Geometry* pGeo = new Geometry(geometry);
     Lines* p = new Lines(n, x, y, pGeo);
     plot->addLines(p);
-    layout->addPlot(pGeo);
+
+    layout->addPlot(lGeo, pGeo);
 
     pthread_mutex_lock(&mutex);
     plots.push_back(plot);
