@@ -39,7 +39,7 @@ private:
     GLuint lineprogram;
     GLuint textprogram;
     
-	GLint linepos, linerect, linecolor, linemvp, textpos, textuv, textrect, textglyphs, textmvp;
+	GLint linepos, linerect, linecolor, linemvp, textpos, textuv, textrect, textglyphs, textmvp, textcolor;
 	int numChars;
 };
 }

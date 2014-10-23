@@ -115,6 +115,7 @@ void Canvas::init()
 	GLchar const* textfsource =
 		"#version 120\n"
 		"uniform sampler2D Glyphs;\n"
+		"uniform vec3 Color;\n"
 		"varying vec2 vUV;\n"
 		"float contour(in float d, in float w) {\n"
 		"return smoothstep(0.5 - w, 0.5 + w, d);\n"
@@ -131,7 +132,7 @@ void Canvas::init()
 		"vec4 box = vec4(vUV-duv, vUV+duv);\n"
 		"float asum = samp(box.xy, width) + samp(box.zw, width) + samp(box.xw, width) + samp(box.zy, width);\n"
 		"alpha = (alpha + 0.5 * asum) / 3.0;\n"
-		"gl_FragColor = vec4(vec3(1.0), alpha);\n"
+		"gl_FragColor = vec4(Color, alpha);\n"
 		"}\n";
     
     glShaderSource(textfshader, 1, &textfsource, NULL);

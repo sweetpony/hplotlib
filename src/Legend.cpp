@@ -136,6 +136,7 @@ void Legend::init(GLuint lineprogram, GLuint textprogram)
     textrect = glGetUniformLocation(textprogram, "Rect");
     textglyphs = glGetUniformLocation(textprogram, "Glyphs");
 	textmvp = glGetUniformLocation(textprogram, "MVP");
+	textcolor = glGetUniformLocation(textprogram, "Color");
 
 }
 
@@ -187,6 +188,7 @@ void Legend::draw(float const* mvp)
 	glEnableVertexAttribArray(textuv);
 	glUniform4f(textrect, left, top, width, height);	
 	glUniformMatrix3fv(textmvp, 1, GL_FALSE, mvp);
+    glUniform3f(textcolor, drawColor.r, drawColor.g, drawColor.b);
 	font->bind(textglyphs, 0);
 	
 	glDrawArrays(GL_QUADS, 0, 4*numChars);
