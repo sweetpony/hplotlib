@@ -73,9 +73,9 @@ LinePlot* Canvas::addLinesPlot(int n, double const* x, double const* y, const Ge
 
 void Canvas::setLayout(Layout* layout)
 {
+    layout->copyPlots(*this->layout);
     delete this->layout;
     this->layout = layout;
-    //! @todo add geometries to new layout
 }
 	
 void Canvas::init()

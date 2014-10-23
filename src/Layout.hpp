@@ -15,6 +15,7 @@ public:
     virtual ~Layout();
 
     void addPlot(Geometry* legendBox, Geometry* plotBox);
+    void copyPlots(const Layout& layout);
 
     inline void setXMargins(double left, double right) {
         margins[0] = left;
@@ -32,7 +33,7 @@ public:
 
 protected:
     std::vector<Geometry*> plotBoxes;
-    //! @todo how are margins exactly defined here?
+    //! @todo how are margins exactly defined here? use them
     double margins[4]; //left, right, top, bottom
 
 };
