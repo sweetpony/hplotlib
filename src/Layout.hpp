@@ -3,6 +3,7 @@
 
 #include <vector>
 #include "Geometry.hpp"
+#include "Legend.hpp"
 
 namespace hpl
 {

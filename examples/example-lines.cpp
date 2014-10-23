@@ -10,27 +10,34 @@
 #include <Color.hpp>
 #include <Geometry.hpp>
 #include <HorizontalLayout.hpp>
+#include <VerticalLayout.hpp>
 #include <cmath>
 
-#define NUM_POINTS 100
+#define NUM_POINTS 200
 
 int main()
 {
 	double x[NUM_POINTS];
 	double y[NUM_POINTS];
+    double z[NUM_POINTS];
 	
 	for (int i = 0; i < NUM_POINTS; ++i) {
-		x[i] = i / static_cast<double>(NUM_POINTS);
+        x[i] = i / static_cast<double>(NUM_POINTS);
 		y[i] = sin(10.0 * x[i]);
+        z[i] = cos(20.0 * x[i]);
 	}
 	
 	hpl::Canvas canvas("../fonts/inconsolata.font");
     canvas.setBackgroundColor(hpl::Color(0.9f, 0.9f, 0.9f));
     canvas.setLayout(new hpl::HorizontalLayout());
 
-    hpl::LinePlot* plot = canvas.addLinesPlot(NUM_POINTS, x, y);
-    plot->setLegendColor(hpl::Color(0.0f, 0.0f, 0.0f));
-    plot->setLineColor(0, hpl::Color(0.1f, 0.3f, 0.6f));
+    hpl::LinePlot* plot1 = canvas.addLinesPlot(NUM_POINTS, x, y);
+    plot1->setLegendColor(hpl::Color(0.0f, 0.0f, 0.0f));
+    plot1->setLineColor(0, hpl::Color(0.1f, 0.3f, 0.6f));
+
+    hpl::LinePlot* plot2 = canvas.addLinesPlot(NUM_POINTS, x, z);
+    plot2->setLegendColor(hpl::Color(0.0f, 0.0f, 0.0f));
+    plot2->setLineColor(0, hpl::Color(0.6f, 0.3f, 0.1f));
 	
 	canvas.wait();
 
