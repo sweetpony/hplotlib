@@ -16,7 +16,7 @@ namespace hpl
 {
 	class Win32Window {
 	public:
-		void* run(void* windowBase);
+		bool show(Window* windowBase);
 	private:
 		static VOID CALLBACK TimerProc(HWND hWnd, UINT uMsg, UINT_PTR idEvent, DWORD dwTime);
 		static LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam);

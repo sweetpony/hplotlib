@@ -34,6 +34,9 @@ namespace hpl
 		
 	private:
 		bool loadOpenGL();
+		bool updateRequired() { return needsRepaint; }
+		void updateQueued() { needsRepaint = false; }
+		void update() { needsRepaint = true; }
 	
 		pthread_t windowThread;		
 		bool needsRepaint = false;

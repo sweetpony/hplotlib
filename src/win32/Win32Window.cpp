@@ -9,8 +9,6 @@
 #include <GL/glld.h>
 #include <windowsx.h>
 
-#include <iostream>
-
 #define WGL_CONTEXT_MAJOR_VERSION_ARB 0x2091
 #define WGL_CONTEXT_MINOR_VERSION_ARB 0x2092
 #define WGL_CONTEXT_FLAGS_ARB 0x2094
@@ -38,9 +36,9 @@ namespace hpl {
 VOID CALLBACK Win32Window::TimerProc(HWND hWnd, UINT uMsg, UINT_PTR idEvent, DWORD dwTime)
 {
 	Win32Window* win32 = reinterpret_cast<Win32Window*>(GetWindowLongPtr(hWnd, GWL_USERDATA));
-	if (win32->win->needsRepaint) {
-		win32->win->needsRepaint = false;
+	if (win32->win->updateRequired()) {
 		PostMessage(hWnd, WM_PAINT, NULL, NULL);
+		win32->win->updateQueued();
 	}
 }
 
@@ -88,23 +86,23 @@ LRESULT CALLBACK Win32Window::WndProc(HWND hWnd, UINT message, WPARAM wParam, LP
                     break;
 				case 0x52: // R
 					win32->win->resetEvent();
-					win32->win->needsRepaint = true;
+					win32->win->update();
 					break;
 				case VK_LEFT:
 					win32->win->moveEvent(0.1f, 0.0f);
-					win32->win->needsRepaint = true;
+					win32->win->update();
 					break;
 				case VK_RIGHT:
 					win32->win->moveEvent(-0.1f, 0.0f);
-					win32->win->needsRepaint = true;
+					win32->win->update();
 					break;
 				case VK_UP:
 					win32->win->moveEvent(0.0f, -0.1f);
-					win32->win->needsRepaint = true;
+					win32->win->update();
 					break;
 				case VK_DOWN:
 					win32->win->moveEvent(0.0f, 0.1f);
-					win32->win->needsRepaint = true;
+					win32->win->update();
 					break;
 				default:
 					break;
@@ -121,7 +119,7 @@ LRESULT CALLBACK Win32Window::WndProc(HWND hWnd, UINT message, WPARAM wParam, LP
 				double x = GET_X_LPARAM(lParam);
 				double y = GET_Y_LPARAM(lParam);
 				win32->win->moveEvent((x - win32->win->lastx) / win32->win->width, -(y - win32->win->lasty) / win32->win->height);
-				win32->win->needsRepaint = true;
+				win32->win->update();
 				win32->win->lastx = x;
 				win32->win->lasty = y;
 			}
@@ -137,7 +135,7 @@ LRESULT CALLBACK Win32Window::WndProc(HWND hWnd, UINT message, WPARAM wParam, LP
 				p.y,
 				GET_WHEEL_DELTA_WPARAM(wParam) / static_cast<double>(WHEEL_DELTA)
 			);
-			win32->win->needsRepaint = true;
+			win32->win->update();
 			break;
 		}
         default:
@@ -148,9 +146,9 @@ LRESULT CALLBACK Win32Window::WndProc(HWND hWnd, UINT message, WPARAM wParam, LP
     return 0;
 }
 
-void* Win32Window::run(void* windowBase)
+void Win32Window::show(Window* windowBase)
 {
-	win = static_cast<Window*>(windowBase);
+	win = windowBase;
 
     char const windowClass[] = "canvas";
 
@@ -231,7 +229,7 @@ void* Win32Window::run(void* windowBase)
 	wglMakeCurrent(hdc2, glcontext);
 
 	if (!win->loadOpenGL()) {
-		return nullptr;
+		return false;
 	}
 	
 	win->init();
@@ -249,6 +247,6 @@ void* Win32Window::run(void* windowBase)
     
     KillTimer(hWnd2, IDT_TIMER1);
 
-    return nullptr;
+    return true;
 }
 }
