@@ -146,7 +146,7 @@ LRESULT CALLBACK Win32Window::WndProc(HWND hWnd, UINT message, WPARAM wParam, LP
     return 0;
 }
 
-void Win32Window::show(Window* windowBase)
+bool Win32Window::show(Window* windowBase)
 {
 	win = windowBase;
 
