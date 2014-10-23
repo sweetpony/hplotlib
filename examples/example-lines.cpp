@@ -24,6 +24,7 @@ int main()
 	
 	hpl::Canvas canvas("../fonts/inconsolata.font");
     LinePlot* plot = canvas.addLinesPlot(NUM_POINTS, x, y, 0.0, 0.0, 1.0, 1.0);
+    plot->setLegendColor(Color(0.0, 0.0, 1.0));
     plot->setLineColor(0, Color(0.1, 0.3, 1.0));
 	
 	canvas.wait();

@@ -20,6 +20,8 @@ public:
 
     virtual void addLegend(Legend* legend);
 
+    virtual void setLegendColor(const Color& c);
+
 protected:
     Legend* legend;
     std::vector<PlotPart*> parts;

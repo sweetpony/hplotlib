@@ -43,4 +43,9 @@ void Plot::addLegend(Legend* legend)
 {
     this->legend = legend;
 }
+
+void Plot::setLegendColor(const Color& c)
+{
+    legend->setColor(c);
+}
 }
