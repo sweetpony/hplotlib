@@ -12,6 +12,7 @@
 #include "Window.hpp"
 #include "Lineplot.hpp"
 #include "Font.hpp"
+#include "Color.hpp"
 
 namespace hpl
 {
@@ -21,6 +22,10 @@ public:
 	~Canvas();
 
     LinePlot* addLinesPlot(int n, double const* x, double const* y, float left, float top, float width, float height);
+
+    inline void setBackgroundColor(const Color& c) {
+        backgroundColor = c;
+    }
 
 protected:
 	virtual void init();
@@ -36,6 +41,7 @@ private:
 	int initiated = 0;
     std::vector<Plot*> plots, plots_tmp;
 	pthread_mutex_t mutex = PTHREAD_MUTEX_INITIALIZER;
+    Color backgroundColor = Color(1.0f, 1.0f, 1.0f);
 	
 	GLuint linevshader = 0;
     GLuint linefshader = 0;

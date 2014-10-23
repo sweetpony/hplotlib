@@ -159,7 +159,7 @@ void Legend::draw(float const* mvp)
 	);
 	glEnableVertexAttribArray(linepos);
 	glUniform4f(linerect, left, top, width, height);
-    glUniform3f(linecolor, color.r, color.g, color.b);
+    glUniform3f(linecolor, drawColor.r, drawColor.g, drawColor.b);
 	glUniformMatrix3fv(linemvp, 1, GL_FALSE, mvp);
 	
 	glDrawArrays(GL_LINES, 0, 4 + 4*Ticks);

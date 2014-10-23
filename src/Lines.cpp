@@ -60,7 +60,7 @@ void Lines::draw(float const* mvp)
 	);
 	glEnableVertexAttribArray(pos);
 	glUniform4f(rect, left, top, width, height);
-    glUniform3f(color, color.r, color.g, color.b);
+    glUniform3f(color, drawColor.r, drawColor.g, drawColor.b);
 	glUniformMatrix3fv(linemvp, 1, GL_FALSE, mvp);
 	
 	glDrawArrays(GL_LINE_STRIP, 0, n);

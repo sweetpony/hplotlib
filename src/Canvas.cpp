@@ -70,7 +70,7 @@ Canvas::~Canvas()
 	
 void Canvas::init()
 {
-	glClearColor(0.0, 0.0, 0.0, 1.0);	
+    glClearColor(backgroundColor.r, backgroundColor.g, backgroundColor.b, 1.0);
     glEnable(GL_MULTISAMPLE);
     glEnable(GL_BLEND);
     glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);

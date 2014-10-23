@@ -8,7 +8,7 @@
 #define HPLOTLIB_PLOTPART_HPP
 
 #include <GL/glld.h>
-#include <Color.hpp>
+#include "Color.hpp"
 
 namespace hpl
 {
@@ -22,12 +22,12 @@ public:
 	virtual void draw(float const* mvp) = 0;
 
     virtual inline void setColor(const Color& c) {
-        color = c;
+        drawColor = c;
     }
 	
 protected:
 	float left, top, width, height;
-    const Color color;
+    Color drawColor = Color(1.0f, 1.0f, 1.0f);
 };
 }
 
