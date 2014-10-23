@@ -20,7 +20,7 @@ public:
 	static constexpr float YOffset = 0.08f;
 	static constexpr int Ticks = 8;
 	static constexpr float TickLength = 0.02f;
-	Legend(Font* font, int n, double const* x, double const* y, float left, float top, float width, float height);
+    Legend(Font* font, int n, double const* x, double const* y, Geometry* geometry);
 
 	virtual void init(GLuint lineprogram, GLuint textprogram);
 	virtual void destroy();

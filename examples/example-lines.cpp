@@ -8,6 +8,7 @@
 #include <Canvas.hpp>
 #include <LinePlot.hpp>
 #include <Color.hpp>
+#include <Geometry.hpp>
 #include <cmath>
 
 #define NUM_POINTS 100
@@ -25,7 +26,7 @@ int main()
 	hpl::Canvas canvas("../fonts/inconsolata.font");
     canvas.setBackgroundColor(hpl::Color(0.9f, 0.9f, 0.9f));
 
-    hpl::LinePlot* plot = canvas.addLinesPlot(NUM_POINTS, x, y, 0.0, 0.0, 1.0, 1.0);
+    hpl::LinePlot* plot = canvas.addLinesPlot(NUM_POINTS, x, y);
     plot->setLegendColor(hpl::Color(0.0f, 0.0f, 0.0f));
     plot->setLineColor(0, hpl::Color(0.1f, 0.3f, 0.6f));
 	

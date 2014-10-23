@@ -13,7 +13,7 @@ namespace hpl
 {
 class Lines : public PlotPart {
 public:
-    Lines(int n, double const* x, double const* y, float left, float top, float width, float height);
+    Lines(int n, double const* x, double const* y, Geometry* geometry);
 
 	virtual void init(GLuint lineprogram, GLuint);
 	virtual void destroy();

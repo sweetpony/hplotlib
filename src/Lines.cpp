@@ -9,8 +9,8 @@
 
 namespace hpl
 {
-Lines::Lines(int n, double const* x, double const* y, float left, float top, float width, float height)
-    : n(n), PlotPart(left, top, width, height)
+Lines::Lines(int n, double const* x, double const* y, Geometry* geometry)
+    : PlotPart(geometry), n(n)
 {
 	double xmin = hpl::min(n, x);
 	double xmax = hpl::max(n, x);
@@ -59,7 +59,7 @@ void Lines::draw(float const* mvp)
 		(GLvoid const*) 0
 	);
 	glEnableVertexAttribArray(pos);
-	glUniform4f(rect, left, top, width, height);
+    glUniform4f(rect, geometry->leftOffset, geometry->topOffset, geometry->width, geometry->height);
     glUniform3f(color, drawColor.r, drawColor.g, drawColor.b);
 	glUniformMatrix3fv(linemvp, 1, GL_FALSE, mvp);
 	

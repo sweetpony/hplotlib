@@ -13,8 +13,8 @@
 
 namespace hpl
 {
-Legend::Legend(Font* font, int n, double const* x, double const* y, float left, float top, float width, float height)
-	: font(font), PlotPart(left, top, width, height)
+Legend::Legend(Font* font, int n, double const* x, double const* y, Geometry* geometry)
+    : PlotPart(geometry), font(font)
 {
 	xmin = hpl::min(n, x);
 	xmax = hpl::max(n, x);	
@@ -159,7 +159,7 @@ void Legend::draw(float const* mvp)
 		(GLvoid const*) 0
 	);
 	glEnableVertexAttribArray(linepos);
-	glUniform4f(linerect, left, top, width, height);
+    glUniform4f(linerect, geometry->leftOffset, geometry->topOffset, geometry->width, geometry->height);
     glUniform3f(linecolor, drawColor.r, drawColor.g, drawColor.b);
 	glUniformMatrix3fv(linemvp, 1, GL_FALSE, mvp);
 	
@@ -186,7 +186,7 @@ void Legend::draw(float const* mvp)
 		(GLvoid const*) (2*sizeof(float))
 	);
 	glEnableVertexAttribArray(textuv);
-	glUniform4f(textrect, left, top, width, height);	
+    glUniform4f(textrect, geometry->leftOffset, geometry->topOffset, geometry->width, geometry->height);
 	glUniformMatrix3fv(textmvp, 1, GL_FALSE, mvp);
     glUniform3f(textcolor, drawColor.r, drawColor.g, drawColor.b);
 	font->bind(textglyphs, 0);

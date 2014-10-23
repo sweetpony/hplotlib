@@ -43,15 +43,26 @@ void showLinkLog(GLuint id)
     }
 }
 
-LinePlot* Canvas::addLinesPlot(int n, double const* x, double const* y, float left, float top, float width, float height) {
+Canvas::~Canvas()
+{
+    for (auto it = plots_tmp.cbegin(); it != plots_tmp.cend(); ++it) {
+        delete (*it);
+    }
+    delete layout;
+}
+
+//! @todo use layout
+LinePlot* Canvas::addLinesPlot(int n, double const* x, double const* y, const Geometry& geometry) {
     LinePlot* plot = new LinePlot();
 
-    Legend* l = new Legend(&font, n, x, y, left, top, width, height);
+    Geometry* lGeo = new Geometry(geometry);
+    Legend* l = new Legend(&font, n, x, y, lGeo);
     plot->addLegend(l);
 
-	float xo = width*Legend::XOffset;
-	float yo = height*Legend::YOffset;
-    Lines* p = new Lines(n, x, y, left+xo, top+yo, width-xo, height-yo);
+    float xo = geometry.width*Legend::XOffset;
+    float yo = geometry.height*Legend::YOffset;
+    Geometry* pGeo = new Geometry(geometry.leftOffset+xo, geometry.topOffset+yo, geometry.width-xo, geometry.height-yo);
+    Lines* p = new Lines(n, x, y, pGeo);
     plot->addLines(p);
 
     pthread_mutex_lock(&mutex);
@@ -59,13 +70,6 @@ LinePlot* Canvas::addLinesPlot(int n, double const* x, double const* y, float le
 	pthread_mutex_unlock(&mutex);
 
     return plot;
-}
-	
-Canvas::~Canvas()
-{
-	for (auto it = plots_tmp.cbegin(); it != plots_tmp.cend(); ++it) {
-		delete (*it);
-	}
 }
 	
 void Canvas::init()

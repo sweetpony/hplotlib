@@ -13,6 +13,8 @@
 #include "LinePlot.hpp"
 #include "Font.hpp"
 #include "Color.hpp"
+#include "Geometry.hpp"
+#include "FixedLayout.hpp"
 
 namespace hpl
 {
@@ -21,7 +23,7 @@ public:
 	Canvas(std::string const& fontFile) : fontFile(fontFile) {}
 	~Canvas();
 
-    LinePlot* addLinesPlot(int n, double const* x, double const* y, float left, float top, float width, float height);
+    LinePlot* addLinesPlot(int n, double const* x, double const* y, const Geometry& geometry = Geometry());
 
     inline void setBackgroundColor(const Color& c) {
         backgroundColor = c;
@@ -42,6 +44,7 @@ private:
     std::vector<Plot*> plots, plots_tmp;
 	pthread_mutex_t mutex = PTHREAD_MUTEX_INITIALIZER;
     Color backgroundColor = Color(1.0f, 1.0f, 1.0f);
+    Layout* layout = new FixedLayout();
 	
 	GLuint linevshader = 0;
     GLuint linefshader = 0;

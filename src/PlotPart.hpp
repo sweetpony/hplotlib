@@ -9,13 +9,16 @@
 
 #include <GL/glld.h>
 #include "Color.hpp"
+#include "Geometry.hpp"
 
 namespace hpl
 {
 class PlotPart {
 public:
-    PlotPart(float left, float top, float width, float height) : left(left), top(top), width(width), height(height) {}
-    virtual ~PlotPart() {}
+    PlotPart(Geometry* geometry) : geometry(geometry) {}
+    virtual ~PlotPart() {
+        delete geometry;
+    }
 
 	virtual void init(GLuint lineprogram, GLuint textprogram) = 0;
 	virtual void destroy() = 0;
@@ -26,7 +29,7 @@ public:
     }
 	
 protected:
-	float left, top, width, height;
+    Geometry* geometry;
     Color drawColor = Color(1.0f, 1.0f, 1.0f);
 };
 }
