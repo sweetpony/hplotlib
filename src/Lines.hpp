@@ -7,11 +7,11 @@
 #ifndef HPLOTLIB_LINES_HPP
 #define HPLOTLIB_LINES_HPP
 
-#include "Plot.hpp"
+#include "PlotPart.hpp"
 
 namespace hpl
 {
-class Lines : public Plot {
+class Lines : public PlotPart {
 public:
 	Lines(int n, double const* x, double const* y, float r, float g, float b, float left, float top, float width, float height);
 

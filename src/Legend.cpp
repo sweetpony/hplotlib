@@ -14,7 +14,7 @@
 namespace hpl
 {
 Legend::Legend(Font* font, int n, double const* x, double const* y, float left, float top, float width, float height)
-	: font(font), Plot(left, top, width, height)
+	: font(font), PlotPart(left, top, width, height)
 {
 	xmin = hpl::min(n, x);
 	xmax = hpl::max(n, x);	

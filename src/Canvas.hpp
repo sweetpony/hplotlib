@@ -10,8 +10,7 @@
 #include <vector>
 
 #include "Window.hpp"
-#include "Lines.hpp"
-#include "Legend.hpp"
+#include "Lineplot.hpp"
 #include "Font.hpp"
 
 namespace hpl
@@ -20,7 +19,7 @@ class Canvas : public Window {
 public:
 	Canvas(std::string const& fontFile) : fontFile(fontFile) {}
 	~Canvas();
-	void addLinesPlot(int n, double const* x, double const* y, float r, float g, float b, float left, float top, float width, float height);
+    void addLinesPlot(int n, double const* x, double const* y, float r, float g, float b, float left, float top, float width, float height);
 
 protected:
 	virtual void init();
@@ -34,8 +33,8 @@ private:
 	std::string fontFile;
 	Font font;
 	int initiated = 0;
-	std::vector<Plot*> plots;
-	std::vector<Plot*> plots_tmp;
+    std::vector<PlotPart*> plots;
+    std::vector<PlotPart*> plots_tmp;
 	pthread_mutex_t mutex = PTHREAD_MUTEX_INITIALIZER;
 	
 	GLuint linevshader = 0;

@@ -45,10 +45,10 @@ void showLinkLog(GLuint id)
 
 void Canvas::addLinesPlot(int n, double const* x, double const* y, float r, float g, float b, float left, float top, float width, float height) {
 	pthread_mutex_lock(&mutex);
-	Plot* l = new Legend(&font, n, x, y, left, top, width, height);
+    PlotPart* l = new Legend(&font, n, x, y, left, top, width, height);
 	float xo = width*Legend::XOffset;
 	float yo = height*Legend::YOffset;
-	Plot* p = new Lines(n, x, y, r, g, b, left+xo, top+yo, width-xo, height-yo);
+    PlotPart* p = new Lines(n, x, y, r, g, b, left+xo, top+yo, width-xo, height-yo);
 	plots.push_back(l);
 	plots.push_back(p);
 	pthread_mutex_unlock(&mutex);

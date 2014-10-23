@@ -9,12 +9,12 @@
 
 #include <GL/glld.h>
 
-#include "Plot.hpp"
+#include "PlotPart.hpp"
 #include "Font.hpp"
 
 namespace hpl
 {
-class Legend : public Plot {
+class Legend : public PlotPart {
 public:
 	static constexpr float XOffset = 0.12f;
 	static constexpr float YOffset = 0.08f;

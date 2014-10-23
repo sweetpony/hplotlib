@@ -10,7 +10,7 @@
 namespace hpl
 {
 Lines::Lines(int n, double const* x, double const* y, float r, float g, float b, float left, float top, float width, float height)
-	: n(n), r(r), g(g), b(b), Plot(left, top, width, height)
+	: n(n), r(r), g(g), b(b), PlotPart(left, top, width, height)
 {
 	double xmin = hpl::min(n, x);
 	double xmax = hpl::max(n, x);
