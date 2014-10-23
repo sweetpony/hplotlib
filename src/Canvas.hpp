@@ -20,7 +20,7 @@ public:
 	Canvas(std::string const& fontFile) : fontFile(fontFile) {}
 	~Canvas();
 
-    LinePlot* addLinesPlot(int n, double const* x, double const* y, float r, float g, float b, float left, float top, float width, float height);
+    LinePlot* addLinesPlot(int n, double const* x, double const* y, float left, float top, float width, float height);
 
 protected:
 	virtual void init();

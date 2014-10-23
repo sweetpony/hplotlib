@@ -3,6 +3,7 @@
 
 #include <vector>
 #include "Legend.hpp"
+#include "Color.hpp"
 
 namespace hpl
 {

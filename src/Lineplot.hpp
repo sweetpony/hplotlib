@@ -13,7 +13,9 @@ public:
     LinePlot();
     virtual ~LinePlot();
 
-    void addLines(Lines* lines);
+    virtual void addLines(Lines* lines);
+
+    virtual void setLineColor(unsigned int id, const Color& c);
 
 };
 }

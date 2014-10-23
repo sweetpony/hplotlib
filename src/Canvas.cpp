@@ -43,7 +43,7 @@ void showLinkLog(GLuint id)
     }
 }
 
-LinePlot* Canvas::addLinesPlot(int n, double const* x, double const* y, float r, float g, float b, float left, float top, float width, float height) {
+LinePlot* Canvas::addLinesPlot(int n, double const* x, double const* y, float left, float top, float width, float height) {
     LinePlot* plot = new LinePlot();
 
     Legend* l = new Legend(&font, n, x, y, left, top, width, height);
@@ -51,7 +51,7 @@ LinePlot* Canvas::addLinesPlot(int n, double const* x, double const* y, float r,
 
 	float xo = width*Legend::XOffset;
 	float yo = height*Legend::YOffset;
-    Lines* p = new Lines(n, x, y, r, g, b, left+xo, top+yo, width-xo, height-yo);
+    Lines* p = new Lines(n, x, y, left+xo, top+yo, width-xo, height-yo);
     plot->addLines(p);
 
     pthread_mutex_lock(&mutex);
