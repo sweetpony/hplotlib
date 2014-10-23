@@ -1,4 +1,4 @@
-#include "Lineplot.hpp"
+#include "LinePlot.hpp"
 
 namespace hpl
 {

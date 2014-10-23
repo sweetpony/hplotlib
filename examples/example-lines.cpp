@@ -6,7 +6,7 @@
  */
 
 #include <Canvas.hpp>
-#include <Lineplot.hpp>
+#include <LinePlot.hpp>
 #include <Color.hpp>
 #include <cmath>
 

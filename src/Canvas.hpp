@@ -10,7 +10,7 @@
 #include <vector>
 
 #include "Window.hpp"
-#include "Lineplot.hpp"
+#include "LinePlot.hpp"
 #include "Font.hpp"
 #include "Color.hpp"
 
