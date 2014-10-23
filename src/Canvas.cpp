@@ -51,25 +51,34 @@ Canvas::~Canvas()
     delete layout;
 }
 
-//! @todo use layout
 LinePlot* Canvas::addLinesPlot(int n, double const* x, double const* y, const Geometry& geometry) {
     LinePlot* plot = new LinePlot();
 
     Geometry* lGeo = new Geometry(geometry);
     Legend* l = new Legend(&font, n, x, y, lGeo);
     plot->addLegend(l);
+    layout->addPlot(lGeo);
 
     float xo = geometry.width*Legend::XOffset;
     float yo = geometry.height*Legend::YOffset;
-    Geometry* pGeo = new Geometry(geometry.leftOffset+xo, geometry.topOffset+yo, geometry.width-xo, geometry.height-yo);
+    Geometry* pGeo = new Geometry(geometry.leftOffset+xo, geometry.topOffset+yo, geometry.width-xo, geometry.height-yo); //! @todo this should be done in Layout
     Lines* p = new Lines(n, x, y, pGeo);
     plot->addLines(p);
+    layout->addPlot(pGeo);
+    //! @todo this is wrong, both geometries should be handled as one
 
     pthread_mutex_lock(&mutex);
     plots.push_back(plot);
 	pthread_mutex_unlock(&mutex);
 
     return plot;
+}
+
+void Canvas::setLayout(Layout* layout)
+{
+    delete this->layout;
+    this->layout = layout;
+    //! @todo add geometries to new layout
 }
 	
 void Canvas::init()

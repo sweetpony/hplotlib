@@ -14,6 +14,7 @@
 #include "Font.hpp"
 #include "Color.hpp"
 #include "Geometry.hpp"
+#include "Layout.hpp"
 #include "FixedLayout.hpp"
 
 namespace hpl
@@ -28,6 +29,8 @@ public:
     inline void setBackgroundColor(const Color& c) {
         backgroundColor = c;
     }
+
+    void setLayout(Layout* layout);
 
 protected:
 	virtual void init();
