@@ -19,7 +19,8 @@ class Canvas : public Window {
 public:
 	Canvas(std::string const& fontFile) : fontFile(fontFile) {}
 	~Canvas();
-    void addLinesPlot(int n, double const* x, double const* y, float r, float g, float b, float left, float top, float width, float height);
+
+    LinePlot* addLinesPlot(int n, double const* x, double const* y, float r, float g, float b, float left, float top, float width, float height);
 
 protected:
 	virtual void init();
@@ -33,8 +34,7 @@ private:
 	std::string fontFile;
 	Font font;
 	int initiated = 0;
-    std::vector<PlotPart*> plots;
-    std::vector<PlotPart*> plots_tmp;
+    std::vector<Plot*> plots, plots_tmp;
 	pthread_mutex_t mutex = PTHREAD_MUTEX_INITIALIZER;
 	
 	GLuint linevshader = 0;

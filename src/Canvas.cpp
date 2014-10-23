@@ -43,15 +43,22 @@ void showLinkLog(GLuint id)
     }
 }
 
-void Canvas::addLinesPlot(int n, double const* x, double const* y, float r, float g, float b, float left, float top, float width, float height) {
-	pthread_mutex_lock(&mutex);
-    PlotPart* l = new Legend(&font, n, x, y, left, top, width, height);
+LinePlot* Canvas::addLinesPlot(int n, double const* x, double const* y, float r, float g, float b, float left, float top, float width, float height) {
+    LinePlot* plot = new LinePlot();
+
+    Legend* l = new Legend(&font, n, x, y, left, top, width, height);
+    plot->addLegend(l);
+
 	float xo = width*Legend::XOffset;
 	float yo = height*Legend::YOffset;
-    PlotPart* p = new Lines(n, x, y, r, g, b, left+xo, top+yo, width-xo, height-yo);
-	plots.push_back(l);
-	plots.push_back(p);
+    Lines* p = new Lines(n, x, y, r, g, b, left+xo, top+yo, width-xo, height-yo);
+    plot->addLines(p);
+
+    pthread_mutex_lock(&mutex);
+    plots.push_back(plot);
 	pthread_mutex_unlock(&mutex);
+
+    return plot;
 }
 	
 Canvas::~Canvas()
