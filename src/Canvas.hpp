@@ -36,8 +36,8 @@ protected:
 	virtual void init();
 	virtual void destroy();
 	virtual void draw();
-	virtual void moveEvent(double deltax, double deltay);
-	virtual void mouseWheelEvent(double x, double y, double delta);
+	virtual void moveEvent(int deltax, int deltay);
+	virtual void mouseWheelEvent(int x, int y, double delta);
 	virtual void resetEvent();
 	
 private:

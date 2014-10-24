@@ -77,22 +77,6 @@ LRESULT CALLBACK Win32Window::WndProc(HWND hWnd, UINT message, WPARAM wParam, LP
 					win32->win->resetEvent();
 					win32->win->update();
 					break;
-				case VK_LEFT:
-					win32->win->moveEvent(0.1f, 0.0f);
-					win32->win->update();
-					break;
-				case VK_RIGHT:
-					win32->win->moveEvent(-0.1f, 0.0f);
-					win32->win->update();
-					break;
-				case VK_UP:
-					win32->win->moveEvent(0.0f, -0.1f);
-					win32->win->update();
-					break;
-				case VK_DOWN:
-					win32->win->moveEvent(0.0f, 0.1f);
-					win32->win->update();
-					break;
 				default:
 					break;
             }
@@ -107,10 +91,10 @@ LRESULT CALLBACK Win32Window::WndProc(HWND hWnd, UINT message, WPARAM wParam, LP
 			if (wParam == MK_LBUTTON) {
 				double x = GET_X_LPARAM(lParam);
 				double y = GET_Y_LPARAM(lParam);
-				win32->win->moveEvent((x - win32->win->lastx) / win32->win->width, -(y - win32->win->lasty) / win32->win->height);
-				win32->win->update();
+				win32->win->moveEvent(x - win32->win->lastx, y - win32->win->lasty);
 				win32->win->lastx = x;
 				win32->win->lasty = y;
+				win32->win->update();
 			}
 			break;
 		}

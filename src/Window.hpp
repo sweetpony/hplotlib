@@ -11,6 +11,8 @@
 #include <chrono>
 #include <algorithm>
 
+#include "Sleep.hpp"
+
 namespace hpl
 {
 	class Window {
@@ -27,8 +29,8 @@ namespace hpl
 		virtual void destroy() = 0;
 		virtual void draw() = 0;
 		virtual void resetEvent() = 0;
-		virtual void moveEvent(double deltax, double deltay) = 0;
-		virtual void mouseWheelEvent(double x, double y, double delta) = 0;
+		virtual void moveEvent(int deltax, int deltay) = 0;
+		virtual void mouseWheelEvent(int x, int y, double delta) = 0;
 		
 		double width = 0.0;
 		double height = 0.0;
@@ -67,8 +69,8 @@ void* hpl::Window::runProto(void* self)
 			win->needsRepaint = false;
 		}
 
-		std::chrono::milliseconds timeSpan = std::chrono::duration_cast<std::chrono::milliseconds>(std::chrono::steady_clock::now() - last);
-		Sleep(std::round(std::max(0.0, 1e3 / RefreshRate - timeSpan.count())));
+		std::chrono::microseconds timeSpan = std::chrono::duration_cast<std::chrono::microseconds>(std::chrono::steady_clock::now() - last);
+		sleep(std::round(std::max(0.0, 1e6 / RefreshRate - timeSpan.count())));
 		last = std::chrono::steady_clock::now();
 	}
 

@@ -9,7 +9,5 @@
 
 void* hpl::Window::run(void* self)
 {
-	X11Window window;
-	window.show(static_cast<Window*>(self));
-	return nullptr;
+	return runProto<X11Window>(self);
 }

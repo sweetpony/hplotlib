@@ -198,13 +198,13 @@ void Canvas::resetEvent()
 	mvp[7] = 0.0;
 }
 
-void Canvas::moveEvent(double deltax, double deltay)
-{	
-	mvp[6] += deltax;
-	mvp[7] += deltay;
+void Canvas::moveEvent(int deltax, int deltay)
+{
+	mvp[6] += deltax / static_cast<double>(width);
+	mvp[7] += -deltay / static_cast<double>(height);
 }
 
-void Canvas::mouseWheelEvent(double x, double y, double delta)
+void Canvas::mouseWheelEvent(int x, int y, double delta)
 {
 	delta *= 0.2f;
 	double old = mvp[0];
@@ -216,8 +216,8 @@ void Canvas::mouseWheelEvent(double x, double y, double delta)
 	if (mvp[4] < 0.5f) {
 		mvp[4] = 0.5f;
 	}
-	double xs = (x / width - mvp[6]) / old;
-	double ys = (1.0 - y / height - mvp[7]) / old;
+	double xs = (x / static_cast<double>(width) - mvp[6]) / old;
+	double ys = (1.0 - y / static_cast<double>(height) - mvp[7]) / old;
 	mvp[6] += (old-mvp[0]) * xs;
 	mvp[7] += (old-mvp[4]) * ys;
 }

@@ -7,7 +7,6 @@
 #include "../Window.hpp"
 #include "Win32Window.hpp"
 
-
 void* hpl::Window::run(void* self)
 {
 	return runProto<Win32Window>(self);
