@@ -4,6 +4,7 @@
 #include <vector>
 #include "Legend.hpp"
 #include "Color.hpp"
+#include "Delegate.hpp"
 
 namespace hpl
 {
@@ -21,11 +22,12 @@ public:
     virtual void addLegend(Legend* legend);
 
     virtual void setLegendColor(const Color& c);
+    
+    Delegate<> changed;
 
 protected:
     Legend* legend;
     std::vector<PlotPart*> parts;
-
 };
 }
 

@@ -53,6 +53,7 @@ Canvas::~Canvas()
 
 LinePlot* Canvas::addLinesPlot(int n, double const* x, double const* y, const Geometry& geometry) {
     LinePlot* plot = new LinePlot();
+    plot->changed.bind<Window, &Window::update>(this);
 
     Geometry* lGeo = new Geometry(geometry);
     Legend* l = new Legend(&font, n, x, y, lGeo);

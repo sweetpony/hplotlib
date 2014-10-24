@@ -22,6 +22,7 @@ namespace hpl
 		void wait() {
 			pthread_join(windowThread, nullptr);			
 		}
+		void update() { needsRepaint = true; }
 	protected:
 		Window() { pthread_create(&windowThread, nullptr, run, this); }
 
@@ -42,7 +43,6 @@ namespace hpl
 		template<class T>
 		static void* runProto(void* self);
 		bool loadOpenGL();
-		void update() { needsRepaint = true; }
 		void close() { destroy(); isOpen = false; }
 	
 		pthread_t windowThread;		

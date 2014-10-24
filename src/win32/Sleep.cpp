@@ -5,5 +5,5 @@
 
 void hpl::sleep(unsigned useconds)
 {
-	Sleep(useconds);
+	Sleep(useconds / 1000);
 }

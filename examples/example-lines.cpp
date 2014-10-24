@@ -38,6 +38,15 @@ int main()
     hpl::LinePlot* plot2 = canvas.addLinesPlot(NUM_POINTS, x, z);
     plot2->setLegendColor(hpl::Color(0.0f, 0.0f, 0.0f));
     plot2->setLineColor(0, hpl::Color(0.6f, 0.3f, 0.1f));
+    
+    for (int i = 0; i < 10; ++i) {    
+		hpl::sleep(5e5);
+		plot2->setLineColor(0, hpl::Color(
+			rand() / static_cast<float>(RAND_MAX), 
+			rand() / static_cast<float>(RAND_MAX), 
+			rand() / static_cast<float>(RAND_MAX)
+		));
+	}
 	
 	canvas.wait();
 

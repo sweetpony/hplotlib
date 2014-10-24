@@ -42,10 +42,12 @@ void Plot::draw(float const* mvp)
 void Plot::addLegend(Legend* legend)
 {
     this->legend = legend;
+    changed.invoke();
 }
 
 void Plot::setLegendColor(const Color& c)
 {
     legend->setColor(c);
+    changed.invoke();
 }
 }
