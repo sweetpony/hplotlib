@@ -30,18 +30,7 @@ typedef HGLRC (WINAPI* PFNWGLCREATECONTEXTATTRIBSARBPROC) (HDC hDC, HGLRC hShare
 #define WGL_SAMPLES_ARB 0x2042
 typedef BOOL (WINAPI * PFNWGLCHOOSEPIXELFORMATARBPROC) (HDC hdc, const int *piAttribIList, const FLOAT *pfAttribFList, UINT nMaxFormats, int *piFormats, UINT *nNumFormats);
 
-#define IDT_TIMER1 1001
-
 namespace hpl {
-VOID CALLBACK Win32Window::TimerProc(HWND hWnd, UINT uMsg, UINT_PTR idEvent, DWORD dwTime)
-{
-	Win32Window* win32 = reinterpret_cast<Win32Window*>(GetWindowLongPtr(hWnd, GWL_USERDATA));
-	if (win32->win->updateRequired()) {
-		PostMessage(hWnd, WM_PAINT, NULL, NULL);
-		win32->win->updateQueued();
-	}
-}
-
 LRESULT CALLBACK Win32Window::WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 {
 	Win32Window* win32 = reinterpret_cast<Win32Window*>(GetWindowLongPtr(hWnd, GWL_USERDATA));
@@ -72,7 +61,7 @@ LRESULT CALLBACK Win32Window::WndProc(HWND hWnd, UINT message, WPARAM wParam, LP
         case WM_DESTROY: {
             HDC hdc = GetDC(hWnd);
 			wglMakeCurrent(hdc, win32->glcontext);
-			win32->win->destroy();            
+			win32->win->close();
             wglMakeCurrent(NULL, NULL);
             wglDeleteContext(win32->glcontext);
             ReleaseDC(hWnd, GetDC(hWnd));
@@ -169,7 +158,7 @@ bool Win32Window::show(Window* windowBase)
 
     RegisterClassEx(&wc);
 
-    HWND hWnd = CreateWindow(windowClass, "Canvas", WS_OVERLAPPEDWINDOW, CW_USEDEFAULT, CW_USEDEFAULT, 640, 480, NULL, NULL, hInstance, NULL);
+    HWND hWndTmp = CreateWindow(windowClass, "Canvas", WS_OVERLAPPEDWINDOW, CW_USEDEFAULT, CW_USEDEFAULT, 640, 480, NULL, NULL, hInstance, NULL);
     
     // Create a basic OpenGL context
 	PIXELFORMATDESCRIPTOR  pfd = {
@@ -185,11 +174,11 @@ bool Win32Window::show(Window* windowBase)
 		0, 0, 0, 0
 	};	
 
-	HDC hdc = GetDC(hWnd);
-	int pf = ChoosePixelFormat(hdc, &pfd);
-	SetPixelFormat(hdc, pf, &pfd);
-	glcontext = wglCreateContext(hdc);
-	wglMakeCurrent(hdc, glcontext);	
+	HDC hdcTmp = GetDC(hWndTmp);
+	int pf = ChoosePixelFormat(hdcTmp, &pfd);
+	SetPixelFormat(hdcTmp, pf, &pfd);
+	glcontext = wglCreateContext(hdcTmp);
+	wglMakeCurrent(hdcTmp, glcontext);	
 	
 	auto wglChoosePixelFormatARB = (PFNWGLCHOOSEPIXELFORMATARBPROC) wglGetProcAddress("wglChoosePixelFormatARB");
 	auto wglCreateContextAttribsARB = (PFNWGLCREATECONTEXTATTRIBSARBPROC) wglGetProcAddress("wglCreateContextAttribsARB");
@@ -217,16 +206,16 @@ bool Win32Window::show(Window* windowBase)
 		0
 	};
 
-	DestroyWindow(hWnd);
-    HWND hWnd2 = CreateWindow(windowClass, "Canvas", WS_OVERLAPPEDWINDOW, CW_USEDEFAULT, CW_USEDEFAULT, 640, 480, NULL, NULL, hInstance, this);
-    HDC hdc2 = GetDC(hWnd2);
+	DestroyWindow(hWndTmp);
+    hWnd = CreateWindow(windowClass, "Canvas", WS_OVERLAPPEDWINDOW, CW_USEDEFAULT, CW_USEDEFAULT, 640, 480, NULL, NULL, hInstance, this);
+    HDC hdc = GetDC(hWnd);
 	int msaa = 16;
-	while (msaa >= 0 && !wglChoosePixelFormatARB(hdc2, iAttribs, fAttribs, 1, &pixelFormat, &numFormats)) {
+	while (msaa >= 0 && !wglChoosePixelFormatARB(hdc, iAttribs, fAttribs, 1, &pixelFormat, &numFormats)) {
 		--msaa;
 	}
-	SetPixelFormat(hdc2, pixelFormat, &pfd);
-	glcontext = wglCreateContextAttribsARB(hdc2, 0, attribs);
-	wglMakeCurrent(hdc2, glcontext);
+	SetPixelFormat(hdc, pixelFormat, &pfd);
+	glcontext = wglCreateContextAttribsARB(hdc, 0, attribs);
+	wglMakeCurrent(hdc, glcontext);
 
 	if (!win->loadOpenGL()) {
 		return false;
@@ -234,19 +223,24 @@ bool Win32Window::show(Window* windowBase)
 	
 	win->init();
     
-    ShowWindow(hWnd2, SW_MAXIMIZE);
-    UpdateWindow(hWnd2);
-    
-    SetTimer(hWnd2, IDT_TIMER1, 16, TimerProc);
-    
+    ShowWindow(hWnd, SW_MAXIMIZE);
+    UpdateWindow(hWnd);
+
+    return true;
+}
+
+void Win32Window::poll()
+{
 	MSG msg;
-    while (GetMessage(&msg, NULL, 0, 0)) {
+    while (PeekMessage(&msg, NULL, 0, 0, PM_REMOVE)) {
         TranslateMessage(&msg);
         DispatchMessage(&msg);
     }
-    
-    KillTimer(hWnd2, IDT_TIMER1);
+}
 
-    return true;
+void Win32Window::update()
+{
+	InvalidateRect(hWnd, NULL, TRUE);
+	UpdateWindow(hWnd);
 }
 }

@@ -7,9 +7,8 @@
 #include "../Window.hpp"
 #include "Win32Window.hpp"
 
+
 void* hpl::Window::run(void* self)
 {
-	Win32Window window;
-	window.show(static_cast<Window*>(self));
-	return nullptr;
+	return runProto<Win32Window>(self);
 }
