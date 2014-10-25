@@ -43,11 +43,18 @@ void GridLayout::recalculate()
     }
 }
 
-//! @todo this should also call a repaint in window
 void GridLayout::remap(unsigned int xCount, unsigned int yCount)
 {
     this->xCount = xCount;
     this->yCount = yCount;
     recalculate();
+    changed.invoke();
+}
+
+void GridLayout::changeOrientation(Orientation orientation)
+{
+    this->orientation = orientation;
+    recalculate();
+    changed.invoke();
 }
 }

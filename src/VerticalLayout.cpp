@@ -40,5 +40,12 @@ void VerticalLayout::recalculate()
         }
     }
 }
+
+void VerticalLayout::changeOrientation(Orientation orientation)
+{
+    this->orientation = orientation;
+    recalculate();
+    changed.invoke();
+}
 }
 

@@ -79,8 +79,7 @@ void Canvas::setLayout(Layout* layout)
     layout->copyPlots(*this->layout);
     delete this->layout;
     this->layout = layout;
-
-    needsRepaint = true;
+    layout->changed.bind<Window, &Window::update>(this);
 }
 	
 void Canvas::init()

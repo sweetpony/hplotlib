@@ -18,6 +18,7 @@ public:
     virtual ~GridLayout();
 
     void remap(unsigned int xCount, unsigned int yCount);
+    void changeOrientation(Orientation orientation);
 
     virtual void recalculate();
 

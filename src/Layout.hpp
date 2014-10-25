@@ -4,6 +4,7 @@
 #include <vector>
 #include "Geometry.hpp"
 #include "Legend.hpp"
+#include "Delegate.hpp"
 
 namespace hpl
 {
@@ -29,7 +30,7 @@ public:
 
     virtual void recalculate() = 0;
 
-    void redraw();
+    Delegate<> changed;
 
 protected:
     std::vector<Geometry*> plotBoxes;

@@ -57,11 +57,15 @@ int main()
 
     hpl::sleep(1e6);
 
-    canvas.setLayout(new hpl::GridLayout(2, 2));
+    canvas.setLayout(new hpl::GridLayout(2, 2, hpl::GridLayout::BottomRightToTopLeft));
 
     hpl::LinePlot* plot3 = canvas.addLinesPlot(NUM_POINTS, x, y);
     plot3->setLegendColor(hpl::Color(0.0f, 0.0f, 0.0f));
     plot3->setLineColor(0, hpl::Color(0.6f, 0.6f, 0.6f));
+
+    hpl::sleep(1e6);
+
+    static_cast<hpl::GridLayout*>(canvas.getLayout())->changeOrientation(hpl::GridLayout::TopLeftToBottomRight);
 	
 	canvas.wait();
 

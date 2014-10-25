@@ -19,6 +19,8 @@ public:
 
     virtual void recalculate();
 
+    void changeOrientation(Orientation orientation);
+
 private:
     Orientation orientation;
 

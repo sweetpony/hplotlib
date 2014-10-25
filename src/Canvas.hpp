@@ -31,6 +31,9 @@ public:
     }
 
     void setLayout(Layout* layout);
+    inline Layout* getLayout() {
+        return layout;
+    }
 
 protected:
 	virtual void init();
