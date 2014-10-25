@@ -2,7 +2,7 @@
 
 namespace hpl
 {
-FixedLayout::FixedLayout()
+FixedLayout::FixedLayout() : Layout()
 {
 }
 

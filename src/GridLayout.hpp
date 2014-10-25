@@ -9,10 +9,15 @@ class GridLayout : public Layout
 {
 
 public:
-    GridLayout();
+    GridLayout(unsigned int xCount, unsigned int yCount);
     virtual ~GridLayout();
 
+    void remap(unsigned int xCount, unsigned int yCount);
+
     virtual void recalculate();
+
+private:
+    unsigned int xCount, yCount;
 
 };
 }

@@ -11,6 +11,7 @@
 #include <Geometry.hpp>
 #include <HorizontalLayout.hpp>
 #include <VerticalLayout.hpp>
+#include <GridLayout.hpp>
 #include <cmath>
 
 #define NUM_POINTS 200
@@ -53,6 +54,14 @@ int main()
 			rand() / static_cast<float>(RAND_MAX)
 		));
     }
+
+    hpl::sleep(1e6);
+
+    canvas.setLayout(new hpl::GridLayout(2, 2));
+
+    hpl::LinePlot* plot3 = canvas.addLinesPlot(NUM_POINTS, x, y);
+    plot3->setLegendColor(hpl::Color(0.0f, 0.0f, 0.0f));
+    plot3->setLineColor(0, hpl::Color(0.6f, 0.6f, 0.6f));
 	
 	canvas.wait();
 

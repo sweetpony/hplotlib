@@ -2,7 +2,7 @@
 
 namespace hpl
 {
-HorizontalLayout::HorizontalLayout()
+HorizontalLayout::HorizontalLayout() : Layout()
 {
 }
 

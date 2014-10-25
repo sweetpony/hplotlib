@@ -2,7 +2,7 @@
 
 namespace hpl
 {
-VerticalLayout::VerticalLayout()
+VerticalLayout::VerticalLayout() : Layout()
 {
 }
 
