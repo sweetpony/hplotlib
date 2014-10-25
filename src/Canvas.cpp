@@ -69,6 +69,8 @@ LinePlot* Canvas::addLinesPlot(int n, double const* x, double const* y, const Ge
     plots.push_back(plot);
 	pthread_mutex_unlock(&mutex);
 
+    needsRepaint = true;
+
     return plot;
 }
 
@@ -77,6 +79,8 @@ void Canvas::setLayout(Layout* layout)
     layout->copyPlots(*this->layout);
     delete this->layout;
     this->layout = layout;
+
+    needsRepaint = true;
 }
 	
 void Canvas::init()

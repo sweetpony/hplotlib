@@ -35,6 +35,7 @@ namespace hpl
 		
 		double width = 0.0;
 		double height = 0.0;
+        bool needsRepaint = false;
 		
 	private:	
 		static double constexpr RefreshRate = 60.0;
@@ -45,8 +46,7 @@ namespace hpl
 		bool loadOpenGL();
 		void close() { destroy(); isOpen = false; }
 	
-		pthread_t windowThread;		
-		bool needsRepaint = false;
+        pthread_t windowThread;
 		bool isOpen = true;
 		double lastx = 0.0;
 		double lasty = 0.0;
