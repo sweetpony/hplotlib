@@ -21,6 +21,10 @@ Legend::Legend(Font* font, int n, double const* x, double const* y, Geometry* ge
 	ymin = hpl::min(n, y);
 	ymax = hpl::max(n, y);
 }
+
+Legend::~Legend()
+{
+}
 	
 void Legend::init(GLuint lineprogram, GLuint textprogram)
 {

@@ -23,6 +23,10 @@ Lines::Lines(int n, double const* x, double const* y, Geometry* geometry)
 		interleave[(i << 1) + 1] = (y[i] - ymin) / (ymax - ymin);
 	}
 }
+
+Lines::~Lines()
+{
+}
 	
 void Lines::init(GLuint lineprogram, GLuint)
 {

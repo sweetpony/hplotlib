@@ -14,6 +14,7 @@ namespace hpl
 class Lines : public PlotPart {
 public:
     Lines(int n, double const* x, double const* y, Geometry* geometry);
+    virtual ~Lines();
 
 	virtual void init(GLuint lineprogram, GLuint);
 	virtual void destroy();
