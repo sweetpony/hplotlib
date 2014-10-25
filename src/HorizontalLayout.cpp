@@ -2,7 +2,7 @@
 
 namespace hpl
 {
-HorizontalLayout::HorizontalLayout() : Layout()
+HorizontalLayout::HorizontalLayout(Orientation orientation) : Layout(), orientation(orientation)
 {
 }
 
@@ -17,6 +17,10 @@ void HorizontalLayout::recalculate()
     double h = 1.0;
 
     double l = 0.0, t = 0.0, xo = 0.0, yo = 0.0;
+    if (orientation == RightToLeft) {
+        l = (c / 2.0 - 1) * w;
+    }
+
     for(unsigned int i = 0; i < c; i+=2) {
         if (plotBoxes[i] != 0) {
             plotBoxes[i]->reset(l, t, w, h);
@@ -29,7 +33,11 @@ void HorizontalLayout::recalculate()
             plotBoxes[i+1]->reset(l+xo, t+yo, w-xo, h-yo);
         }
 
-        l += w;
+        if (orientation == LeftToRight) {
+            l += w;
+        } else {
+            l -= w;
+        }
     }
 }
 }

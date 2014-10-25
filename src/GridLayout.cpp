@@ -2,7 +2,7 @@
 
 namespace hpl
 {
-GridLayout::GridLayout(unsigned int xCount, unsigned int yCount) : Layout(), xCount(xCount), yCount(yCount)
+GridLayout::GridLayout(unsigned int xCount, unsigned int yCount, Orientation orientation) : Layout(), xCount(xCount), yCount(yCount), orientation(orientation)
 {
 }
 
@@ -20,9 +20,15 @@ void GridLayout::recalculate()
     double h = 1.0 / (yCount);
 
     double l = 0.0, t = 0.0, xo = 0.0, yo = 0.0;
+
     for(unsigned int i = 0; i < c; i+=2) {
-        l = (i / 2 % xCount) * w;
-        t = (i / 2 / xCount) * w;
+        if (orientation == TopLeftToBottomRight) {
+            l = (i / 2 % xCount) * w;
+            t = (c / 2.0 - 2 - i / 2 / xCount) * h;
+        } else {
+            l = (c / 2.0 - 2 - i / 2 % xCount) * w;
+            t = (i / 2 / xCount) * h;
+        }
 
         if (plotBoxes[i] != 0) {
             plotBoxes[i]->reset(l, t, w, h);

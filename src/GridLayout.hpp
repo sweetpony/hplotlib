@@ -9,7 +9,12 @@ class GridLayout : public Layout
 {
 
 public:
-    GridLayout(unsigned int xCount, unsigned int yCount);
+    enum Orientation {
+        TopLeftToBottomRight,
+        BottomRightToTopLeft
+    };
+
+    GridLayout(unsigned int xCount, unsigned int yCount, Orientation orientation = TopLeftToBottomRight);
     virtual ~GridLayout();
 
     void remap(unsigned int xCount, unsigned int yCount);
@@ -18,6 +23,7 @@ public:
 
 private:
     unsigned int xCount, yCount;
+    Orientation orientation;
 
 };
 }

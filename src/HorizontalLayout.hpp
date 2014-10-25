@@ -9,10 +9,18 @@ class HorizontalLayout : public Layout
 {
 
 public:
-    HorizontalLayout();
+    enum Orientation {
+        LeftToRight,
+        RightToLeft
+    };
+
+    HorizontalLayout(Orientation orientation = LeftToRight);
     virtual ~HorizontalLayout();
 
     virtual void recalculate();
+
+private:
+    Orientation orientation;
 
 };
 }

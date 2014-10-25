@@ -9,10 +9,18 @@ class VerticalLayout : public Layout
 {
 
 public:
-    VerticalLayout();
+    enum Orientation {
+        TopToBottom,
+        BottomToTop
+    };
+
+    VerticalLayout(Orientation orientation = TopToBottom);
     virtual ~VerticalLayout();
 
     virtual void recalculate();
+
+private:
+    Orientation orientation;
 
 };
 }

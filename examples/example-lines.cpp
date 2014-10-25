@@ -44,9 +44,9 @@ int main()
 
     hpl::sleep(1e6);
 
-    canvas.setLayout(new hpl::HorizontalLayout());
+    canvas.setLayout(new hpl::HorizontalLayout(hpl::HorizontalLayout::RightToLeft));
     
-    for (int i = 0; i < 10; ++i) {
+    for (int i = 0; i < 5; ++i) {
 		hpl::sleep(5e5);
 		plot2->setLineColor(0, hpl::Color(
 			rand() / static_cast<float>(RAND_MAX), 

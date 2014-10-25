@@ -2,7 +2,7 @@
 
 namespace hpl
 {
-VerticalLayout::VerticalLayout() : Layout()
+VerticalLayout::VerticalLayout(Orientation orientation) : Layout(), orientation(orientation)
 {
 }
 
@@ -17,6 +17,10 @@ void VerticalLayout::recalculate()
     double h = 1.0 / (c / 2.0);
 
     double l = 0.0, t = 0.0, xo = 0.0, yo = 0.0;
+    if (orientation == TopToBottom) {
+        t = (c / 2.0 - 1) * h;
+    }
+
     for(unsigned int i = 0; i < c; i+=2) {
         if (plotBoxes[i] != 0) {
             plotBoxes[i]->reset(l, t, w, h);
@@ -29,7 +33,11 @@ void VerticalLayout::recalculate()
             plotBoxes[i+1]->reset(l+xo, t+yo, w-xo, h-yo);
         }
 
-        t += h;
+        if (orientation == TopToBottom) {
+            t -= h;
+        } else {
+            t += h;
+        }
     }
 }
 }
