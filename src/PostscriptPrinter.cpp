@@ -21,10 +21,11 @@ bool PostscriptPrinter::saveToFile(const std::string& fileName, std::vector<Plot
     for(std::vector<Plot*>::iterator i = plots.begin(); i != plots.end(); i++) {
         bool first = true;
         //! @todo also handle legend in the following two statements
-        for (std::vector<PlotPart*>::iterator j = (*i)->getPlotParts().begin(); j != (*i)->getPlotParts().end(); j++) {
+        std::vector<PlotPart*> parts = (*i)->getPlotParts();
+        for (std::vector<PlotPart*>::iterator j = parts.begin(); j != parts.end(); j++) {
             first = !adjustMinMax(*j, first);
         }
-        for (std::vector<PlotPart*>::iterator j = (*i)->getPlotParts().begin(); j != (*i)->getPlotParts().end(); j++) {
+        for (std::vector<PlotPart*>::iterator j = parts.begin(); j != parts.end(); j++) {
             Lines* l = dynamic_cast<Lines*>(*j);
             if (l != 0) {
                 float* x = l->getX();
@@ -38,17 +39,17 @@ bool PostscriptPrinter::saveToFile(const std::string& fileName, std::vector<Plot
                 delete[] y;
                 continue;
             }
-            Points* p = dynamic_cast<Points*>(*j);
+            //! @todo draw points
+            /*Points* p = dynamic_cast<Points*>(*j);
             if (p != 0) {
                 float* x = l->getX();
                 float* y = l->getY();
 
-                //! @todo draw points
 
                 delete[] x;
                 delete[] y;
                 continue;
-            }
+            }*/
         }
     }
 
