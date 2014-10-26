@@ -11,10 +11,10 @@ namespace hpl
 Lines::Lines(int n, double const* x, double const* y, Geometry* geometry)
     : PlotPart(geometry), n(n)
 {
-    double xmin = hpl::min(n, x);
-    double xmax = hpl::max(n, x);
-    double ymin = hpl::min(n, y);
-    double ymax = hpl::max(n, y);
+    xmin = hpl::min(n, x);
+    xmax = hpl::max(n, x);
+    ymin = hpl::min(n, y);
+    ymax = hpl::max(n, y);
 
     interleave = new float[2*n];
     for (int i = 0; i < n; ++i) {
@@ -25,6 +25,24 @@ Lines::Lines(int n, double const* x, double const* y, Geometry* geometry)
 
 Lines::~Lines()
 {
+}
+
+float* Lines::getX() const
+{
+    float* x = new float[n];
+    for (unsigned int i = 0; i < n; i++) {
+        x[i] = interleave[i << 1] * (xmax - xmin) + xmin;
+    }
+    return x;
+}
+
+float* Lines::getY() const
+{
+    float* y = new float[n];
+    for (unsigned int i = 0; i < n; i++) {
+        y[i] = interleave[(i << 1) + 1] * (ymax - ymin) + ymin;
+    }
+    return y;
 }
 
 void Lines::init(GLuint lineprogram, GLuint)

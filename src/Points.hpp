@@ -13,6 +13,26 @@ public:
     Points(int n, double const* x, double const* y, Geometry* geometry);
     virtual ~Points();
 
+    float* getX() const;
+    float* getY() const;
+
+    inline int getN() const {
+        return n;
+    }
+
+    inline double getXMin() const {
+        return xmin;
+    }
+    inline double getYMin() const {
+        return ymin;
+    }
+    inline double getXMax() const {
+        return xmax;
+    }
+    inline double getYMax() const {
+        return ymax;
+    }
+
     virtual void init(GLuint lineprogram, GLuint);
     virtual void destroy();
     virtual void draw(float const* mvp);
@@ -20,6 +40,7 @@ public:
 private:
     int n;
     float* points = nullptr;
+    double xmin, ymin, xmax, ymax;
 
     GLuint pointBuffer;
     GLuint program;

@@ -17,12 +17,44 @@ bool PostscriptPrinter::saveToFile(const std::string& fileName, std::vector<Plot
         return false;
     }
 
-    //! @todo Write plot data to file, this is just a test
     writeHeader(o);
-    drawLine(o, 0.1, 0.1, 0.9, 0.4);
-    setFont(o, 15);
-    setColor(o, Color(1.0f, 0.0f, 0.0f));
-    writeText(o, 0.2, 0.5, "Hello Postscript");
+    for(std::vector<Plot*>::iterator i = plots.begin(); i != plots.end(); i++) {
+        bool first = true;
+        for (std::vector<PlotPart*>::iterator j = (*i)->getPlotParts().begin(); j != (*i)->getPlotParts().end(); j++) {
+            first = !adjustMinMax(*j, first);
+        }
+        for (std::vector<PlotPart*>::iterator j = (*i)->getPlotParts().begin(); j != (*i)->getPlotParts().end(); j++) {
+            Lines* l = dynamic_cast<Lines*>(*j);
+            if (l != 0) {
+                float* x = l->getX();
+                float* y = l->getY();
+
+                for (int k = 0; k < l->getN()-1; k++) {
+                    drawLine(o, x[k], y[k], x[k+1], y[k+1]);
+                }
+
+                delete[] x;
+                delete[] y;
+                continue;
+            }
+            Points* p = dynamic_cast<Points*>(*j);
+            if (p != 0) {
+                float* x = l->getX();
+                float* y = l->getY();
+
+                //! @todo draw points
+
+                delete[] x;
+                delete[] y;
+                continue;
+            }
+            Legend* le = dynamic_cast<Legend*>(*j);
+            if (le != 0) {
+                //! @todo paint legend
+                continue;
+            }
+        }
+    }
 
     o.close();
     return true;

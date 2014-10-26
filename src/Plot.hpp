@@ -15,6 +15,10 @@ public:
     Plot();
     virtual ~Plot();
 
+    virtual inline std::vector<PlotPart*> getPlotParts() {
+        return parts;
+    }
+
     virtual void init(GLuint lineprogram, GLuint textprogram);
     virtual void destroy();
     virtual void draw(float const* mvp);

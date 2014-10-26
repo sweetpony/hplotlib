@@ -4,10 +4,10 @@ namespace hpl
 {
 Points::Points(int n, double const* x, double const* y, Geometry* geometry) : PlotPart(geometry), n(n)
 {
-    double xmin = hpl::min(n, x);
-    double xmax = hpl::max(n, x);
-    double ymin = hpl::min(n, y);
-    double ymax = hpl::max(n, y);
+    xmin = hpl::min(n, x);
+    xmax = hpl::max(n, x);
+    ymin = hpl::min(n, y);
+    ymax = hpl::max(n, y);
 
     points = new float[2*n];
     for (int i = 0; i < n; ++i) {
@@ -18,6 +18,24 @@ Points::Points(int n, double const* x, double const* y, Geometry* geometry) : Pl
 
 Points::~Points()
 {
+}
+
+float* Points::getX() const
+{
+    float* x = new float[n];
+    for (unsigned int i = 0; i < n; i++) {
+        x[i] = points[i << 1] * (xmax - xmin) + xmin;
+    }
+    return x;
+}
+
+float* Points::getY() const
+{
+    float* y = new float[n];
+    for (unsigned int i = 0; i < n; i++) {
+        y[i] = points[(i << 1) + 1] * (ymax - ymin) + ymin;
+    }
+    return y;
 }
 
 void Points::init(GLuint lineprogram, GLuint)
