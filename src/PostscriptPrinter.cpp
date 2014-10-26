@@ -20,6 +20,7 @@ bool PostscriptPrinter::saveToFile(const std::string& fileName, std::vector<Plot
     writeHeader(o);
     for(std::vector<Plot*>::iterator i = plots.begin(); i != plots.end(); i++) {
         bool first = true;
+        //! @todo also handle legend in the following two statements
         for (std::vector<PlotPart*>::iterator j = (*i)->getPlotParts().begin(); j != (*i)->getPlotParts().end(); j++) {
             first = !adjustMinMax(*j, first);
         }
@@ -46,11 +47,6 @@ bool PostscriptPrinter::saveToFile(const std::string& fileName, std::vector<Plot
 
                 delete[] x;
                 delete[] y;
-                continue;
-            }
-            Legend* le = dynamic_cast<Legend*>(*j);
-            if (le != 0) {
-                //! @todo paint legend
                 continue;
             }
         }
