@@ -21,6 +21,7 @@ Lines::Lines(int n, double const* x, double const* y, Geometry* geometry)
         interleave[(i << 1)] = (x[i] - xmin) / (xmax - xmin);
         interleave[(i << 1) + 1] = (y[i] - ymin) / (ymax - ymin);
     }
+    std::cout << this << " y[0] pre = " << y[0] << " -> " << interleave[1] << "; " << &(interleave[1]) << std::endl;
 }
 
 Lines::~Lines()
@@ -31,7 +32,7 @@ float* Lines::getX() const
 {
     float* x = new float[n];
     for (unsigned int i = 0; i < n; i++) {
-        x[i] = interleave[i << 1] * (xmax - xmin) + xmin;
+        x[i] = interleave[i << 1] * geometry->width + geometry->leftOffset;
     }
     return x;
 }
@@ -39,8 +40,9 @@ float* Lines::getX() const
 float* Lines::getY() const
 {
     float* y = new float[n];
+    std::cout << this << " y[0] = " << interleave[1] << " -> " << interleave[1] * geometry->height + geometry->topOffset << "; " << &(interleave[1]) << std::endl;
     for (unsigned int i = 0; i < n; i++) {
-        y[i] = interleave[(i << 1) + 1] * (ymax - ymin) + ymin;
+        y[i] = interleave[(i << 1) + 1] * geometry->height + geometry->topOffset;
     }
     return y;
 }

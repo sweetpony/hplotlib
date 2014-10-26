@@ -24,7 +24,7 @@ float* Points::getX() const
 {
     float* x = new float[n];
     for (unsigned int i = 0; i < n; i++) {
-        x[i] = points[i << 1] * (xmax - xmin) + xmin;
+        x[i] = points[i << 1] * geometry->width + geometry->leftOffset;
     }
     return x;
 }
@@ -33,7 +33,7 @@ float* Points::getY() const
 {
     float* y = new float[n];
     for (unsigned int i = 0; i < n; i++) {
-        y[i] = points[(i << 1) + 1] * (ymax - ymin) + ymin;
+        y[i] = points[(i << 1) + 1] * geometry->height + geometry->topOffset;
     }
     return y;
 }

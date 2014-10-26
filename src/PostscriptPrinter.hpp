@@ -5,6 +5,8 @@
 #include <fstream>
 #include <vector>
 
+#include <iostream>
+
 #include "PlotPrinter.hpp"
 #include "Color.hpp"
 

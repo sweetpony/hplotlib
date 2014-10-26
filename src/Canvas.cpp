@@ -108,7 +108,12 @@ void Canvas::setLayout(Layout* layout)
 bool Canvas::saveToFile(const std::string& fileName)
 {
     PostscriptPrinter p;
-    p.saveToFile(fileName, plots);
+
+    pthread_mutex_lock(&mutex);
+    std::vector<Plot*> pl = plots;
+    pthread_mutex_unlock(&mutex);
+
+    p.saveToFile(fileName, pl);
 }
 	
 void Canvas::init()

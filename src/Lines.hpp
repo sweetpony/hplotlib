@@ -10,6 +10,8 @@
 #include "PlotPart.hpp"
 #include "Statistics.hpp"
 
+#include <iostream>
+
 namespace hpl
 {
 class Lines : public PlotPart {
@@ -22,19 +24,6 @@ public:
 
     inline int getN() const {
         return n;
-    }
-
-    inline double getXMin() const {
-        return xmin;
-    }
-    inline double getYMin() const {
-        return ymin;
-    }
-    inline double getXMax() const {
-        return xmax;
-    }
-    inline double getYMax() const {
-        return ymax;
     }
 
 	virtual void init(GLuint lineprogram, GLuint);
