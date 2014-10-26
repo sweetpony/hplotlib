@@ -8,6 +8,7 @@
 #define HPLOTLIB_LINES_HPP
 
 #include "PlotPart.hpp"
+#include "Statistics.hpp"
 
 namespace hpl
 {

@@ -11,6 +11,7 @@
 
 #include "Window.hpp"
 #include "LinePlot.hpp"
+#include "ScatterPlot.hpp"
 #include "Font.hpp"
 #include "Color.hpp"
 #include "Geometry.hpp"
@@ -25,6 +26,7 @@ public:
 	~Canvas();
 
     LinePlot* addLinesPlot(int n, double const* x, double const* y, const Geometry& geometry = Geometry());
+    ScatterPlot* addScatterPlot(int n, double const* x, double const* y, const Geometry& geometry = Geometry());
 
     inline void setBackgroundColor(const Color& c) {
         backgroundColor = c;

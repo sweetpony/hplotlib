@@ -59,9 +59,9 @@ int main()
 
     canvas.setLayout(new hpl::GridLayout(2, 2, hpl::GridLayout::BottomRightToTopLeft));
 
-    hpl::LinePlot* plot3 = canvas.addLinesPlot(NUM_POINTS, x, y);
+    hpl::ScatterPlot* plot3 = canvas.addScatterPlot(NUM_POINTS, x, y);
     plot3->setLegendColor(hpl::Color(0.0f, 0.0f, 0.0f));
-    plot3->setLineColor(0, hpl::Color(0.6f, 0.6f, 0.6f));
+    plot3->setPointColor(0, hpl::Color(0.0f, 0.0f, 0.0f));
 
     hpl::sleep(1e6);
 

@@ -5,11 +5,6 @@
  *      Author: Carsten Uphoff (uphoff@mytum.de)
  */
 #include "Legend.hpp"
-#include "Statistics.hpp"
-
-#include <GL/glld.h>
-#include <cstdio>
-#include <algorithm>
 
 namespace hpl
 {

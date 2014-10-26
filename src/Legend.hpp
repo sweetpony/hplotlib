@@ -8,9 +8,12 @@
 #define HPLOTLIB_LEGEND_HPP
 
 #include <GL/glld.h>
+#include <cstdio>
+#include <algorithm>
 
 #include "PlotPart.hpp"
 #include "Font.hpp"
+#include "Statistics.hpp"
 
 namespace hpl
 {
