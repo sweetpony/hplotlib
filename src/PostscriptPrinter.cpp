@@ -2,7 +2,7 @@
 
 namespace hpl
 {
-PostscriptPrinter::PostscriptPrinter()
+PostscriptPrinter::PostscriptPrinter(Orientation orientation) : PlotPrinter(orientation)
 {
 }
 
@@ -17,10 +17,6 @@ bool PostscriptPrinter::saveToFile(const std::string& fileName, std::vector<Plot
         return false;
     }
 
-    //! @todo Set min, max and pixel attributes appropriately
-    minX = minY = 0.0;
-    maxX = maxY = 1.0;
-    pixelX = pixelY = 1000;
     //! @todo Write plot data to file, this is just a test
     writeHeader(o);
     drawLine(o, 0.1, 0.1, 0.9, 0.4);

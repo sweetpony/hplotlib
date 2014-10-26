@@ -2,8 +2,13 @@
 
 namespace hpl
 {
-PlotPrinter::PlotPrinter()
+PlotPrinter::PlotPrinter(Orientation orientation) : orientation(orientation)
 {
+    if (orientation == Portrait) {
+        unsigned int buf = pixelX;
+        pixelX = pixelY;
+        pixelY = buf;
+    }
 }
 
 PlotPrinter::~PlotPrinter()

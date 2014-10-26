@@ -14,7 +14,7 @@ class PostscriptPrinter : public PlotPrinter
 {
 
 public:
-    PostscriptPrinter();
+    PostscriptPrinter(Orientation orientation = Landscape);
     virtual ~PostscriptPrinter();
 
     virtual bool saveToFile(const std::string& fileName, std::vector<Plot*> plots);
