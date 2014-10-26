@@ -66,6 +66,8 @@ int main()
     hpl::sleep(1e6);
 
     static_cast<hpl::GridLayout*>(canvas.getLayout())->changeOrientation(hpl::GridLayout::TopLeftToBottomRight);
+
+    canvas.saveToFile("testoutput");
 	
 	canvas.wait();
 

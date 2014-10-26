@@ -8,6 +8,7 @@
 #define HPLOTLIB_CANVAS_HPP
 
 #include <vector>
+#include <string>
 
 #include "Window.hpp"
 #include "LinePlot.hpp"
@@ -17,6 +18,7 @@
 #include "Geometry.hpp"
 #include "Layout.hpp"
 #include "FixedLayout.hpp"
+#include "PostscriptPrinter.hpp"
 
 namespace hpl
 {
@@ -36,6 +38,8 @@ public:
     inline Layout* getLayout() {
         return layout;
     }
+
+    bool saveToFile(const std::string& fileName);
 
 protected:
 	virtual void init();

@@ -104,6 +104,12 @@ void Canvas::setLayout(Layout* layout)
     this->layout = layout;
     layout->changed.bind<Window, &Window::update>(this);
 }
+
+bool Canvas::saveToFile(const std::string& fileName)
+{
+    PostscriptPrinter p;
+    p.saveToFile(fileName, plots);
+}
 	
 void Canvas::init()
 {
