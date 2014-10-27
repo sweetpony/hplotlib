@@ -50,6 +50,10 @@ bool PostscriptPrinter::saveToFile(const std::string& fileName, std::vector<Plot
                 continue;
             }
         }
+        Legend* l = (*i)->getLegend();
+        if (l != 0) {
+            //! @todo draw legend
+        }
     }
 
     o.close();

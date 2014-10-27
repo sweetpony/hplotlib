@@ -18,6 +18,7 @@ Points::Points(int n, double const* x, double const* y, Geometry* geometry) : Pl
 
 Points::~Points()
 {
+    delete[] points;
 }
 
 float* Points::getX() const

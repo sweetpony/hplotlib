@@ -25,6 +25,7 @@ Lines::Lines(int n, double const* x, double const* y, Geometry* geometry)
 
 Lines::~Lines()
 {
+    delete[] interleave;
 }
 
 float* Lines::getX() const
