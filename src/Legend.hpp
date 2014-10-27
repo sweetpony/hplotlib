@@ -8,15 +8,11 @@
 #define HPLOTLIB_LEGEND_HPP
 
 #include <GL/glld.h>
-#include <cstdio>
-#include <algorithm>
-
 #include "PlotPart.hpp"
-#include "Font.hpp"
-#include "Statistics.hpp"
 
 namespace hpl
 {
+class Font;
 class Legend : public PlotPart {
 public:
 	static constexpr float XOffset = 0.12f;
