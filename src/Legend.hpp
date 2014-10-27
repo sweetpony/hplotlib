@@ -27,6 +27,11 @@ public:
     Legend(Font* font, int n, double const* x, double const* y, Geometry* geometry);
     ~Legend();
 
+    float* getLines() const;
+    inline unsigned int getLinesCount() const {
+        return 8 + 2*Ticks*4;
+    }
+
 	virtual void init(GLuint lineprogram, GLuint textprogram);
 	virtual void destroy();
 	virtual void draw(float const* mvp);
@@ -46,6 +51,8 @@ private:
     
 	GLint linepos, linerect, linecolor, linemvp, textpos, textuv, textrect, textglyphs, textmvp, textcolor;
 	int numChars;
+
+    float* lines = nullptr;
 };
 }
 

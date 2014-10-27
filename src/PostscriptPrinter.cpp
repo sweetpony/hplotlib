@@ -53,6 +53,13 @@ bool PostscriptPrinter::saveToFile(const std::string& fileName, std::vector<Plot
         Legend* l = (*i)->getLegend();
         if (l != 0) {
             //! @todo draw legend
+            float* lines = l->getLines();
+
+            for (int k = 0; k < l->getLinesCount()-3; k+=4) {
+                drawLine(o, lines[k], lines[k+1], lines[k+2], lines[k+3]);
+            }
+
+            delete[] lines;
         }
     }
 

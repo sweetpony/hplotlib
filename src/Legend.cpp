@@ -19,6 +19,20 @@ Legend::Legend(Font* font, int n, double const* x, double const* y, Geometry* ge
 
 Legend::~Legend()
 {
+    delete[] lines;
+}
+
+float* Legend::getLines() const
+{
+    const unsigned int m = getLinesCount();
+    float* l = new float[m];
+
+    for (unsigned int i = 0; i < m-1; i+=2) {
+        l[i] = lines[i] * geometry->width + geometry->leftOffset;
+        l[i+1] = lines[i+1] * geometry->height + geometry->topOffset;
+    }
+
+    return l;
 }
 	
 void Legend::init(GLuint lineprogram, GLuint textprogram)
@@ -26,12 +40,12 @@ void Legend::init(GLuint lineprogram, GLuint textprogram)
 	this->lineprogram = lineprogram;
 	this->textprogram = textprogram;
 	
-	float lines[8 + 2*Ticks*4] = {
+    lines = new float[8 + 2*Ticks*4]{
 		XOffset, 1.0f,
 		XOffset, YOffset,
 		XOffset, YOffset,
 		1.0f, YOffset
-	};	
+    };
     
     struct Label {
 		char label[16];
@@ -71,7 +85,7 @@ void Legend::init(GLuint lineprogram, GLuint textprogram)
 
     glGenBuffers(1, &lineBuffer);
     glBindBuffer(GL_ARRAY_BUFFER, lineBuffer);
-	glBufferData(GL_ARRAY_BUFFER, sizeof(lines), lines, GL_STATIC_DRAW);
+    glBufferData(GL_ARRAY_BUFFER, (8 + 2*Ticks*4) * sizeof(float), lines, GL_STATIC_DRAW);
     glBindBuffer(GL_ARRAY_BUFFER, 0);   
 
     
