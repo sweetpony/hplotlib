@@ -18,13 +18,10 @@ bool PostscriptPrinter::saveToFile(const std::string& fileName, std::vector<Plot
     }
 
     writeHeader(o);
-    std::cout << "i size " << plots.size() << std::endl;
     for(std::vector<Plot*>::iterator i = plots.begin(); i != plots.end(); i++) {
         //! @todo also handle legend in the following two statements
         std::vector<PlotPart*> parts = (*i)->getPlotParts();
-        std::cout << "i: " << *i << " j size " << parts.size() << std::endl;
         for (std::vector<PlotPart*>::iterator j = parts.begin(); j != parts.end(); j++) {
-            std::cout << "j: " << *j << std::endl;
             Lines* l = dynamic_cast<Lines*>(*j);
             if (l != 0) {
                 float* x = l->getX();
@@ -38,17 +35,31 @@ bool PostscriptPrinter::saveToFile(const std::string& fileName, std::vector<Plot
                 delete[] y;
                 continue;
             }
-            //! @todo draw points
-            /*Points* p = dynamic_cast<Points*>(*j);
+            Points* p = dynamic_cast<Points*>(*j);
             if (p != 0) {
-                float* x = l->getX();
-                float* y = l->getY();
+                float* x = p->getX();
+                float* y = p->getY();
 
+                //! @todo set point size
+                for (int k = 0; k < p->getN(); k++) {
+                    drawPoint(o, x[k], y[k], 1);
+                }
 
                 delete[] x;
                 delete[] y;
                 continue;
-            }*/
+            }
+        }
+        Legend* l = (*i)->getLegend();
+        if (l != 0) {
+            //! @todo draw legend
+            float* lines = l->getLines();
+
+            for (int k = 0; k < l->getLinesCount()-3; k+=4) {
+                drawLine(o, lines[k], lines[k+1], lines[k+2], lines[k+3]);
+            }
+
+            delete[] lines;
         }
     }
 
@@ -85,6 +96,14 @@ void PostscriptPrinter::drawLine(std::ofstream& o, double x1, double y1, double 
     o << p1.first << " " << p1.second << " moveto" << std::endl;
     o << p2.first << " " << p2.second << " lineto" << std::endl;
     o << "stroke" << std::endl;
+}
+
+void PostscriptPrinter::drawPoint(std::ofstream& o, double x, double y, unsigned int size) const
+{
+    Pixel p = transformCoordinates(x, y);
+    o << "newpath" << std::endl;
+    o << p.first << " " << p.second << " moveto" << std::endl;
+    o << "gsave currentpoint lineto " << size << " setlinewidth 1 setlinecap stroke grestore" << std::endl;
 }
 
 void PostscriptPrinter::fillShape(std::ofstream& o, std::vector<double> x, std::vector<double> y) const

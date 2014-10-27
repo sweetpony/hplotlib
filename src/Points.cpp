@@ -18,6 +18,7 @@ Points::Points(int n, double const* x, double const* y, Geometry* geometry) : Pl
 
 Points::~Points()
 {
+    delete[] points;
 }
 
 float* Points::getX() const
@@ -46,8 +47,6 @@ void Points::init(GLuint lineprogram, GLuint)
     glBindBuffer(GL_ARRAY_BUFFER, pointBuffer);
     glBufferData(GL_ARRAY_BUFFER, 2 * n * sizeof(float), points, GL_STATIC_DRAW);
     glBindBuffer(GL_ARRAY_BUFFER, 0);
-
-    delete[] points;
 
     pos = glGetAttribLocation(program, "Position");
     rect = glGetUniformLocation(program, "Rect");

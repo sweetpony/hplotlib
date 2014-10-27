@@ -20,19 +20,6 @@ public:
         return n;
     }
 
-    inline double getXMin() const {
-        return xmin;
-    }
-    inline double getYMin() const {
-        return ymin;
-    }
-    inline double getXMax() const {
-        return xmax;
-    }
-    inline double getYMax() const {
-        return ymax;
-    }
-
     virtual void init(GLuint lineprogram, GLuint);
     virtual void destroy();
     virtual void draw(float const* mvp);
