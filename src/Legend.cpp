@@ -5,6 +5,10 @@
  *      Author: Carsten Uphoff (uphoff@mytum.de)
  */
 #include "Legend.hpp"
+#include <cstdio>
+#include <algorithm>
+#include "Statistics.hpp"
+#include "Font.hpp"
 
 namespace hpl
 {

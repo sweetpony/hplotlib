@@ -20,3 +20,4 @@ endif ()
 
 add_library (hplotlib ${SOURCES})
 target_link_libraries (hplotlib glld ${CMAKE_THREAD_LIBS_INIT} ${OPENGL_LIBRARY})
+install (TARGETS hplotlib DESTINATION lib)
