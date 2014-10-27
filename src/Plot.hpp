@@ -24,7 +24,9 @@ public:
     virtual void draw(float const* mvp);
 
     virtual void addLegend(Legend* legend);
-    Legend* getLegend();
+    inline Legend* getLegend() {
+        return legend;
+    }
 
     virtual void setLegendColor(const Color& c);
     
