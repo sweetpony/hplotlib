@@ -26,5 +26,3 @@ if (BUILD_EXAMPLES)
 endif ()
 add_subdirectory (ext)
 add_subdirectory (src)
-
-install (TARGETS glld hplotlib LIBRARY DESTINATION lib)
