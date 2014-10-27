@@ -18,13 +18,10 @@ bool PostscriptPrinter::saveToFile(const std::string& fileName, std::vector<Plot
     }
 
     writeHeader(o);
-    std::cout << "i size " << plots.size() << std::endl;
     for(std::vector<Plot*>::iterator i = plots.begin(); i != plots.end(); i++) {
         //! @todo also handle legend in the following two statements
         std::vector<PlotPart*> parts = (*i)->getPlotParts();
-        std::cout << "i: " << *i << " j size " << parts.size() << std::endl;
         for (std::vector<PlotPart*>::iterator j = parts.begin(); j != parts.end(); j++) {
-            std::cout << "j: " << *j << std::endl;
             Lines* l = dynamic_cast<Lines*>(*j);
             if (l != 0) {
                 float* x = l->getX();

@@ -47,8 +47,6 @@ void Points::init(GLuint lineprogram, GLuint)
     glBufferData(GL_ARRAY_BUFFER, 2 * n * sizeof(float), points, GL_STATIC_DRAW);
     glBindBuffer(GL_ARRAY_BUFFER, 0);
 
-    delete[] points;
-
     pos = glGetAttribLocation(program, "Position");
     rect = glGetUniformLocation(program, "Rect");
     color = glGetUniformLocation(program, "Color");

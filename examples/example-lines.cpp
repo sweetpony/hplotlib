@@ -14,8 +14,6 @@
 #include <GridLayout.hpp>
 #include <cmath>
 
-#include <iostream>
-
 #define NUM_POINTS 200
 
 int main()
@@ -44,9 +42,7 @@ int main()
     plot2->setLegendColor(hpl::Color(0.0f, 0.0f, 0.0f));
     plot2->setLineColor(0, hpl::Color(0.6f, 0.3f, 0.1f));
 
-    std::cout << "Plots: " << plot1 << " " << plot2 << std::endl;
-
-    /*hpl::sleep(1e6);
+    hpl::sleep(1e6);
 
     canvas.setLayout(new hpl::HorizontalLayout(hpl::HorizontalLayout::RightToLeft));
     
@@ -69,11 +65,11 @@ int main()
 
     hpl::sleep(1e6);
 
-    static_cast<hpl::GridLayout*>(canvas.getLayout())->changeOrientation(hpl::GridLayout::TopLeftToBottomRight);*/
+    static_cast<hpl::GridLayout*>(canvas.getLayout())->changeOrientation(hpl::GridLayout::TopLeftToBottomRight);
 
     canvas.saveToFile("testoutput");
 	
-    //canvas.wait();
+    canvas.wait();
 
     return 0;
 }

@@ -10,8 +10,6 @@
 #include "PlotPart.hpp"
 #include "Statistics.hpp"
 
-#include <iostream>
-
 namespace hpl
 {
 class Lines : public PlotPart {
