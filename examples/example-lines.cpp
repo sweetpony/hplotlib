@@ -40,7 +40,7 @@ int main()
     plot2.setLegendColor(hpl::Color(0.0f, 0.0f, 0.0f));
     plot2.setLineColor(0, hpl::Color(0.6f, 0.3f, 0.1f));
     
-    canvas.addPlotToLayout(plot1->id(), layout->id());
+   /// canvas.addPlotToLayout(plot1.id(), layout.id());
 
     /*hpl::sleep(1e6);
 
