@@ -29,6 +29,9 @@ public:
     }
 
     virtual void setLegendColor(const Color& c);
+
+    virtual void addPlotPart(PlotPart* plotPart);
+    virtual void setColor(unsigned int id, const Color& c);
     
     Delegate<> changed;
 
