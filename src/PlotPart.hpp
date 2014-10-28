@@ -30,7 +30,7 @@ public:
 	
 protected:
     Geometry* geometry;
-    Color drawColor = Color(1.0f, 1.0f, 1.0f);
+    Color drawColor = Color(0.0f, 0.0f, 0.0f);
 };
 }
 
