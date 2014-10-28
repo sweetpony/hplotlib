@@ -48,54 +48,6 @@ Canvas::~Canvas()
     delete layout;
 }
 
-LinePlot* Canvas::addLinesPlot(int n, double const* x, double const* y, const Geometry& geometry) {
-    LinePlot* plot = new LinePlot();
-    plot->changed.bind<Window, &Window::update>(this);
-
-    Geometry* lGeo = new Geometry(geometry);
-    Legend* l = new Legend(&font, n, x, y, lGeo);
-    plot->addLegend(l);
-
-    Geometry* pGeo = new Geometry(geometry);
-    Lines* p = new Lines(n, x, y, pGeo);
-    plot->addLines(p);
-
-    layout->addPlot(lGeo, pGeo);
-
-    pthread_mutex_lock(&mutex);
-    Plot::ID id = plots.add(plot);
-    plotInit.push(id);
-	pthread_mutex_unlock(&mutex);
-
-    needsRepaint = true;
-
-    return plot;
-}
-
-ScatterPlot* Canvas::addScatterPlot(int n, double const* x, double const* y, const Geometry& geometry) {
-    ScatterPlot* plot = new ScatterPlot();
-    plot->changed.bind<Window, &Window::update>(this);
-
-    Geometry* lGeo = new Geometry(geometry);
-    Legend* l = new Legend(&font, n, x, y, lGeo);
-    plot->addLegend(l);
-
-    Geometry* pGeo = new Geometry(geometry);
-    Points* p = new Points(n, x, y, pGeo);
-    plot->addPoints(p);
-
-    layout->addPlot(lGeo, pGeo);
-
-    pthread_mutex_lock(&mutex);
-    Plot::ID id = plots.add(plot);
-    plotInit.push(id);
-    pthread_mutex_unlock(&mutex);
-
-    needsRepaint = true;
-
-    return plot;
-}
-
 void Canvas::setLayout(Layout* layout)
 {
     layout->copyPlots(*this->layout);

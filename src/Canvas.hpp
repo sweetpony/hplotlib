@@ -43,9 +43,6 @@ public:
 		// TODO
 	}
 
-    LinePlot* addLinesPlot(int n, double const* x, double const* y, const Geometry& geometry = Geometry());
-    ScatterPlot* addScatterPlot(int n, double const* x, double const* y, const Geometry& geometry = Geometry());
-
     inline void setBackgroundColor(const Color& c) {
         backgroundColor = c;
     }

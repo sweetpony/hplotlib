@@ -9,7 +9,8 @@ template<typename T>
 class Registry
 {
 public:
-	typedef typename std::unordered_map<typename T::ID, T*>::const_iterator const_iterator;
+	typedef typename std::unordered_map<typename T::ID, T*, std::hash<typename T::ID::Type>> ObjectMap;
+	typedef typename ObjectMap::const_iterator const_iterator;
 
 	~Registry() {
 		for (auto it = objects.cbegin(); it != objects.cend(); ++it) {
@@ -26,7 +27,8 @@ public:
 	}
 	
 	inline typename T::ID add(T* object) {
-		typename T::ID id = nextID++;
+		typename T::ID id = nextID;
+		++nextID;
 		object->setId(id);
 		objects[id] = object;
 		return id;
@@ -46,8 +48,8 @@ public:
 		return objects.cend();
 	}
 private:
-	typename T::ID nextID = 0;
-	std::unordered_map<typename T::ID, T*> objects;
+	typename T::ID nextID = static_cast<typename T::ID::Type>(0);
+	ObjectMap objects;
 };
 }
 

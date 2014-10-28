@@ -5,13 +5,14 @@
 #include "Geometry.hpp"
 #include "Legend.hpp"
 #include "Delegate.hpp"
+#include "IDBase.hpp"
 
 namespace hpl
 {
 class Layout
 {
 public:
-	typedef unsigned ID;
+	typedef IDBase<Layout> ID;
 
     Layout();
     virtual ~Layout();

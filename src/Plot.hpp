@@ -5,13 +5,14 @@
 #include "Legend.hpp"
 #include "Color.hpp"
 #include "Delegate.hpp"
+#include "IDBase.hpp"
 
 namespace hpl
 {
 class Plot
 {
 public:
-	typedef unsigned ID;
+	typedef IDBase<Plot> ID;
 
     Plot();
     virtual ~Plot();
