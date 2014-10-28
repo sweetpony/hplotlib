@@ -7,9 +7,6 @@
 #ifndef HPLOTLIB_CANVAS_HPP
 #define HPLOTLIB_CANVAS_HPP
 
-#include <vector>
-#include <string>
-
 #include "Window.hpp"
 #include "LinePlot.hpp"
 #include "ScatterPlot.hpp"
@@ -19,6 +16,11 @@
 #include "Layout.hpp"
 #include "FixedLayout.hpp"
 #include "PostscriptPrinter.hpp"
+#include "Registry.hpp"
+
+#include <vector>
+#include <string>
+#include <queue>
 
 namespace hpl
 {
@@ -26,6 +28,20 @@ class Canvas : public Window {
 public:
 	Canvas(std::string const& fontFile) : fontFile(fontFile) {}
 	~Canvas();
+	
+	template<typename T>
+	T& addLayout() {
+		T* layout = new T;
+		layouts.add(layout);
+		return *layout;
+	}
+	
+	template<typename T>
+	T& add1D(int n, double const* x, double const* y, Geometry const& geometry = Geometry());
+	
+	void remove(Plot::ID id) {
+		// TODO
+	}
 
     LinePlot* addLinesPlot(int n, double const* x, double const* y, const Geometry& geometry = Geometry());
     ScatterPlot* addScatterPlot(int n, double const* x, double const* y, const Geometry& geometry = Geometry());
@@ -41,6 +57,7 @@ public:
 
     bool saveToFile(const std::string& fileName);
 
+
 protected:
 	virtual void init();
 	virtual void destroy();
@@ -50,10 +67,12 @@ protected:
 	virtual void resetEvent();
 	
 private:
+	Registry<Layout> layouts;
+	Registry<Plot> plots;
+	std::queue<Plot::ID> plotInit;
+
 	std::string fontFile;
 	Font font;
-	int initiated = 0;
-    std::vector<Plot*> plots, plots_tmp;
 	pthread_mutex_t mutex = PTHREAD_MUTEX_INITIALIZER;
     Color backgroundColor = Color(1.0f, 1.0f, 1.0f);
     Layout* layout = new FixedLayout();
@@ -70,6 +89,32 @@ private:
 		0.0, 0.0, 1.0
 	};
 };
+
+template<typename T>
+T& Canvas::add1D(int n, double const* x, double const* y, Geometry const& geometry)
+{
+    T* plot = new T();
+    plot->changed.template bind<Window, &Window::update>(this);
+
+    Geometry* lGeo = new Geometry(geometry);
+    Legend* l = new Legend(&font, n, x, y, lGeo);
+    plot->addLegend(l);
+
+    Geometry* pGeo = new Geometry(geometry);
+    Lines* p = new Lines(n, x, y, pGeo);
+    plot->addLines(p);
+
+    layout->addPlot(lGeo, pGeo);
+
+    pthread_mutex_lock(&mutex);
+    Plot::ID id = plots.add(plot);
+    plotInit.push(id);
+	pthread_mutex_unlock(&mutex);
+
+    update();
+
+    return *plot;
+}
 }
 
 #endif

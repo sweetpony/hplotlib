@@ -10,8 +10,9 @@ namespace hpl
 {
 class Layout
 {
-
 public:
+	typedef unsigned ID;
+
     Layout();
     virtual ~Layout();
 
@@ -31,12 +32,15 @@ public:
     virtual void recalculate() = 0;
 
     Delegate<> changed;
+    
+    inline void setId(ID id) { layoutid = id; }	
+	inline ID id() const { return layoutid; }
 
 protected:
     std::vector<Geometry*> plotBoxes;
     //! @todo how are margins exactly defined here? use them
     double margins[4]; //left, right, top, bottom
-
+    ID layoutid;
 };
 }
 

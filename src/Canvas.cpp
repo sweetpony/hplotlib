@@ -45,9 +45,6 @@ void showLinkLog(GLuint id)
 
 Canvas::~Canvas()
 {
-    for (auto it = plots_tmp.cbegin(); it != plots_tmp.cend(); ++it) {
-        delete (*it);
-    }
     delete layout;
 }
 
@@ -66,7 +63,8 @@ LinePlot* Canvas::addLinesPlot(int n, double const* x, double const* y, const Ge
     layout->addPlot(lGeo, pGeo);
 
     pthread_mutex_lock(&mutex);
-    plots.push_back(plot);
+    Plot::ID id = plots.add(plot);
+    plotInit.push(id);
 	pthread_mutex_unlock(&mutex);
 
     needsRepaint = true;
@@ -89,7 +87,8 @@ ScatterPlot* Canvas::addScatterPlot(int n, double const* x, double const* y, con
     layout->addPlot(lGeo, pGeo);
 
     pthread_mutex_lock(&mutex);
-    plots.push_back(plot);
+    Plot::ID id = plots.add(plot);
+    plotInit.push(id);
     pthread_mutex_unlock(&mutex);
 
     needsRepaint = true;
@@ -107,13 +106,14 @@ void Canvas::setLayout(Layout* layout)
 
 bool Canvas::saveToFile(const std::string& fileName)
 {
-    PostscriptPrinter p;
+    /*PostscriptPrinter p;
 
     pthread_mutex_lock(&mutex);
     std::vector<Plot*> pl = plots;
     pthread_mutex_unlock(&mutex);
 
-    p.saveToFile(fileName, pl);
+    p.saveToFile(fileName, pl);*/
+    return true;
 }
 	
 void Canvas::init()
@@ -197,8 +197,8 @@ void Canvas::init()
 void Canvas::destroy()
 {
 	pthread_mutex_lock(&mutex);
-	for (int i = 0; i < plots.size(); ++i) {
-		plots[i]->destroy();
+	for (auto it = plots.cbegin(); it != plots.cend(); ++it) {
+		it->second->destroy();
 	}
 	pthread_mutex_unlock(&mutex);
 	
@@ -213,19 +213,20 @@ void Canvas::destroy()
 void Canvas::draw()
 {
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-	
-	pthread_mutex_lock(&mutex);
-	plots_tmp = plots;
-	pthread_mutex_unlock(&mutex);
 
-	for (int i = initiated; i < plots_tmp.size(); ++i) {
-		plots_tmp[i]->init(lineprogram, textprogram);
+	pthread_mutex_lock(&mutex);
+	while (!plotInit.empty()) {
+		Plot::ID id = plotInit.front();
+		plotInit.pop();
+		if (plots.has(id)) {
+			plots.lookup(id).init(lineprogram, textprogram);
+		}
 	}
-	initiated = plots_tmp.size();
-	
-	for (auto it = plots_tmp.cbegin(); it != plots_tmp.cend(); ++it) {
-		(*it)->draw(mvp);
+		
+	for (auto it = plots.cbegin(); it != plots.cend(); ++it) {
+		it->second->draw(mvp);
 	}
+	pthread_mutex_unlock(&mutex);
 }
 
 void Canvas::resetEvent()

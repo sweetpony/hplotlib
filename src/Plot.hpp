@@ -10,8 +10,9 @@ namespace hpl
 {
 class Plot
 {
-
 public:
+	typedef unsigned ID;
+
     Plot();
     virtual ~Plot();
 
@@ -28,13 +29,16 @@ public:
         return legend;
     }
 
-    virtual void setLegendColor(const Color& c);
-    
+    virtual void setLegendColor(const Color& c);    
     Delegate<> changed;
+    
+    inline void setId(ID id) { plotid = id; }	
+	inline ID id() const { return plotid; }
 
 protected:
     Legend* legend;
     std::vector<PlotPart*> parts;
+    ID plotid;
 };
 }
 
