@@ -60,10 +60,12 @@ LRESULT CALLBACK Win32Window::WndProc(HWND hWnd, UINT message, WPARAM wParam, LP
         }
         case WM_DESTROY: {
             HDC hdc = GetDC(hWnd);
-			wglMakeCurrent(hdc, win32->glcontext);
-			win32->win->close();
-            wglMakeCurrent(NULL, NULL);
-            wglDeleteContext(win32->glcontext);
+			if (win32 != nullptr) {
+				wglMakeCurrent(hdc, win32->glcontext);
+				win32->win->close();
+				wglMakeCurrent(NULL, NULL);
+				wglDeleteContext(win32->glcontext);
+			}
             ReleaseDC(hWnd, GetDC(hWnd));
             PostQuitMessage(0);
             break;
@@ -142,7 +144,7 @@ bool Win32Window::show(Window* windowBase)
 
     RegisterClassEx(&wc);
 
-    HWND hWndTmp = CreateWindow(windowClass, "Canvas", WS_OVERLAPPEDWINDOW, CW_USEDEFAULT, CW_USEDEFAULT, 640, 480, NULL, NULL, hInstance, NULL);
+    HWND hWndTmp = CreateWindow(windowClass, "Canvas", WS_OVERLAPPEDWINDOW, CW_USEDEFAULT, CW_USEDEFAULT, 640, 480, NULL, NULL, hInstance, nullptr);
     
     // Create a basic OpenGL context
 	PIXELFORMATDESCRIPTOR  pfd = {
@@ -189,6 +191,9 @@ bool Win32Window::show(Window* windowBase)
 		WGL_CONTEXT_PROFILE_MASK_ARB, WGL_CONTEXT_CORE_PROFILE_BIT_ARB,
 		0
 	};
+
+	wglMakeCurrent(NULL, NULL);
+	wglDeleteContext(glcontext);
 
 	DestroyWindow(hWndTmp);
     hWnd = CreateWindow(windowClass, "Canvas", WS_OVERLAPPEDWINDOW, CW_USEDEFAULT, CW_USEDEFAULT, 640, 480, NULL, NULL, hInstance, this);
