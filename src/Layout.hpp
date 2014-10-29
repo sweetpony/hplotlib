@@ -1,22 +1,23 @@
 #ifndef LAYOUT_HPP
 #define LAYOUT_HPP
 
-#include <vector>
 #include "Geometry.hpp"
 #include "Legend.hpp"
 #include "Delegate.hpp"
+#include "Plot.hpp"
+#include "Registry.hpp"
+
+#include <vector>
 
 namespace hpl
 {
 class Layout
 {
-
 public:
-    Layout();
-    virtual ~Layout();
+	typedef IDBase<Layout> ID;
 
-    void addPlot(Geometry* legendBox, Geometry* plotBox);
-    void copyPlots(const Layout& layout);
+    Layout() {}
+    virtual ~Layout() {}
 
     inline void setXMargins(double left, double right) {
         margins[0] = left;
@@ -28,15 +29,25 @@ public:
         margins[3] = bottom;
     }
 
-    virtual void recalculate() = 0;
+    void get(std::vector<Geometry>& geometries);
+    
 
-    Delegate<> changed;
-
+    Delegate<Layout::ID> changed;
+    
+	inline ID id() const { return layoutid; }
+    inline void setId(ID id) { layoutid = id; }
+	
+	inline void setGeometry(Geometry geom) {
+		geometry = geom;
+	}
+    
 protected:
-    std::vector<Geometry*> plotBoxes;
+    virtual void calculate(std::vector<Geometry>& geometries) = 0;
+
     //! @todo how are margins exactly defined here? use them
     double margins[4]; //left, right, top, bottom
-
+    ID layoutid;
+    Geometry geometry;
 };
 }
 

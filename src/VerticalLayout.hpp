@@ -14,16 +14,14 @@ public:
         BottomToTop
     };
 
-    VerticalLayout(Orientation orientation = TopToBottom);
-    virtual ~VerticalLayout();
-
-    virtual void recalculate();
+    VerticalLayout() : Layout() {}
+    virtual ~VerticalLayout() {}
 
     void changeOrientation(Orientation orientation);
 
 private:
-    Orientation orientation;
-
+    virtual void calculate(std::vector<Geometry>& geometries);
+    Orientation orientation = TopToBottom;
 };
 }
 

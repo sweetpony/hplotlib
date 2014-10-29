@@ -14,29 +14,62 @@ namespace hpl
 
 Canvas::~Canvas()
 {
-    for (auto it = plots_tmp.cbegin(); it != plots_tmp.cend(); ++it) {
-        delete (*it);
-    }
-    delete layout;
 }
 
-void Canvas::setLayout(Layout* layout)
+Canvas::Slot* Canvas::findSlot(Slot const& slot)
 {
-    layout->copyPlots(*this->layout);
-    delete this->layout;
-    this->layout = layout;
-    layout->changed.bind<Window, &Window::update>(this);
+	for (auto it = racks.begin(); it != racks.end(); ++it) {
+		auto f = std::find(it->second.slots.begin(), it->second.slots.end(), slot);
+		if (f != it->second.slots.end()) {
+			return &(*f);
+		}
+	}
+	
+	return nullptr;
+}
+
+void Canvas::addSlotToLayout(Slot const& slot, Layout::ID to)
+{
+	Slot* last = findSlot(slot);
+	if (last != nullptr) {
+		last->invalidate();
+	}
+	Rack& rack = racks[to];
+	rack.slots.push_back(slot);
+	rack.geometries.push_back(Geometry());
+	
+	recalculateLayout(to);
+}
+
+void Canvas::recalculateLayout(Layout::ID layout)
+{
+	Rack& rack = racks[layout];
+	layouts.lookup(layout).get(rack.geometries);
+	
+	auto s = rack.slots.cbegin();
+	auto g = rack.geometries.cbegin();
+	for (; s != rack.slots.cend() && g != rack.geometries.cend(); ++s, ++g) {
+		if (s->plot.valid()) {
+			plots.lookup(s->plot).setGeometry(*g);
+		} else if (s->layout.valid()) {
+			layouts.lookup(s->layout).setGeometry(*g);
+			recalculateLayout(s->layout);
+		}
+	}
+	
+	update();
 }
 
 bool Canvas::saveToFile(const std::string& fileName)
 {
-    PostscriptPrinter p;
+    /*PostscriptPrinter p;
 
     pthread_mutex_lock(&mutex);
     std::vector<Plot*> pl = plots;
     pthread_mutex_unlock(&mutex);
 
-    p.saveToFile(fileName, pl);
+    p.saveToFile(fileName, pl);*/
+    return true;
 }
 	
 void Canvas::init()
@@ -54,8 +87,8 @@ void Canvas::init()
 void Canvas::destroy()
 {
 	pthread_mutex_lock(&mutex);
-	for (int i = 0; i < plots.size(); ++i) {
-		plots[i]->destroy();
+	for (auto it = plots.cbegin(); it != plots.cend(); ++it) {
+		it->second->destroy();
 	}
     pthread_mutex_unlock(&mutex);
 
@@ -65,19 +98,20 @@ void Canvas::destroy()
 void Canvas::draw()
 {
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-	
-	pthread_mutex_lock(&mutex);
-	plots_tmp = plots;
-	pthread_mutex_unlock(&mutex);
 
-	for (int i = initiated; i < plots_tmp.size(); ++i) {
-        plots_tmp[i]->init(programsDatabase.getLineProgram(), programsDatabase.getTextProgram());
+	pthread_mutex_lock(&mutex);
+	while (!plotInit.empty()) {
+		Plot::ID id = plotInit.front();
+		plotInit.pop();
+		if (plots.has(id)) {
+			plots.lookup(id).init(programsDatabase.getLineProgram(), programsDatabase.getTextProgram());
+		}
 	}
-	initiated = plots_tmp.size();
-	
-	for (auto it = plots_tmp.cbegin(); it != plots_tmp.cend(); ++it) {
-		(*it)->draw(mvp);
+		
+	for (auto it = plots.cbegin(); it != plots.cend(); ++it) {
+		it->second->draw(mvp);
 	}
+	pthread_mutex_unlock(&mutex);
 }
 
 void Canvas::resetEvent()

@@ -30,22 +30,36 @@ int main()
 	}
 	
 	hpl::Canvas canvas("../fonts/inconsolata.font");
-    canvas.setBackgroundColor(hpl::Color(0.9f, 0.9f, 0.9f));
-    canvas.setLayout(new hpl::HorizontalLayout());
+	canvas.setBackgroundColor(hpl::Color(0.9f, 0.9f, 0.9f));
+    hpl::HorizontalLayout& layout1 = canvas.addLayout<hpl::HorizontalLayout>();
+    hpl::VerticalLayout& layout2 = canvas.addLayout<hpl::VerticalLayout>();
 
-    hpl::Plot2D* plot1 = canvas.add2DPlot<hpl::Lines>(NUM_POINTS, x, y);
-    plot1->setLegendColor(hpl::Color(0.0f, 0.0f, 0.0f));
-    plot1->setColor(0, hpl::Color(0.1f, 0.3f, 0.6f));
+    hpl::Plot& plot1 = canvas.add1D<hpl::Lines>(NUM_POINTS, x, y);
+    plot1.setLegendColor(hpl::Color(0.0f, 0.0f, 0.0f));
+    //~ plot1.setLineColor(0, hpl::Color(1.0f, 0.0f, 0.0f));
+
+    hpl::Plot& plot2 = canvas.add1D<hpl::Lines>(NUM_POINTS, x, z);
+    plot2.setLegendColor(hpl::Color(0.0f, 0.0f, 0.0f));
+    //~ plot2.setLineColor(0, hpl::Color(0.0f, 1.0f, 0.0f));
+
+    hpl::Plot& plot3 = canvas.add1D<hpl::Points>(NUM_POINTS, x, z);
+    plot3.setLegendColor(hpl::Color(0.0f, 0.0f, 0.0f));
+    //~ plot3.setLineColor(0, hpl::Color(0.0f, 0.0f, 1.0f));
+	
+	canvas.addPlotToLayout(plot1.id(), layout1.id());
+	canvas.addLayoutToLayout(layout2.id(), layout1.id());
+	canvas.addPlotToLayout(plot2.id(), layout2.id());
+	canvas.addPlotToLayout(plot3.id(), layout2.id());
 
     hpl::sleep(1e6);
-
-    hpl::Plot2D* plot2 = canvas.add2DPlot<hpl::Lines>(NUM_POINTS, x, z);
-    plot2->setLegendColor(hpl::Color(0.0f, 0.0f, 0.0f));
-    plot2->setColor(0, hpl::Color(0.6f, 0.3f, 0.1f));
+    
+    layout2.changeOrientation(hpl::VerticalLayout::BottomToTop);
 
     hpl::sleep(1e6);
+    
+    layout1.changeOrientation(hpl::HorizontalLayout::RightToLeft);
 
-    canvas.setLayout(new hpl::HorizontalLayout(hpl::HorizontalLayout::RightToLeft));
+    /*canvas.setLayout(new hpl::HorizontalLayout(hpl::HorizontalLayout::RightToLeft));
     
     for (int i = 0; i < 5; ++i) {
 		hpl::sleep(5e5);
@@ -68,7 +82,7 @@ int main()
 
     static_cast<hpl::GridLayout*>(canvas.getLayout())->changeOrientation(hpl::GridLayout::TopLeftToBottomRight);
 
-    canvas.saveToFile("testoutput");
+    canvas.saveToFile("testoutput");*/
 	
     canvas.wait();
 

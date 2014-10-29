@@ -3,6 +3,8 @@
 
 #include "Layout.hpp"
 
+#include <limits>
+
 namespace hpl
 {
 class GridLayout : public Layout
@@ -11,20 +13,25 @@ class GridLayout : public Layout
 public:
     enum Orientation {
         TopLeftToBottomRight,
-        BottomRightToTopLeft
+        TopRightToBottomLeft,
+        BottomRightToTopLeft,
+        BottomLeftToTopRight,
     };
 
-    GridLayout(unsigned int xCount, unsigned int yCount, Orientation orientation = TopLeftToBottomRight);
-    virtual ~GridLayout();
+	GridLayout() : Layout() {}
+    virtual ~GridLayout() {}
 
-    void remap(unsigned int xCount, unsigned int yCount);
+    void setMaxRows(unsigned mr);
+    void setMaxCols(unsigned mc);
     void changeOrientation(Orientation orientation);
 
-    virtual void recalculate();
+protected:
+    virtual void calculate(std::vector<Geometry>& geometries);
 
 private:
-    unsigned int xCount, yCount;
-    Orientation orientation;
+    unsigned maxrows = std::numeric_limits<unsigned>::max();
+    unsigned maxcols = std::numeric_limits<unsigned>::max();
+    Orientation orientation = TopLeftToBottomRight;
 
 };
 }

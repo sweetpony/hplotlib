@@ -15,10 +15,8 @@ namespace hpl
 {
 class PlotPart {
 public:
-    PlotPart(Geometry* geometry) : geometry(geometry) {}
-    virtual ~PlotPart() {
-        delete geometry;
-    }
+    PlotPart() {}
+    virtual ~PlotPart() {}
 
 	virtual void init(GLuint lineprogram, GLuint textprogram) = 0;
 	virtual void destroy() = 0;
@@ -27,10 +25,14 @@ public:
     virtual inline void setColor(const Color& c) {
         drawColor = c;
     }
+    
+	inline void setGeometry(Geometry const& geom) {
+		geometry = geom;
+	}
 	
 protected:
-    Geometry* geometry;
     Color drawColor = Color(0.0f, 0.0f, 0.0f);
+    Geometry geometry;
 };
 }
 

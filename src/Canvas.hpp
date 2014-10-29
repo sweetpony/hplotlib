@@ -7,9 +7,6 @@
 #ifndef HPLOTLIB_CANVAS_HPP
 #define HPLOTLIB_CANVAS_HPP
 
-#include <vector>
-#include <string>
-
 #include "Window.hpp"
 #include "ProgramDatabase.hpp"
 #include "Plot2D.hpp"
@@ -18,8 +15,12 @@
 #include "Color.hpp"
 #include "Geometry.hpp"
 #include "Layout.hpp"
-#include "FixedLayout.hpp"
 #include "PostscriptPrinter.hpp"
+#include "Registry.hpp"
+
+#include <vector>
+#include <string>
+#include <queue>
 
 namespace hpl
 {
@@ -27,20 +28,27 @@ class Canvas : public Window {
 public:
 	Canvas(std::string const& fontFile) : fontFile(fontFile) {}
 	~Canvas();
-
-    template<class PART>
-    Plot2D* add2DPlot(int n, double const* x, double const* y, const Geometry& geometry = Geometry());
+	
+	void addPlotToLayout(Plot::ID plot, Layout::ID to) { addSlotToLayout(Slot(plot), to); }
+	void addLayoutToLayout(Layout::ID layout, Layout::ID to) { addSlotToLayout(Slot(layout), to); }
+	
+	template<typename T>
+	T& addLayout() {
+		T* layout = new T;
+		Layout::ID id = layouts.add(layout);
+		layout->changed.template bind<Canvas, &Canvas::recalculateLayout>(this);
+		return *layout;
+	}
+	
+	template<typename T>
+	hpl::Plot& add1D(int n, double const* x, double const* y, Geometry const& geometry = Geometry());
 
     inline void setBackgroundColor(const Color& c) {
         backgroundColor = c;
     }
 
-    void setLayout(Layout* layout);
-    inline Layout* getLayout() {
-        return layout;
-    }
+    bool saveToFile(const std::string& fileName);;
 
-    bool saveToFile(const std::string& fileName);
 
 protected:
 	virtual void init();
@@ -51,13 +59,38 @@ protected:
 	virtual void resetEvent();
 	
 private:
+	struct Slot {
+		Slot(Layout::ID l) : layout(l) {}
+		Slot(Plot::ID p) : plot(p) {}
+		bool operator==(Slot const& other) {
+			return layout == other.layout && plot == other.plot;
+		}
+		void invalidate() {
+			layout.invalidate();
+			plot.invalidate();
+		}
+		Layout::ID layout;
+		Plot::ID plot;
+	};
+	struct Rack {
+		std::vector<Slot> slots;
+		std::vector<Geometry> geometries;
+	};
+
+	Slot* findSlot(Slot const& slot);
+	void addSlotToLayout(Slot const& slot, Layout::ID to);
+	void recalculateLayout(Layout::ID layout);
+
+	Registry<Layout> layouts;
+	Registry<Plot> plots;
+	std::queue<Plot::ID> plotInit;
+
+	std::unordered_map<Layout::ID, Rack, std::hash<Layout::ID::Type>> racks;
+
 	std::string fontFile;
 	Font font;
-	int initiated = 0;
-    std::vector<Plot*> plots, plots_tmp;
 	pthread_mutex_t mutex = PTHREAD_MUTEX_INITIALIZER;
     Color backgroundColor = Color(1.0f, 1.0f, 1.0f);
-    Layout* layout = new FixedLayout();
 	
     ProgramDatabase programsDatabase;
     
@@ -68,30 +101,26 @@ private:
 	};
 };
 
+template<typename T>
+hpl::Plot& Canvas::add1D(int n, double const* x, double const* y, Geometry const& geometry)
+{
+    Plot* plot = new Plot;
+    plot->changed.template bind<Window, &Window::update>(this);
 
-
-template<class PART>
-Plot2D* Canvas::add2DPlot(int n, double const* x, double const* y, const Geometry& geometry) {
-    Plot2D* plot = new Plot2D();
-    plot->changed.bind<Window, &Window::update>(this);
-
-    Geometry* lGeo = new Geometry(geometry);
-    Legend* l = new Legend(&font, n, x, y, lGeo);
+    Legend* l = new Legend(&font, n, x, y);
     plot->addLegend(l);
 
-    Geometry* pGeo = new Geometry(geometry);
-    PART* p = new PART(n, x, y, pGeo);
+    T* p = new T(n, x, y);
     plot->addPlotPart(p);
 
-    layout->addPlot(lGeo, pGeo);
-
     pthread_mutex_lock(&mutex);
-    plots.push_back(plot);
-    pthread_mutex_unlock(&mutex);
+    Plot::ID id = plots.add(plot);
+    plotInit.push(id);
+	pthread_mutex_unlock(&mutex);
 
-    needsRepaint = true;
+    update();
 
-    return plot;
+    return *plot;
 }
 }
 
