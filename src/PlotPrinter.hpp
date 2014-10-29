@@ -30,8 +30,7 @@ protected:
     typedef std::pair<unsigned int, unsigned int> Pixel;
     Pixel transformCoordinates(double x, double y) const;
 
-    unsigned int ppi = 72, dpi = 150;
-    unsigned int pixelX = 595 * ppi * 1.0 / dpi, pixelY = 842 * ppi * 1.0 / dpi;
+    unsigned int pixelX = 612, pixelY = 792;
     Orientation orientation = Landscape;
 
 };

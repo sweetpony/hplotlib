@@ -62,6 +62,7 @@ bool PostscriptPrinter::saveToFile(const std::string& fileName, std::vector<Plot
             delete[] lines;
         }
     }
+    writeFooter(o);
 
     o.close();
     return true;
@@ -69,7 +70,13 @@ bool PostscriptPrinter::saveToFile(const std::string& fileName, std::vector<Plot
 
 void PostscriptPrinter::writeHeader(std::ofstream& o) const
 {
+    o << "%!PS-Adobe-3.0" << std::endl;
     o << "%%BoundingBox 0 0 " << pixelX << " " << pixelY << std::endl;
+}
+
+void PostscriptPrinter::writeFooter(std::ofstream& o) const
+{
+    o << "%%EOF" << std::endl;
 }
 
 void PostscriptPrinter::setFont(std::ofstream& o, unsigned int size) const

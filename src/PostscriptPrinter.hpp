@@ -21,6 +21,7 @@ public:
 
 private:
     void writeHeader(std::ofstream& o) const;
+    void writeFooter(std::ofstream& o) const;
     void setFont(std::ofstream& o, unsigned int size) const;
     void setColor(std::ofstream& o, const Color& color) const;
     void setLineWidth(std::ofstream& o, unsigned int width) const;
