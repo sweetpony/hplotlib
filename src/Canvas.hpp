@@ -9,8 +9,6 @@
 
 #include "Window.hpp"
 #include "ProgramDatabase.hpp"
-#include "Plot2D.hpp"
-#include "Plot3D.hpp"
 #include "Font.hpp"
 #include "Color.hpp"
 #include "Geometry.hpp"
@@ -41,7 +39,7 @@ public:
 	}
 	
 	template<typename T>
-	hpl::Plot& add1D(int n, double const* x, double const* y, Geometry const& geometry = Geometry());
+    hpl::Plot& add1D(int n, double const* x, double const* y);
 
     inline void setBackgroundColor(const Color& c) {
         backgroundColor = c;
@@ -102,7 +100,7 @@ private:
 };
 
 template<typename T>
-hpl::Plot& Canvas::add1D(int n, double const* x, double const* y, Geometry const& geometry)
+hpl::Plot& Canvas::add1D(int n, double const* x, double const* y)
 {
     Plot* plot = new Plot;
     plot->changed.template bind<Window, &Window::update>(this);
@@ -110,8 +108,7 @@ hpl::Plot& Canvas::add1D(int n, double const* x, double const* y, Geometry const
     Legend* l = new Legend(&font, n, x, y);
     plot->addLegend(l);
 
-    T* p = new T(n, x, y);
-    plot->addPlotPart(p);
+    plot->addPlotPart<T>(n, x, y);
 
     pthread_mutex_lock(&mutex);
     Plot::ID id = plots.add(plot);

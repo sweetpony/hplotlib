@@ -35,7 +35,9 @@ public:
 
     virtual void setLegendColor(const Color& c);
 
-    virtual PlotPart::ID addPlotPart(PlotPart* plotPart);
+    template<typename T>
+    PlotPart::ID addPlotPart(int n, double const* x, double const* y);
+
     virtual void setColor(PlotPart::ID id, const Color& c);
     
     Delegate<> changed;
@@ -60,6 +62,16 @@ protected:
     std::vector<PlotPart*> parts;
     ID plotId;
 };
+
+
+template<typename T>
+PlotPart::ID Plot::addPlotPart(int n, double const* x, double const* y)
+{
+    T* plotPart = new T(n, x, y);
+    parts.push_back(plotPart);
+    changed.invoke();
+    return parts.size()-1;
+}
 }
 
 #endif // PLOT_HPP

@@ -32,7 +32,7 @@ public:
     
 	inline void setGeometry(Geometry const& geom) {
 		geometry = geom;
-	}
+    }
 
     inline ID id() const { return plotPartId; }
     inline void setId(ID id) { plotPartId = id; }

@@ -8,7 +8,7 @@
 #include <cmath>
 
 #include <Canvas.hpp>
-#include <Plot2D.hpp>
+#include <Plot.hpp>
 #include <Color.hpp>
 #include <Geometry.hpp>
 #include <HorizontalLayout.hpp>
@@ -45,9 +45,8 @@ int main()
     hpl::Plot& plot3 = canvas.add1D<hpl::Points>(NUM_POINTS, x, z);
     plot3.setLegendColor(hpl::Color(0.0f, 0.0f, 0.0f));
     plot3.setColor(0, hpl::Color(0.0f, 0.0f, 1.0f));
-    //! @todo should not be done from outside, find a better way
-    plot3.addPlotPart(new hpl::Lines(NUM_POINTS, x, y));
-    plot3.setColor(1, hpl::Color(0.0f, 0.0f, 0.0f));
+    hpl::PlotPart::ID id3b = plot3.addPlotPart<hpl::Lines>(NUM_POINTS, x, y);
+    plot3.setColor(id3b, hpl::Color(0.0f, 0.0f, 0.0f));
 	
 	canvas.addPlotToLayout(plot1.id(), layout1.id());
 	canvas.addLayoutToLayout(layout2.id(), layout1.id());
