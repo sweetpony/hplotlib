@@ -61,30 +61,7 @@ int main()
     
     layout1.changeOrientation(hpl::HorizontalLayout::RightToLeft);
 
-    /*canvas.setLayout(new hpl::HorizontalLayout(hpl::HorizontalLayout::RightToLeft));
-    
-    for (int i = 0; i < 5; ++i) {
-		hpl::sleep(5e5);
-        plot2->setColor(0, hpl::Color(
-			rand() / static_cast<float>(RAND_MAX), 
-			rand() / static_cast<float>(RAND_MAX), 
-			rand() / static_cast<float>(RAND_MAX)
-		));
-    }
-
-    hpl::sleep(1e6);
-
-    canvas.setLayout(new hpl::GridLayout(2, 2, hpl::GridLayout::BottomRightToTopLeft));
-
-    hpl::Plot2D* plot3 = canvas.add2DPlot<hpl::Points>(NUM_POINTS, x, y);
-    plot3->setLegendColor(hpl::Color(0.0f, 0.0f, 0.0f));
-    plot3->setColor(0, hpl::Color(0.0f, 0.0f, 0.0f));
-
-    hpl::sleep(1e6);
-
-    static_cast<hpl::GridLayout*>(canvas.getLayout())->changeOrientation(hpl::GridLayout::TopLeftToBottomRight);
-
-    canvas.saveToFile("testoutput");*/
+    canvas.saveToFile("testoutput");
 	
     canvas.wait();
 

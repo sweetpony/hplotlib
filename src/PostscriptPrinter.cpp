@@ -10,7 +10,7 @@ PostscriptPrinter::~PostscriptPrinter()
 {
 }
 
-bool PostscriptPrinter::saveToFile(const std::string& fileName, std::vector<Plot*> plots)
+bool PostscriptPrinter::saveToFile(const std::string& fileName, const Registry<Plot>& plots)
 {
     std::ofstream o(fileName + ".ps");
     if (! o.is_open()) {
@@ -18,11 +18,11 @@ bool PostscriptPrinter::saveToFile(const std::string& fileName, std::vector<Plot
     }
 
     writeHeader(o);
-    for(std::vector<Plot*>::iterator i = plots.begin(); i != plots.end(); i++) {
+    for(auto i = plots.cbegin(); i != plots.cend(); i++) {
         //! @todo also handle legend in the following two statements
-        std::vector<PlotPart*> parts = (*i)->getPlotParts();
-        for (std::vector<PlotPart*>::iterator j = parts.begin(); j != parts.end(); j++) {
-            Lines* l = dynamic_cast<Lines*>(*j);
+        auto& parts = i->second->getPlotParts();
+        for (auto j = parts.begin(); j != parts.end(); j++) {
+            Lines* l = dynamic_cast<Lines*>(j->second);
             if (l != 0) {
                 float* x = l->getX();
                 float* y = l->getY();
@@ -35,7 +35,7 @@ bool PostscriptPrinter::saveToFile(const std::string& fileName, std::vector<Plot
                 delete[] y;
                 continue;
             }
-            Points* p = dynamic_cast<Points*>(*j);
+            Points* p = dynamic_cast<Points*>(j->second);
             if (p != 0) {
                 float* x = p->getX();
                 float* y = p->getY();
@@ -50,7 +50,7 @@ bool PostscriptPrinter::saveToFile(const std::string& fileName, std::vector<Plot
                 continue;
             }
         }
-        Legend* l = (*i)->getLegend();
+        Legend* l = i->second->getLegend();
         if (l != 0) {
             //! @todo draw legend
             float* lines = l->getLines();

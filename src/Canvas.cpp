@@ -62,14 +62,7 @@ void Canvas::recalculateLayout(Layout::ID layout)
 
 bool Canvas::saveToFile(const std::string& fileName)
 {
-    /*PostscriptPrinter p;
-
-    pthread_mutex_lock(&mutex);
-    std::vector<Plot*> pl = plots;
-    pthread_mutex_unlock(&mutex);
-
-    p.saveToFile(fileName, pl);*/
-    return true;
+    return PostscriptPrinter().saveToFile(fileName, plots);
 }
 	
 void Canvas::init()

@@ -6,8 +6,7 @@
 #include "Delegate.hpp"
 #include "IDBase.hpp"
 #include "Geometry.hpp"
-
-#include <vector>
+#include "Registry.hpp"
 
 namespace hpl
 {
@@ -20,7 +19,7 @@ public:
     Plot();
     virtual ~Plot();
 
-    virtual inline std::vector<PlotPart*> getPlotParts() {
+    virtual inline Registry<PlotPart>& getPlotParts() {
         return parts;
     }
 
@@ -49,7 +48,7 @@ public:
 		geom.width *= (1.0 - Legend::XOffset);
 		geom.height *= (1.0 - Legend::YOffset);
 		for (auto it = parts.begin(); it != parts.end(); ++it) {
-			(*it)->setGeometry(geom);
+            it->second->setGeometry(geom);
 		}
 		changed.invoke();
 	}
@@ -59,7 +58,7 @@ public:
 
 protected:
     Legend* legend;
-    std::vector<PlotPart*> parts;
+    Registry<PlotPart> parts;
     ID plotId;
 };
 
@@ -68,9 +67,9 @@ template<typename T>
 PlotPart::ID Plot::addPlotPart(int n, double const* x, double const* y)
 {
     T* plotPart = new T(n, x, y);
-    parts.push_back(plotPart);
+    PlotPart::ID id = parts.add(plotPart);
     changed.invoke();
-    return parts.size()-1;
+    return id;
 }
 }
 

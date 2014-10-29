@@ -3,12 +3,12 @@
 
 #include <string>
 #include <map>
-#include <vector>
 
 #include "Plot.hpp"
 #include "Lines.hpp"
 #include "Points.hpp"
 #include "Legend.hpp"
+#include "Registry.hpp"
 
 namespace hpl
 {
@@ -24,7 +24,7 @@ public:
     PlotPrinter(Orientation orientation = Landscape);
     virtual ~PlotPrinter();
 
-    virtual bool saveToFile(const std::string& fileName, std::vector<Plot*> plots) = 0;
+    virtual bool saveToFile(const std::string& fileName, const Registry<Plot>& plots) = 0;
 
 protected:
     typedef std::pair<unsigned int, unsigned int> Pixel;

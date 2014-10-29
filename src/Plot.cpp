@@ -8,33 +8,30 @@ Plot::Plot()
 
 Plot::~Plot()
 {
-    for (std::vector<PlotPart*>::iterator i = parts.begin(); i != parts.end(); i++) {
-        delete *i;
-    }
     delete legend;
 }
 
 
 void Plot::init(GLuint lineprogram, GLuint textprogram)
 {
-    for (std::vector<PlotPart*>::iterator i = parts.begin(); i != parts.end(); i++) {
-        (*i)->init(lineprogram, textprogram);
+    for (auto i = parts.begin(); i != parts.end(); i++) {
+        i->second->init(lineprogram, textprogram);
     }
     legend->init(lineprogram, textprogram);
 }
 
 void Plot::destroy()
 {
-    for (std::vector<PlotPart*>::iterator i = parts.begin(); i != parts.end(); i++) {
-        (*i)->destroy();
+    for (auto i = parts.begin(); i != parts.end(); i++) {
+        i->second->destroy();
     }
     legend->destroy();
 }
 
 void Plot::draw(float const* mvp)
 {
-    for (std::vector<PlotPart*>::iterator i = parts.begin(); i != parts.end(); i++) {
-        (*i)->draw(mvp);
+    for (auto i = parts.begin(); i != parts.end(); i++) {
+        i->second->draw(mvp);
     }
     legend->draw(mvp);
 }
@@ -53,7 +50,7 @@ void Plot::setLegendColor(const Color& c)
 
 void Plot::setColor(PlotPart::ID id, const Color& c)
 {
-    parts[id]->setColor(c);
+    parts.lookup(id).setColor(c);
     changed.invoke();
 }
 }

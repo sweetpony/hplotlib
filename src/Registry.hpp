@@ -39,11 +39,17 @@ public:
 		objects.erase(id);
 		delete &o;		
 	}
-	
+
+    inline const_iterator begin() noexcept {
+        return objects.begin();
+    }
 	inline const_iterator cbegin() const noexcept {
 		return objects.cbegin();
 	}
-	
+
+    inline const_iterator end() noexcept {
+        return objects.end();
+    }
 	inline const_iterator cend() const noexcept {
 		return objects.cend();
 	}
