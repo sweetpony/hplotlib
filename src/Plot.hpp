@@ -45,6 +45,7 @@ public:
 		for (auto it = parts.begin(); it != parts.end(); ++it) {
 			(*it)->setGeometry(geom);
 		}
+		changed.invoke();
 	}
 	
 	inline ID id() const { return plotid; }

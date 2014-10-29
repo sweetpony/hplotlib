@@ -29,17 +29,25 @@ public:
         margins[3] = bottom;
     }
 
-    virtual void recalculate(std::vector<Geometry>& geometries) = 0;
+    void get(std::vector<Geometry>& geometries);
+    
 
-    Delegate<> changed;
+    Delegate<Layout::ID> changed;
     
 	inline ID id() const { return layoutid; }
     inline void setId(ID id) { layoutid = id; }
+	
+	inline void setGeometry(Geometry geom) {
+		geometry = geom;
+	}
     
 protected:
+    virtual void calculate(std::vector<Geometry>& geometries) = 0;
+
     //! @todo how are margins exactly defined here? use them
     double margins[4]; //left, right, top, bottom
     ID layoutid;
+    Geometry geometry;
 };
 }
 

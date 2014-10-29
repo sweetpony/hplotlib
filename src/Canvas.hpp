@@ -35,6 +35,7 @@ public:
 	T& addLayout() {
 		T* layout = new T;
 		Layout::ID id = layouts.add(layout);
+		layout->changed.template bind<Canvas, &Canvas::recalculateLayout>(this);
 		return *layout;
 	}
 	

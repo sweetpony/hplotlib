@@ -75,13 +75,16 @@ void Canvas::addSlotToLayout(Slot const& slot, Layout::ID to)
 void Canvas::recalculateLayout(Layout::ID layout)
 {
 	Rack& rack = racks[layout];
-	layouts.lookup(layout).recalculate(rack.geometries);
+	layouts.lookup(layout).get(rack.geometries);
 	
 	auto s = rack.slots.cbegin();
 	auto g = rack.geometries.cbegin();
 	for (; s != rack.slots.cend() && g != rack.geometries.cend(); ++s, ++g) {
 		if (s->plot.valid()) {
 			plots.lookup(s->plot).setGeometry(*g);
+		} else if (s->layout.valid()) {
+			layouts.lookup(s->layout).setGeometry(*g);
+			recalculateLayout(s->layout);
 		}
 	}
 	

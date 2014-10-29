@@ -2,15 +2,7 @@
 
 namespace hpl
 {
-HorizontalLayout::HorizontalLayout(Orientation orientation) : Layout(), orientation(orientation)
-{
-}
-
-HorizontalLayout::~HorizontalLayout()
-{
-}
-
-void HorizontalLayout::recalculate(std::vector<Geometry>& geometries)
+void HorizontalLayout::calculate(std::vector<Geometry>& geometries)
 {
     unsigned int c = geometries.size();
     double w = 1.0 / c;
@@ -30,8 +22,7 @@ void HorizontalLayout::recalculate(std::vector<Geometry>& geometries)
 
 void HorizontalLayout::changeOrientation(Orientation orientation)
 {
-    //~ this->orientation = orientation;
-    //~ recalculate();
-    //~ changed.invoke();
+    this->orientation = orientation;
+    changed.invoke(id());
 }
 }

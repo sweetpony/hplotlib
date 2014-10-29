@@ -14,15 +14,16 @@ public:
         RightToLeft
     };
 
-    HorizontalLayout(Orientation orientation = LeftToRight);
-    virtual ~HorizontalLayout();
-
-    virtual void recalculate(std::vector<Geometry>& geometries);
+    HorizontalLayout() : Layout() {}
+    virtual ~HorizontalLayout() {}
 
     void changeOrientation(Orientation orientation);
 
+protected:
+    virtual void calculate(std::vector<Geometry>& geometries);
+
 private:
-    Orientation orientation;
+    Orientation orientation = LeftToRight;
 
 };
 }
