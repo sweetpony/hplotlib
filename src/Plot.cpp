@@ -51,13 +51,14 @@ void Plot::setLegendColor(const Color& c)
     changed.invoke();
 }
 
-void Plot::addPlotPart(PlotPart* plotPart)
+PlotPart::ID Plot::addPlotPart(PlotPart* plotPart)
 {
     parts.push_back(plotPart);
     changed.invoke();
+    return parts.size()-1;
 }
 
-void Plot::setColor(unsigned int id, const Color& c)
+void Plot::setColor(PlotPart::ID id, const Color& c)
 {
     parts[id]->setColor(c);
     changed.invoke();

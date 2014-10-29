@@ -10,11 +10,15 @@
 #include <GL/glld.h>
 #include "Color.hpp"
 #include "Geometry.hpp"
+#include "IDBase.hpp"
 
 namespace hpl
 {
 class PlotPart {
+
 public:
+    typedef IDBase<PlotPart> ID;
+
     PlotPart() {}
     virtual ~PlotPart() {}
 
@@ -29,10 +33,14 @@ public:
 	inline void setGeometry(Geometry const& geom) {
 		geometry = geom;
 	}
+
+    inline ID id() const { return plotPartId; }
+    inline void setId(ID id) { plotPartId = id; }
 	
 protected:
     Color drawColor = Color(0.0f, 0.0f, 0.0f);
     Geometry geometry;
+    ID plotPartId;
 };
 }
 

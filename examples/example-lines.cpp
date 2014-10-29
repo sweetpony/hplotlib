@@ -36,15 +36,18 @@ int main()
 
     hpl::Plot& plot1 = canvas.add1D<hpl::Lines>(NUM_POINTS, x, y);
     plot1.setLegendColor(hpl::Color(0.0f, 0.0f, 0.0f));
-    //~ plot1.setLineColor(0, hpl::Color(1.0f, 0.0f, 0.0f));
+    plot1.setColor(0, hpl::Color(1.0f, 0.0f, 0.0f));
 
     hpl::Plot& plot2 = canvas.add1D<hpl::Lines>(NUM_POINTS, x, z);
     plot2.setLegendColor(hpl::Color(0.0f, 0.0f, 0.0f));
-    //~ plot2.setLineColor(0, hpl::Color(0.0f, 1.0f, 0.0f));
+    plot2.setColor(0, hpl::Color(0.0f, 1.0f, 0.0f));
 
     hpl::Plot& plot3 = canvas.add1D<hpl::Points>(NUM_POINTS, x, z);
     plot3.setLegendColor(hpl::Color(0.0f, 0.0f, 0.0f));
-    //~ plot3.setLineColor(0, hpl::Color(0.0f, 0.0f, 1.0f));
+    plot3.setColor(0, hpl::Color(0.0f, 0.0f, 1.0f));
+    //! @todo should not be done from outside, find a better way
+    plot3.addPlotPart(new hpl::Lines(NUM_POINTS, x, y));
+    plot3.setColor(1, hpl::Color(0.0f, 0.0f, 0.0f));
 	
 	canvas.addPlotToLayout(plot1.id(), layout1.id());
 	canvas.addLayoutToLayout(layout2.id(), layout1.id());

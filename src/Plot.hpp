@@ -35,8 +35,8 @@ public:
 
     virtual void setLegendColor(const Color& c);
 
-    virtual void addPlotPart(PlotPart* plotPart);
-    virtual void setColor(unsigned int id, const Color& c);
+    virtual PlotPart::ID addPlotPart(PlotPart* plotPart);
+    virtual void setColor(PlotPart::ID id, const Color& c);
     
     Delegate<> changed;
 	
@@ -52,13 +52,13 @@ public:
 		changed.invoke();
 	}
 	
-	inline ID id() const { return plotid; }
-    inline void setId(ID id) { plotid = id; }
+    inline ID id() const { return plotId; }
+    inline void setId(ID id) { plotId = id; }
 
 protected:
     Legend* legend;
     std::vector<PlotPart*> parts;
-    ID plotid;
+    ID plotId;
 };
 }
 
