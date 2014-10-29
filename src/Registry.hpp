@@ -48,7 +48,7 @@ public:
 		return objects.cend();
 	}
 private:
-	typename T::ID nextID = static_cast<typename T::ID::Type>(0);
+    typename T::ID nextID = typename T::ID(static_cast<typename T::ID::Type>(0));
 	ObjectMap objects;
 };
 }

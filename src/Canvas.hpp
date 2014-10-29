@@ -47,7 +47,7 @@ public:
         backgroundColor = c;
     }
 
-    bool saveToFile(const std::string& fileName);;
+    bool saveToFile(const std::string& fileName);
 
 
 protected:
@@ -60,7 +60,7 @@ protected:
 	
 private:
 	struct Slot {
-		Slot(Layout::ID l) : layout(l) {}
+        Slot(Layout::ID l) : layout(l) {}
 		Slot(Plot::ID p) : plot(p) {}
 		bool operator==(Slot const& other) {
 			return layout == other.layout && plot == other.plot;
