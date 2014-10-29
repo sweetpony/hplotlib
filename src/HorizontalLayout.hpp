@@ -17,7 +17,7 @@ public:
     HorizontalLayout(Orientation orientation = LeftToRight);
     virtual ~HorizontalLayout();
 
-    virtual void recalculate();
+    virtual void recalculate(std::vector<Geometry>& geometries);
 
     void changeOrientation(Orientation orientation);
 

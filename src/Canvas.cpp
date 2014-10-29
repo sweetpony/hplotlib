@@ -45,15 +45,47 @@ void showLinkLog(GLuint id)
 
 Canvas::~Canvas()
 {
-    delete layout;
 }
 
-void Canvas::setLayout(Layout* layout)
+Canvas::Slot* Canvas::findSlot(Slot const& slot)
 {
-    layout->copyPlots(*this->layout);
-    delete this->layout;
-    this->layout = layout;
-    layout->changed.bind<Window, &Window::update>(this);
+	for (auto it = racks.begin(); it != racks.end(); ++it) {
+		auto f = std::find(it->second.slots.begin(), it->second.slots.end(), slot);
+		if (f != it->second.slots.end()) {
+			return &(*f);
+		}
+	}
+	
+	return nullptr;
+}
+
+void Canvas::addSlotToLayout(Slot const& slot, Layout::ID to)
+{
+	Slot* last = findSlot(slot);
+	if (last != nullptr) {
+		last->invalidate();
+	}
+	Rack& rack = racks[to];
+	rack.slots.push_back(slot);
+	rack.geometries.push_back(Geometry());
+	
+	recalculateLayout(to);
+}
+
+void Canvas::recalculateLayout(Layout::ID layout)
+{
+	Rack& rack = racks[layout];
+	layouts.lookup(layout).recalculate(rack.geometries);
+	
+	auto s = rack.slots.cbegin();
+	auto g = rack.geometries.cbegin();
+	for (; s != rack.slots.cend() && g != rack.geometries.cend(); ++s, ++g) {
+		if (s->plot.valid()) {
+			plots.lookup(s->plot).setGeometry(*g);
+		}
+	}
+	
+	update();
 }
 
 bool Canvas::saveToFile(const std::string& fileName)

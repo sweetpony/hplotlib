@@ -1,14 +1,17 @@
 #ifndef PLOT_HPP
 #define PLOT_HPP
 
-#include <vector>
 #include "Legend.hpp"
 #include "Color.hpp"
 #include "Delegate.hpp"
 #include "IDBase.hpp"
+#include "Geometry.hpp"
+
+#include <vector>
 
 namespace hpl
 {
+class Layout;
 class Plot
 {
 public:
@@ -32,9 +35,20 @@ public:
 
     virtual void setLegendColor(const Color& c);    
     Delegate<> changed;
-    
-    inline void setId(ID id) { plotid = id; }	
+	
+	inline void setGeometry(Geometry geom) {
+		legend->setGeometry(geom);
+		geom.leftOffset += Legend::XOffset * geom.width;
+		geom.topOffset += Legend::YOffset * geom.height;
+		geom.width *= (1.0 - Legend::XOffset);
+		geom.height *= (1.0 - Legend::YOffset);
+		for (auto it = parts.begin(); it != parts.end(); ++it) {
+			(*it)->setGeometry(geom);
+		}
+	}
+	
 	inline ID id() const { return plotid; }
+    inline void setId(ID id) { plotid = id; }
 
 protected:
     Legend* legend;

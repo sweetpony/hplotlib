@@ -14,7 +14,7 @@ namespace hpl
 {
 class Lines : public PlotPart {
 public:
-    Lines(int n, double const* x, double const* y, Geometry* geometry);
+    Lines(int n, double const* x, double const* y);
     virtual ~Lines();
 
     float* getX() const;

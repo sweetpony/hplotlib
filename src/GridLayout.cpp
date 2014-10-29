@@ -12,7 +12,7 @@ GridLayout::~GridLayout()
 
 void GridLayout::recalculate()
 {
-    unsigned int c = plotBoxes.size();
+    /*unsigned int c = plotBoxes.size();
     if (c > 2 * xCount * yCount) {
         c = 2 * xCount * yCount;
     }
@@ -40,7 +40,7 @@ void GridLayout::recalculate()
         if (plotBoxes[i+1] != 0) {
             plotBoxes[i+1]->reset(l+xo, t+yo, w-xo, h-yo);
         }
-    }
+    }*/
 }
 
 void GridLayout::remap(unsigned int xCount, unsigned int yCount)

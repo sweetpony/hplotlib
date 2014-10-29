@@ -12,7 +12,7 @@ VerticalLayout::~VerticalLayout()
 
 void VerticalLayout::recalculate()
 {
-    unsigned int c = plotBoxes.size();
+    /*unsigned int c = plotBoxes.size();
     double w = 1.0;
     double h = 1.0 / (c / 2.0);
 
@@ -38,7 +38,7 @@ void VerticalLayout::recalculate()
         } else {
             t += h;
         }
-    }
+    }*/
 }
 
 void VerticalLayout::changeOrientation(Orientation orientation)

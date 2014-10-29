@@ -14,7 +14,6 @@
 #include "Color.hpp"
 #include "Geometry.hpp"
 #include "Layout.hpp"
-#include "FixedLayout.hpp"
 #include "PostscriptPrinter.hpp"
 #include "Registry.hpp"
 
@@ -29,30 +28,24 @@ public:
 	Canvas(std::string const& fontFile) : fontFile(fontFile) {}
 	~Canvas();
 	
+	void addPlotToLayout(Plot::ID plot, Layout::ID to) { addSlotToLayout(Slot(plot), to); }
+	void addLayoutToLayout(Layout::ID layout, Layout::ID to) { addSlotToLayout(Slot(layout), to); }
+	
 	template<typename T>
 	T& addLayout() {
 		T* layout = new T;
-		layouts.add(layout);
+		Layout::ID id = layouts.add(layout);
 		return *layout;
 	}
 	
 	template<typename T>
 	T& add1D(int n, double const* x, double const* y, Geometry const& geometry = Geometry());
-	
-	void remove(Plot::ID id) {
-		// TODO
-	}
 
     inline void setBackgroundColor(const Color& c) {
         backgroundColor = c;
     }
 
-    void setLayout(Layout* layout);
-    inline Layout* getLayout() {
-        return layout;
-    }
-
-    bool saveToFile(const std::string& fileName);
+    bool saveToFile(const std::string& fileName);;
 
 
 protected:
@@ -64,15 +57,38 @@ protected:
 	virtual void resetEvent();
 	
 private:
+	struct Slot {
+		Slot(Layout::ID l) : layout(l) {}
+		Slot(Plot::ID p) : plot(p) {}
+		bool operator==(Slot const& other) {
+			return layout == other.layout && plot == other.plot;
+		}
+		void invalidate() {
+			layout.invalidate();
+			plot.invalidate();
+		}
+		Layout::ID layout;
+		Plot::ID plot;
+	};
+	struct Rack {
+		std::vector<Slot> slots;
+		std::vector<Geometry> geometries;
+	};
+
+	Slot* findSlot(Slot const& slot);
+	void addSlotToLayout(Slot const& slot, Layout::ID to);
+	void recalculateLayout(Layout::ID layout);
+
 	Registry<Layout> layouts;
 	Registry<Plot> plots;
 	std::queue<Plot::ID> plotInit;
+
+	std::unordered_map<Layout::ID, Rack, std::hash<Layout::ID::Type>> racks;
 
 	std::string fontFile;
 	Font font;
 	pthread_mutex_t mutex = PTHREAD_MUTEX_INITIALIZER;
     Color backgroundColor = Color(1.0f, 1.0f, 1.0f);
-    Layout* layout = new FixedLayout();
 	
 	GLuint linevshader = 0;
     GLuint linefshader = 0;
@@ -93,15 +109,11 @@ T& Canvas::add1D(int n, double const* x, double const* y, Geometry const& geomet
     T* plot = new T();
     plot->changed.template bind<Window, &Window::update>(this);
 
-    Geometry* lGeo = new Geometry(geometry);
-    Legend* l = new Legend(&font, n, x, y, lGeo);
+    Legend* l = new Legend(&font, n, x, y);
     plot->addLegend(l);
 
-    Geometry* pGeo = new Geometry(geometry);
-    Lines* p = new Lines(n, x, y, pGeo);
+    Lines* p = new Lines(n, x, y);
     plot->addLines(p);
-
-    layout->addPlot(lGeo, pGeo);
 
     pthread_mutex_lock(&mutex);
     Plot::ID id = plots.add(plot);

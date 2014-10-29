@@ -2,7 +2,7 @@
 
 namespace hpl
 {
-Points::Points(int n, double const* x, double const* y, Geometry* geometry) : PlotPart(geometry), n(n)
+Points::Points(int n, double const* x, double const* y) : n(n)
 {
     xmin = hpl::min(n, x);
     xmax = hpl::max(n, x);
@@ -25,7 +25,7 @@ float* Points::getX() const
 {
     float* x = new float[n];
     for (unsigned int i = 0; i < n; i++) {
-        x[i] = points[i << 1] * geometry->width + geometry->leftOffset;
+        x[i] = points[i << 1] * geometry.width + geometry.leftOffset;
     }
     return x;
 }
@@ -34,7 +34,7 @@ float* Points::getY() const
 {
     float* y = new float[n];
     for (unsigned int i = 0; i < n; i++) {
-        y[i] = points[(i << 1) + 1] * geometry->height + geometry->topOffset;
+        y[i] = points[(i << 1) + 1] * geometry.height + geometry.topOffset;
     }
     return y;
 }
@@ -72,7 +72,7 @@ void Points::draw(float const* mvp)
         (GLvoid const*) 0
     );
     glEnableVertexAttribArray(pos);
-    glUniform4f(rect, geometry->leftOffset, geometry->topOffset, geometry->width, geometry->height);
+    glUniform4f(rect, geometry.leftOffset, geometry.topOffset, geometry.width, geometry.height);
     glUniform3f(color, drawColor.r, drawColor.g, drawColor.b);
     glUniformMatrix3fv(pointmvp, 1, GL_FALSE, mvp);
 

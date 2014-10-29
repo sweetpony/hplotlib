@@ -1,6 +1,8 @@
 #ifndef IDBASE_HPP
 #define IDBASE_HPP
 
+#include <limits>
+
 namespace hpl
 {
 template<typename StubForTypeSafety, typename T = unsigned>
@@ -8,7 +10,8 @@ class IDBase
 {
 public:
 	typedef T Type;
-	IDBase() : id(-1) {}
+
+	IDBase() : id(Invalid) {}
 	IDBase(Type other) {
 		id = other;
 	}
@@ -21,8 +24,11 @@ public:
 		++id;
 		return *this;
 	}
+	bool valid() const { return id != Invalid; }
+	void invalidate() { id = Invalid; }
 
 private:
+	static const Type Invalid = std::numeric_limits<Type>::max();
     Type id;
 };
 }

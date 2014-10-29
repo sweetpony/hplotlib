@@ -10,7 +10,7 @@ class Points : public PlotPart
 {
 
 public:
-    Points(int n, double const* x, double const* y, Geometry* geometry);
+    Points(int n, double const* x, double const* y);
     virtual ~Points();
 
     float* getX() const;

@@ -20,7 +20,7 @@ public:
 	static constexpr int Ticks = 8;
 	static constexpr float TickLength = 0.02f;
 
-    Legend(Font* font, int n, double const* x, double const* y, Geometry* geometry);
+    Legend(Font* font, int n, double const* x, double const* y);
     ~Legend();
 
     float* getLines() const;
