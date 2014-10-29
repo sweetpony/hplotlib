@@ -11,6 +11,7 @@
 #include <string>
 
 #include "Window.hpp"
+#include "ProgramDatabase.hpp"
 #include "Plot2D.hpp"
 #include "Plot3D.hpp"
 #include "Font.hpp"
@@ -58,11 +59,7 @@ private:
     Color backgroundColor = Color(1.0f, 1.0f, 1.0f);
     Layout* layout = new FixedLayout();
 	
-	GLuint linevshader = 0;
-    GLuint linefshader = 0;
-    GLuint lineprogram = 0;
-    GLuint textfshader = 0;
-    GLuint textprogram = 0;
+    ProgramDatabase programsDatabase;
     
     float mvp[9] = {
 		1.0, 0.0, 0.0,
