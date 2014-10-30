@@ -10,7 +10,7 @@ PostscriptPrinter::~PostscriptPrinter()
 {
 }
 
-bool PostscriptPrinter::saveToFile(const std::string& fileName, const Registry<Plot>& plots)
+bool PostscriptPrinter::saveToFile(const std::string& fileName, const Registry<CoordinateSystem>& plots)
 {
     std::ofstream o(fileName + ".ps");
     if (! o.is_open()) {
@@ -20,7 +20,7 @@ bool PostscriptPrinter::saveToFile(const std::string& fileName, const Registry<P
     writeHeader(o);
     for(auto i = plots.cbegin(); i != plots.cend(); i++) {
         //! @todo also handle legend in the following two statements
-        auto& parts = i->second->getPlotParts();
+        auto& parts = i->second->getPlots();
         for (auto j = parts.begin(); j != parts.end(); j++) {
             Lines* l = dynamic_cast<Lines*>(j->second);
             if (l != 0) {
@@ -50,8 +50,8 @@ bool PostscriptPrinter::saveToFile(const std::string& fileName, const Registry<P
                 continue;
             }
         }
-        Legend* l = i->second->getLegend();
-        if (l != 0) {
+        CoordinateSystem *const l = i->second;
+        if (l != nullptr) {
             //! @todo draw legend
             float* lines = l->getLines();
 

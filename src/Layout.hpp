@@ -2,10 +2,9 @@
 #define LAYOUT_HPP
 
 #include "Geometry.hpp"
-#include "Legend.hpp"
 #include "Delegate.hpp"
-#include "Plot.hpp"
 #include "Registry.hpp"
+#include "IDBase.hpp"
 
 #include <vector>
 

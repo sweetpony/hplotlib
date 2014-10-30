@@ -7,7 +7,6 @@
 #include "Canvas.hpp"
 #include <GL/glld.h>
 #include <cmath>
-#include <iostream>
 
 namespace hpl
 {
@@ -49,8 +48,8 @@ void Canvas::recalculateLayout(Layout::ID layout)
 	auto s = rack.slots.cbegin();
 	auto g = rack.geometries.cbegin();
 	for (; s != rack.slots.cend() && g != rack.geometries.cend(); ++s, ++g) {
-		if (s->plot.valid()) {
-			plots.lookup(s->plot).setGeometry(*g);
+		if (s->cs.valid()) {
+			csystems.lookup(s->cs).setGeometry(*g);
 		} else if (s->layout.valid()) {
 			layouts.lookup(s->layout).setGeometry(*g);
 			recalculateLayout(s->layout);
@@ -62,7 +61,7 @@ void Canvas::recalculateLayout(Layout::ID layout)
 
 bool Canvas::saveToFile(const std::string& fileName)
 {
-    return PostscriptPrinter().saveToFile(fileName, plots);
+    return PostscriptPrinter().saveToFile(fileName, csystems);
 }
 	
 void Canvas::init()
@@ -80,7 +79,7 @@ void Canvas::init()
 void Canvas::destroy()
 {
 	pthread_mutex_lock(&mutex);
-	for (auto it = plots.cbegin(); it != plots.cend(); ++it) {
+	for (auto it = csystems.cbegin(); it != csystems.cend(); ++it) {
 		it->second->destroy();
 	}
     pthread_mutex_unlock(&mutex);
@@ -93,15 +92,15 @@ void Canvas::draw()
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
 	pthread_mutex_lock(&mutex);
-	while (!plotInit.empty()) {
-		Plot::ID id = plotInit.front();
-		plotInit.pop();
-		if (plots.has(id)) {
-			plots.lookup(id).init(programsDatabase.getLineProgram(), programsDatabase.getTextProgram());
+	while (!csInit.empty()) {
+		CoordinateSystem::ID id = csInit.front();
+		csInit.pop();
+		if (csystems.has(id)) {
+			csystems.lookup(id).init(programsDatabase.getLineProgram(), programsDatabase.getTextProgram());
 		}
 	}
 		
-	for (auto it = plots.cbegin(); it != plots.cend(); ++it) {
+	for (auto it = csystems.cbegin(); it != csystems.cend(); ++it) {
 		it->second->draw(mvp);
 	}
 	pthread_mutex_unlock(&mutex);

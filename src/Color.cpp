@@ -2,8 +2,10 @@
 
 namespace hpl
 {
-Color Color::fromHSV(float h, float s, float v)
+Color Color::fromHSV(float H, float S, float V)
 {
+	Color c(0.0f, 0.0f, 0.0f);
+	
 	int h = H * 6;
 	float f = H * 6.0f - h;
 	float p = V*(1.0f-S);
@@ -13,27 +15,27 @@ Color Color::fromHSV(float h, float s, float v)
 	switch (h) {
 	case 0:
 	case 6:
-		*r = V; *g = t; *b = p;
+		c.r = V; c.g = t; c.b = p;
 		break;
 	case 1:
-		*r = q; *g = V; *b = p;
+		c.r = q; c.g = V; c.b = p;
 		break;
 	case 2:
-		*r = p; *g = V; *b = t;
+		c.r = p; c.g = V; c.b = t;
 		break;
 	case 3:
-		*r = p; *g = q; *b = V;
+		c.r = p; c.g = q; c.b = V;
 		break;
 	case 4:
-		*r = t; *g = p; *b = V;
+		c.r = t; c.g = p; c.b = V;
 		break;
 	case 5:
-		*r = V; *g = p; *b = q;
+		c.r = V; c.g = p; c.b = q;
 		break;
 	default:
 		break;
 	}
+	
+	return c;
 }
 }
-
-#endif // COLOR_HPP

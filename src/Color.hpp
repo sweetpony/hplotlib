@@ -8,7 +8,7 @@ namespace hpl
         Color(unsigned int r, unsigned int g, unsigned int b) : r(r/255.0f), g(g/255.0f), b(b/255.0f) {}
         Color(unsigned int hex) : r(((hex >> 16) & 0xff) / 255.0f), g(((hex >> 8) & 0xff) / 255.0f), b((hex & 0xff) / 255.0f) {}
         
-        static Color fromHSV(float h, float s, float v);
+        static Color fromHSV(float H, float S, float V);
 
         float r, g, b;
     };

@@ -34,24 +34,25 @@ int main()
     hpl::HorizontalLayout& layout1 = canvas.addLayout<hpl::HorizontalLayout>();
     hpl::VerticalLayout& layout2 = canvas.addLayout<hpl::VerticalLayout>();
 
-    hpl::Plot& plot1 = canvas.add1D<hpl::Lines>(NUM_POINTS, x, y);
-    plot1.setLegendColor(hpl::Color(0.0f, 0.0f, 0.0f));
-    plot1.setColor(0, hpl::Color(1.0f, 0.0f, 0.0f));
+    hpl::CoordinateSystem& cs1 = canvas.addCoordinateSystem<hpl::CoordinateSystem>();
+    cs1.setColor(hpl::Color(0.6f, 0.6f, 0.6f));
+    hpl::Lines& plot1 = cs1.addPlot<hpl::Lines>(NUM_POINTS, x, y);
+    plot1.setColor(hpl::Color(1.0f, 0.0f, 0.0f));
 
-    hpl::Plot& plot2 = canvas.add1D<hpl::Lines>(NUM_POINTS, x, z);
-    plot2.setLegendColor(hpl::Color(0.0f, 0.0f, 0.0f));
-    plot2.setColor(0, hpl::Color(0.0f, 1.0f, 0.0f));
-
-    hpl::Plot& plot3 = canvas.add1D<hpl::Points>(NUM_POINTS, x, z);
-    plot3.setLegendColor(hpl::Color(0.0f, 0.0f, 0.0f));
-    plot3.setColor(0, hpl::Color(0.0f, 0.0f, 1.0f));
-    hpl::PlotPart::ID id3b = plot3.addPlotPart<hpl::Lines>(NUM_POINTS, x, y);
-    plot3.setColor(id3b, hpl::Color(0.0f, 0.0f, 0.0f));
+    hpl::CoordinateSystem& cs2 = canvas.addCoordinateSystem<hpl::CoordinateSystem>();    
+    hpl::Lines& plot2 = cs2.addPlot<hpl::Lines>(NUM_POINTS, x, z);
+    plot2.setColor(hpl::Color(0.0f, 1.0f, 0.0f));
+    
+    hpl::CoordinateSystem& cs3 = canvas.addCoordinateSystem<hpl::CoordinateSystem>(); 
+    hpl::Points& plot3 = cs3.addPlot<hpl::Points>(NUM_POINTS, x, z);
+    plot3.setColor(hpl::Color(0.0f, 0.0f, 1.0f));
+    hpl::Lines& plot4 = cs3.addPlot<hpl::Lines>(NUM_POINTS, x, y);
+    plot4.setColor(hpl::Color(0.0f, 0.0f, 0.0f));
 	
-	canvas.addPlotToLayout(plot1.id(), layout1.id());
+	canvas.addCoordinateSystemToLayout(cs1.id(), layout1.id());
 	canvas.addLayoutToLayout(layout2.id(), layout1.id());
-	canvas.addPlotToLayout(plot2.id(), layout2.id());
-	canvas.addPlotToLayout(plot3.id(), layout2.id());
+	canvas.addCoordinateSystemToLayout(cs2.id(), layout2.id());
+	canvas.addCoordinateSystemToLayout(cs3.id(), layout2.id());
 
     hpl::sleep(1e6);
     

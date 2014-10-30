@@ -4,7 +4,7 @@
  *  Created on: Oct 15, 2014
  *      Author: Carsten Uphoff (uphoff@mytum.de)
  */
-#include "Legend.hpp"
+#include "CoordinateSystem.hpp"
 #include <cstdio>
 #include <algorithm>
 #include "Statistics.hpp"
@@ -12,21 +12,17 @@
 
 namespace hpl
 {
-Legend::Legend(Font* font, int n, double const* x, double const* y)
-    : font(font)
+CoordinateSystem::CoordinateSystem(Font* font)
+    : font(font), drawColor(0.0f, 0.0f, 0.0f)
 {
-	xmin = hpl::min(n, x);
-	xmax = hpl::max(n, x);	
-	ymin = hpl::min(n, y);
-	ymax = hpl::max(n, y);
 }
 
-Legend::~Legend()
+CoordinateSystem::~CoordinateSystem()
 {
     delete[] lines;
 }
 
-float* Legend::getLines() const
+float* CoordinateSystem::getLines() const
 {
     const unsigned int m = getLinesCount();
     float* l = new float[m];
@@ -38,12 +34,71 @@ float* Legend::getLines() const
 
     return l;
 }
-	
-void Legend::init(GLuint lineprogram, GLuint textprogram)
+
+void CoordinateSystem::setColor(const Color& c)
 {
+    drawColor = c;
+    changed.invoke();
+}
+
+void CoordinateSystem::setGeometry(Geometry geom)
+{
+	geometry = geom;
+
+	geom.leftOffset += XOffset * geom.width;
+	geom.topOffset += YOffset * geom.height;
+	geom.width *= (1.0 - XOffset);
+	geom.height *= (1.0 - YOffset);
+	for (auto it = plots.begin(); it != plots.end(); ++it) {
+		it->second->setGeometry(geom);
+	}
+	changed.invoke();
+}
+
+void CoordinateSystem::updateLimits(double xmin, double xmax, double ymin, double ymax)
+{
+	if (xmin < this->xmin || xmax > this->xmax || ymin < this->ymin || ymax > this->ymax) {
+		this->xmin = std::min(this->xmin, xmin);
+		this->xmax = std::min(this->xmax, xmax);
+		this->ymin = std::min(this->ymin, ymin);
+		this->ymax = std::min(this->ymax, ymax);
+		updateLabels = true;
+		changed.invoke();
+	}
+}
+	
+void CoordinateSystem::init(GLuint lineprogram, GLuint textprogram)
+{
+	while (!plotInit.empty()) {
+		Plot::ID id = plotInit.front();
+		plotInit.pop();
+		if (plots.has(id)) {
+			plots.lookup(id).init(lineprogram, textprogram);
+		}
+	}
+
 	this->lineprogram = lineprogram;
 	this->textprogram = textprogram;
 	
+    glGenBuffers(1, &lineBuffer);
+    glGenBuffers(1, &textBuffer);
+    
+    linepos = glGetAttribLocation(lineprogram, "Position");
+    linerect = glGetUniformLocation(lineprogram, "Rect");
+	linecolor = glGetUniformLocation(lineprogram, "Color");
+	linemvp = glGetUniformLocation(lineprogram, "MVP");
+
+    textpos = glGetAttribLocation(textprogram, "Position");
+    textuv = glGetAttribLocation(textprogram, "UV");
+    textrect = glGetUniformLocation(textprogram, "Rect");
+    textglyphs = glGetUniformLocation(textprogram, "Glyphs");
+	textmvp = glGetUniformLocation(textprogram, "MVP");
+	textcolor = glGetUniformLocation(textprogram, "Color");
+}
+
+void CoordinateSystem::update()
+{	
+	delete[] lines;
     lines = new float[8 + 2*Ticks*4]{
 		XOffset, 1.0f,
 		XOffset, YOffset,
@@ -53,7 +108,7 @@ void Legend::init(GLuint lineprogram, GLuint textprogram)
     
     struct Label {
 		char label[16];
-		int len;
+		int len = 0;
 		float x, y;
 	};
     
@@ -86,11 +141,12 @@ void Legend::init(GLuint lineprogram, GLuint textprogram)
 		labels[i].x = XOffset / 2.0;
 		labels[i].y = y;
 	}
+	
+	numLines =  4 + 4*Ticks;
 
-    glGenBuffers(1, &lineBuffer);
     glBindBuffer(GL_ARRAY_BUFFER, lineBuffer);
-    glBufferData(GL_ARRAY_BUFFER, (8 + 2*Ticks*4) * sizeof(float), lines, GL_STATIC_DRAW);
-    glBindBuffer(GL_ARRAY_BUFFER, 0);   
+    glBufferData(GL_ARRAY_BUFFER, 2 * numLines * sizeof(float), lines, GL_STATIC_DRAW);
+    glBindBuffer(GL_ARRAY_BUFFER, 0);
 
     
 	float* text = new float[numChars*4*4];
@@ -136,35 +192,33 @@ void Legend::init(GLuint lineprogram, GLuint textprogram)
 		}
 	}
 
-    glGenBuffers(1, &textBuffer);
     glBindBuffer(GL_ARRAY_BUFFER, textBuffer);
 	glBufferData(GL_ARRAY_BUFFER, numChars*4*4*sizeof(float), text, GL_STATIC_DRAW);
     glBindBuffer(GL_ARRAY_BUFFER, 0);
     
     delete[] text;
-    
-    linepos = glGetAttribLocation(lineprogram, "Position");
-    linerect = glGetUniformLocation(lineprogram, "Rect");
-	linecolor = glGetUniformLocation(lineprogram, "Color");
-	linemvp = glGetUniformLocation(lineprogram, "MVP");
-
-    textpos = glGetAttribLocation(textprogram, "Position");
-    textuv = glGetAttribLocation(textprogram, "UV");
-    textrect = glGetUniformLocation(textprogram, "Rect");
-    textglyphs = glGetUniformLocation(textprogram, "Glyphs");
-	textmvp = glGetUniformLocation(textprogram, "MVP");
-	textcolor = glGetUniformLocation(textprogram, "Color");
-
 }
 
-void Legend::destroy()
+void CoordinateSystem::destroy()
 {
+	for (auto i = plots.begin(); i != plots.end(); i++) {
+        i->second->destroy();
+    }
 	glDeleteBuffers(1, &lineBuffer);
 	glDeleteBuffers(1, &textBuffer);
 }
 
-void Legend::draw(float const* mvp)
+void CoordinateSystem::draw(float const* mvp)
 {
+	if (updateLabels) {
+		updateLabels = false;
+		update();
+	}
+	
+	for (auto i = plots.begin(); i != plots.end(); i++) {
+        i->second->draw(mvp);
+    }
+    
     glUseProgram(lineprogram);
     glBindBuffer(GL_ARRAY_BUFFER, lineBuffer);
 	glVertexAttribPointer(
@@ -180,7 +234,7 @@ void Legend::draw(float const* mvp)
     glUniform3f(linecolor, drawColor.r, drawColor.g, drawColor.b);
 	glUniformMatrix3fv(linemvp, 1, GL_FALSE, mvp);
 	
-	glDrawArrays(GL_LINES, 0, 4 + 4*Ticks);
+	glDrawArrays(GL_LINES, 0, numLines);
 	glDisableVertexAttribArray(linepos);
 	
     glUseProgram(textprogram);    

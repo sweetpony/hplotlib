@@ -27,7 +27,7 @@ public:
 	Canvas(std::string const& fontFile) : fontFile(fontFile) {}
 	~Canvas();
 	
-	void addPlotToLayout(Plot::ID plot, Layout::ID to) { addSlotToLayout(Slot(plot), to); }
+	void addCoordinateSystemToLayout(CoordinateSystem::ID cs, Layout::ID to) { addSlotToLayout(Slot(cs), to); }
 	void addLayoutToLayout(Layout::ID layout, Layout::ID to) { addSlotToLayout(Slot(layout), to); }
 	
 	template<typename T>
@@ -39,7 +39,7 @@ public:
 	}
 	
 	template<typename T>
-    hpl::Plot& add1D(int n, double const* x, double const* y);
+    T& addCoordinateSystem();
 
     inline void setBackgroundColor(const Color& c) {
         backgroundColor = c;
@@ -59,16 +59,16 @@ protected:
 private:
 	struct Slot {
         Slot(Layout::ID l) : layout(l) {}
-		Slot(Plot::ID p) : plot(p) {}
+		Slot(CoordinateSystem::ID c) : cs(c) {}
 		bool operator==(Slot const& other) {
-			return layout == other.layout && plot == other.plot;
+			return layout == other.layout && cs == other.cs;
 		}
 		void invalidate() {
 			layout.invalidate();
-			plot.invalidate();
+			cs.invalidate();
 		}
 		Layout::ID layout;
-		Plot::ID plot;
+		CoordinateSystem::ID cs;
 	};
 	struct Rack {
 		std::vector<Slot> slots;
@@ -80,8 +80,8 @@ private:
 	void recalculateLayout(Layout::ID layout);
 
 	Registry<Layout> layouts;
-	Registry<Plot> plots;
-	std::queue<Plot::ID> plotInit;
+	Registry<CoordinateSystem> csystems;
+	std::queue<CoordinateSystem::ID> csInit;
 
 	std::unordered_map<Layout::ID, Rack, std::hash<Layout::ID::Type>> racks;
 
@@ -100,24 +100,19 @@ private:
 };
 
 template<typename T>
-hpl::Plot& Canvas::add1D(int n, double const* x, double const* y)
+T& Canvas::addCoordinateSystem()
 {
-    Plot* plot = new Plot;
-    plot->changed.template bind<Window, &Window::update>(this);
-
-    Legend* l = new Legend(&font, n, x, y);
-    plot->addLegend(l);
-
-    plot->addPlotPart<T>(n, x, y);
+    T* cs = new T(&font);
+    cs->changed.template bind<Window, &Window::update>(this);
 
     pthread_mutex_lock(&mutex);
-    Plot::ID id = plots.add(plot);
-    plotInit.push(id);
+    CoordinateSystem::ID id = csystems.add(cs);
+    csInit.push(id);
 	pthread_mutex_unlock(&mutex);
 
     update();
 
-    return *plot;
+    return *cs;
 }
 }
 

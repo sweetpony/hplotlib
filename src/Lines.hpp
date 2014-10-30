@@ -7,12 +7,12 @@
 #ifndef HPLOTLIB_LINES_HPP
 #define HPLOTLIB_LINES_HPP
 
-#include "PlotPart.hpp"
+#include "Plot.hpp"
 #include "Statistics.hpp"
 
 namespace hpl
 {
-class Lines : public PlotPart {
+class Lines : public Plot {
 public:
     Lines(int n, double const* x, double const* y);
     virtual ~Lines();

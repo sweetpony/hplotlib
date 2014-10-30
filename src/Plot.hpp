@@ -1,12 +1,13 @@
 #ifndef PLOT_HPP
 #define PLOT_HPP
 
-#include "Legend.hpp"
 #include "Color.hpp"
 #include "Delegate.hpp"
 #include "IDBase.hpp"
 #include "Geometry.hpp"
 #include "Registry.hpp"
+
+#include <GL/glld.h>
 
 namespace hpl
 {
@@ -16,61 +17,33 @@ class Plot
 public:
 	typedef IDBase<Plot> ID;
 
-    Plot();
-    virtual ~Plot();
+    Plot() {}
+    virtual ~Plot() {}
 
-    virtual inline Registry<PlotPart>& getPlotParts() {
-        return parts;
+	virtual void init(GLuint lineprogram, GLuint textprogram) = 0;
+	virtual void destroy() = 0;
+	virtual void draw(float const* mvp) = 0;
+
+    virtual inline void setColor(const Color& c) {
+        drawColor = c;
+        changed.invoke();
     }
-
-    virtual void init(GLuint lineprogram, GLuint textprogram);
-    virtual void destroy();
-    virtual void draw(float const* mvp);
-
-    virtual void addLegend(Legend* legend);
-    inline Legend* getLegend() {
-        return legend;
+    
+	inline void setGeometry(Geometry const& geom) {
+		geometry = geom;
+		changed.invoke();
     }
-
-    virtual void setLegendColor(const Color& c);
-
-    template<typename T>
-    PlotPart::ID addPlotPart(int n, double const* x, double const* y);
-
-    virtual void setColor(PlotPart::ID id, const Color& c);
     
     Delegate<> changed;
-	
-	inline void setGeometry(Geometry geom) {
-		legend->setGeometry(geom);
-		geom.leftOffset += Legend::XOffset * geom.width;
-		geom.topOffset += Legend::YOffset * geom.height;
-		geom.width *= (1.0 - Legend::XOffset);
-		geom.height *= (1.0 - Legend::YOffset);
-		for (auto it = parts.begin(); it != parts.end(); ++it) {
-            it->second->setGeometry(geom);
-		}
-		changed.invoke();
-	}
-	
+    
     inline ID id() const { return plotId; }
     inline void setId(ID id) { plotId = id; }
 
 protected:
-    Legend* legend;
-    Registry<PlotPart> parts;
+    Color drawColor = Color(0.0f, 0.0f, 0.0f);
+    Geometry geometry;
     ID plotId;
 };
-
-
-template<typename T>
-PlotPart::ID Plot::addPlotPart(int n, double const* x, double const* y)
-{
-    T* plotPart = new T(n, x, y);
-    PlotPart::ID id = parts.add(plotPart);
-    changed.invoke();
-    return id;
-}
 }
 
 #endif // PLOT_HPP
