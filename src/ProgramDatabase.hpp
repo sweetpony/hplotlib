@@ -1,8 +1,7 @@
 #ifndef PROGRAMDATABASE_HPP
 #define PROGRAMDATABASE_HPP
 
-#include <iostream>
-#include <GL/glld.h>
+#include "GL/glld.h"
 
 namespace hpl
 {

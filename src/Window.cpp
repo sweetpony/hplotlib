@@ -6,7 +6,7 @@
  */
 #include "Window.hpp"
 
-#include <GL/glld.h>
+#include "GL/glld.h"
 #include <iostream>
 
 bool hpl::Window::loadOpenGL()

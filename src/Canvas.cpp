@@ -5,7 +5,7 @@
  *      Author: Carsten Uphoff (uphoff@mytum.de)
  */
 #include "Canvas.hpp"
-#include <GL/glld.h>
+#include "GL/glld.h"
 #include <cmath>
 
 namespace hpl
