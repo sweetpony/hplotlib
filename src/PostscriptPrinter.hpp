@@ -17,7 +17,7 @@ public:
     PostscriptPrinter(Orientation orientation = Landscape);
     virtual ~PostscriptPrinter();
 
-    virtual bool saveToFile(const std::string& fileName, const Registry<CoordinateSystem>& plots);
+    virtual bool saveToFile(const std::string& fileName, const Registry<CoordinateSystem>& coordinateSystems);
 
 private:
     void writeHeader(std::ofstream& o) const;

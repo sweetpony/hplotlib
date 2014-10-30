@@ -10,7 +10,7 @@ PostscriptPrinter::~PostscriptPrinter()
 {
 }
 
-bool PostscriptPrinter::saveToFile(const std::string& fileName, const Registry<CoordinateSystem>& plots)
+bool PostscriptPrinter::saveToFile(const std::string& fileName, const Registry<CoordinateSystem>& coordinateSystems)
 {
     std::ofstream o(fileName + ".ps");
     if (! o.is_open()) {
@@ -18,10 +18,11 @@ bool PostscriptPrinter::saveToFile(const std::string& fileName, const Registry<C
     }
 
     writeHeader(o);
-    for(auto i = plots.cbegin(); i != plots.cend(); i++) {
+    for(auto i = coordinateSystems.cbegin(); i != coordinateSystems.cend(); i++) {
         //! @todo also handle legend in the following two statements
-        auto& parts = i->second->getPlots();
-        for (auto j = parts.begin(); j != parts.end(); j++) {
+        CoordinateSystem* const cosy = i->second;
+        auto& plots = cosy->getPlots();
+        for (auto j = plots.begin(); j != plots.end(); j++) {
             Lines* l = dynamic_cast<Lines*>(j->second);
             if (l != 0) {
                 float* x = l->getX();
@@ -50,17 +51,14 @@ bool PostscriptPrinter::saveToFile(const std::string& fileName, const Registry<C
                 continue;
             }
         }
-        CoordinateSystem *const l = i->second;
-        if (l != nullptr) {
-            //! @todo draw legend
-            float* lines = l->getLines();
+        //! @todo draw legend
+        float* lines = cosy->getLines();
 
-            for (int k = 0; k < l->getLinesCount()-3; k+=4) {
-                drawLine(o, lines[k], lines[k+1], lines[k+2], lines[k+3]);
-            }
-
-            delete[] lines;
+        for (int k = 0; k < cosy->getLinesCount()-3; k+=4) {
+            drawLine(o, lines[k], lines[k+1], lines[k+2], lines[k+3]);
         }
+
+        delete[] lines;
     }
     writeFooter(o);
 
