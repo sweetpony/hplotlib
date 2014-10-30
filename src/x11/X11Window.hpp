@@ -8,7 +8,7 @@
 #define HPLOTLIB_X11WINDOW_HPP
 
 #include "../Window.hpp"
-#include <GL/glld.h>
+#include "../GL/glld.h"
 #include <GL/glx.h>
 #include <X11/X.h>
 #include <X11/Xlib.h>
