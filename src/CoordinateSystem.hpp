@@ -4,8 +4,8 @@
  *  Created on: Oct 15, 2014
  *      Author: Carsten Uphoff (uphoff@mytum.de)
  */
-#ifndef HPLOTLIB_LEGEND_HPP
-#define HPLOTLIB_LEGEND_HPP
+#ifndef HPLOTLIB_COORDINATESYSTEM_HPP
+#define HPLOTLIB_COORDINATESYSTEM_HPP
 
 #include "Plot.hpp"
 #include "Statistics.hpp"
