@@ -20,6 +20,7 @@ CoordinateSystem::CoordinateSystem(Font* font)
 CoordinateSystem::~CoordinateSystem()
 {
     delete[] lines;
+    delete[] labels;
 }
 
 float* CoordinateSystem::getLines() const
@@ -30,6 +31,25 @@ float* CoordinateSystem::getLines() const
     for (unsigned int i = 0; i < m-1; i+=2) {
         l[i] = lines[i] * geometry.width + geometry.leftOffset;
         l[i+1] = lines[i+1] * geometry.height + geometry.topOffset;
+    }
+
+    return l;
+}
+
+CoordinateSystem::Label* CoordinateSystem::getLabels() const
+{
+    const unsigned int m = getLabelsCount();
+    Label* l = new Label[m];
+
+    for (unsigned int i = 0; i < m; i++) {
+        l[i].x = labels[i].x * geometry.width + geometry.leftOffset;
+        l[i].y = labels[i].y * geometry.height + geometry.topOffset;
+        for (unsigned int j = 0; j < 16; j++) {
+            l[i].label[j] = labels[i].label[j];
+        }
+        l[i].len = labels[i].len;
+        l[i].width = labels[i].width * geometry.width;
+        l[i].height = labels[i].height * geometry.height;
     }
 
     return l;
@@ -105,14 +125,9 @@ void CoordinateSystem::update()
 		XOffset, YOffset,
 		1.0f, YOffset
     };
-    
-    struct Label {
-		char label[16];
-		int len = 0;
-		float x, y;
-	};
-    
-    Label labels[2*Ticks];
+
+    delete[] labels;
+    labels = new Label[2*Ticks];
     numChars = 0;
 	
 	float xspacing = (1.0 - XOffset) / (Ticks + 1.0f);
@@ -148,8 +163,8 @@ void CoordinateSystem::update()
     glBufferData(GL_ARRAY_BUFFER, 2 * numLines * sizeof(float), lines, GL_STATIC_DRAW);
     glBindBuffer(GL_ARRAY_BUFFER, 0);
 
-    
-	float* text = new float[numChars*4*4];
+
+    float* text = new float[numChars*4*4];
 	float maxTextWidth = std::min(XOffset-TickLength, 0.8f*xspacing);
 	float maxTextHeight = YOffset-TickLength;
 	
@@ -158,7 +173,7 @@ void CoordinateSystem::update()
 	for (int i = 0; i < 2*Ticks; ++i) {
 		float textw = 0.0;
 		for (int j = 0; j < labels[i].len; ++j) {			
-			textw += font->ch(labels[i].label[j]).xadvance;
+            textw += font->ch(labels[i].label[j]).xadvance;
 		}
 		float xscale = maxTextWidth / textw;
 		float yscale = maxTextHeight / header.lineHeight;
@@ -188,14 +203,19 @@ void CoordinateSystem::update()
 			text[4*4*c + 13] = y - ch.height*scale;
 			text[4*4*c + 14] = (ch.x + ch.width) / header.width;
 			text[4*4*c + 15] = (ch.y + ch.height) / header.height;
+
+            labels[i].width += ch.xadvance + ch.xoffset;
+            labels[i].height += ch.height;
 			++c;
-		}
+        }
+        labels[i].width *= scale;
+        labels[i].height *= scale / labels[i].len;
 	}
 
     glBindBuffer(GL_ARRAY_BUFFER, textBuffer);
 	glBufferData(GL_ARRAY_BUFFER, numChars*4*4*sizeof(float), text, GL_STATIC_DRAW);
     glBindBuffer(GL_ARRAY_BUFFER, 0);
-    
+
     delete[] text;
 }
 

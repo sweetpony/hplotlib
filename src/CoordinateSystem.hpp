@@ -21,6 +21,12 @@ class CoordinateSystem {
 public:
 	typedef IDBase<CoordinateSystem> ID;
 
+    struct Label {
+        char label[16];
+        int len = 0;
+        float x, y, width, height;
+    };
+
 	static constexpr float XOffset = 0.12f;
 	static constexpr float YOffset = 0.08f;
 	static constexpr int Ticks = 8;
@@ -32,7 +38,13 @@ public:
     float* getLines() const;
     inline unsigned int getLinesCount() const {
         return 8 + 2*Ticks*4;
-    }    
+    }
+
+    Label* getLabels() const;
+    inline unsigned int getLabelsCount() const {
+        return 2*Ticks;
+    }
+
     inline Registry<Plot>& getPlots() {
         return plots;
     }
@@ -81,6 +93,7 @@ private:
 	int numChars = 0;
 
     float* lines = nullptr;
+    Label* labels = nullptr;
 };
 
 template<typename T>

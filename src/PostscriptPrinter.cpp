@@ -18,8 +18,9 @@ bool PostscriptPrinter::saveToFile(const std::string& fileName, const Registry<C
     }
 
     writeHeader(o);
+    setFont(o, 10);
+
     for(auto i = coordinateSystems.cbegin(); i != coordinateSystems.cend(); i++) {
-        //! @todo also handle legend in the following two statements
         CoordinateSystem* const cosy = i->second;
         auto& plots = cosy->getPlots();
         for (auto j = plots.begin(); j != plots.end(); j++) {
@@ -51,14 +52,20 @@ bool PostscriptPrinter::saveToFile(const std::string& fileName, const Registry<C
                 continue;
             }
         }
-        //! @todo draw legend
         float* lines = cosy->getLines();
 
         for (int k = 0; k < cosy->getLinesCount()-3; k+=4) {
             drawLine(o, lines[k], lines[k+1], lines[k+2], lines[k+3]);
         }
 
+        CoordinateSystem::Label* labels = cosy->getLabels();
+
+        for (int k = 0; k < cosy->getLabelsCount(); k++) {
+            writeText(o, labels[k].x-0.5*labels[k].width, labels[k].y-0.5*labels[k].height, labels[k].label);
+        }
+
         delete[] lines;
+        delete[] labels;
     }
     writeFooter(o);
 
