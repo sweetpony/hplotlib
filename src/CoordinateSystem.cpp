@@ -27,10 +27,10 @@ float* CoordinateSystem::getLines() const
     const unsigned int m = getLinesCount();
     float* l = new float[m];
 
-    /*for (unsigned int i = 0; i < m-1; i+=2) {
+    for (unsigned int i = 0; i < m-1; i+=2) {
         l[i] = lines[i] * geometry.width + geometry.leftOffset;
         l[i+1] = lines[i+1] * geometry.height + geometry.topOffset;
-    }*/
+    }
 
     return l;
 }
