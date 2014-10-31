@@ -13,9 +13,11 @@ void ProgramDatabase::init()
     lineVertexShader = compileLineVertexShader();
     lineFragmentShader = compileLineFragmentShader();
     textFragmentShader = compileTextFragmentShader();
+    textureFragmentShader = compileTextureFragmentShader();
 
     lineProgram = linkLineProgram(lineVertexShader, lineFragmentShader);
     textProgram = linkTextProgram(lineVertexShader, textFragmentShader);
+    mapProgram = linkMapProgram(lineVertexShader, textureFragmentShader);
 }
 
 void ProgramDatabase::destroy()
@@ -23,9 +25,11 @@ void ProgramDatabase::destroy()
     glDeleteShader(lineVertexShader);
     glDeleteShader(lineFragmentShader);
     glDeleteShader(textFragmentShader);
+    glDeleteShader(textureFragmentShader);
 
     glDeleteProgram(lineProgram);
     glDeleteProgram(textProgram);
+    glDeleteProgram(mapProgram);
 }
 
 GLuint ProgramDatabase::compileLineVertexShader() const
@@ -101,6 +105,23 @@ GLuint ProgramDatabase::compileTextFragmentShader() const
     return textfshader;
 }
 
+GLuint ProgramDatabase::compileTextureFragmentShader() const
+{
+    GLuint texturefshader = glCreateShader(GL_FRAGMENT_SHADER);
+    GLchar const* fsource =
+        "#version 120\n"
+        "uniform sampler2D colorMap;\n"
+        "void main(void) {\n"
+        "gl_FragColor = texture2D(colorMap, pos);\n"
+        "}\n";
+
+    glShaderSource(texturefshader, 1, &fsource, NULL);
+    glCompileShader(texturefshader);
+    showCompileLog(texturefshader);
+
+    return texturefshader;
+}
+
 GLuint ProgramDatabase::linkLineProgram(GLuint vertexShader, GLuint fragmentShader) const
 {
     GLuint lineprogram = glCreateProgram();
@@ -123,6 +144,18 @@ GLuint ProgramDatabase::linkTextProgram(GLuint vertexShader, GLuint fragmentShad
     showLinkLog(textprogram);
 
     return textprogram;
+}
+
+GLuint ProgramDatabase::linkMapProgram(GLuint vertexShader, GLuint fragmentShader) const
+{
+    GLuint mapProgram = glCreateProgram();
+
+    glAttachShader(mapProgram, vertexShader);
+    glAttachShader(mapProgram, fragmentShader);
+    glLinkProgram(mapProgram);
+    showLinkLog(mapProgram);
+
+    return mapProgram;
 }
 
 void ProgramDatabase::showCompileLog(GLuint id) const

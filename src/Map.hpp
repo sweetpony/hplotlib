@@ -20,10 +20,10 @@ private:
     float* rectCorners = nullptr;
     double xmin, ymin, xmax, ymax, zmin, zmax;
 
-    GLuint lineBuffer;
+    GLuint mapBuffer;
     GLuint program;
 
-    GLint pos, rect, color, linemvp;
+    GLint pos, rect, colorMap, linemvp;
 };
 }
 

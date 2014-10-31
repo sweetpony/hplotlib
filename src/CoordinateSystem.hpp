@@ -9,6 +9,7 @@
 
 #include "Plot.hpp"
 #include "Statistics.hpp"
+#include "Map.hpp"
 
 #include "GL/glld.h"
 
@@ -61,7 +62,7 @@ public:
     template<typename T>
     T& addPlot(int n, double const* x, double const* y, double const* z);
 
-	virtual void init(GLuint lineprogram, GLuint textprogram);
+    virtual void init(GLuint lineprogram, GLuint textprogram, GLuint mapprogram);
 	virtual void destroy();
 	virtual void draw(float const* mvp);
 	
@@ -93,6 +94,7 @@ private:
     GLuint textBuffer;
     GLuint lineprogram;
     GLuint textprogram;
+    GLuint mapprogram;
     
 	GLint linepos, linerect, linecolor, linemvp, textpos, textuv, textrect, textglyphs, textmvp, textcolor;
 	int numLines = 0;

@@ -20,20 +20,25 @@ public:
     inline GLuint getTextProgram() const {
         return textProgram;
     }
+    inline GLuint getMapProgram() const {
+        return mapProgram;
+    }
 
 private:
     GLuint compileLineVertexShader() const;
     GLuint compileLineFragmentShader() const;
     GLuint compileTextFragmentShader() const;
+    GLuint compileTextureFragmentShader() const;
 
     GLuint linkLineProgram(GLuint vertexShader, GLuint fragmentShader) const;
     GLuint linkTextProgram(GLuint vertexShader, GLuint fragmentShader) const;
+    GLuint linkMapProgram(GLuint vertexShader, GLuint fragmentShader) const;
 
     void showCompileLog(GLuint id) const;
     void showLinkLog(GLuint id) const;
 
-    GLuint lineVertexShader, lineFragmentShader, textFragmentShader;
-    GLuint lineProgram, textProgram;
+    GLuint lineVertexShader, lineFragmentShader, textFragmentShader, textureFragmentShader;
+    GLuint lineProgram, textProgram, mapProgram;
 
 };
 }

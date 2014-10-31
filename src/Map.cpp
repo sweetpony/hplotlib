@@ -31,30 +31,32 @@ Map::~Map()
     delete[] rectCorners;
 }
 
-void Map::init(GLuint lineprogram, GLuint)
+void Map::init(GLuint mapprogram, GLuint)
 {
-    program = lineprogram;
+    program = mapprogram;
 
-    glGenBuffers(1, &lineBuffer);
-    glBindBuffer(GL_ARRAY_BUFFER, lineBuffer);
+    glGenBuffers(1, &mapBuffer);
+    glBindBuffer(GL_ARRAY_BUFFER, mapBuffer);
     glBufferData(GL_ARRAY_BUFFER, (4 + 8 * (n - 1)) * sizeof(float), rectCorners, GL_STATIC_DRAW);
     glBindBuffer(GL_ARRAY_BUFFER, 0);
 
     pos = glGetAttribLocation(program, "Position");
     rect = glGetUniformLocation(program, "Rect");
-    color = glGetUniformLocation(program, "Color");
+    colorMap = glGetUniformLocation(program, "ColorMap");
     linemvp = glGetUniformLocation(program, "MVP");
+
+    glEnable(GL_TEXTURE_2D);
 }
 
 void Map::destroy()
 {
-    glDeleteBuffers(1, &lineBuffer);
+    glDeleteBuffers(1, &mapBuffer);
 }
 
 void Map::draw(float const* mvp)
 {
     glUseProgram(program);
-    glBindBuffer(GL_ARRAY_BUFFER, lineBuffer);
+    glBindBuffer(GL_ARRAY_BUFFER, mapBuffer);
     glVertexAttribPointer(
         pos,
         2,
@@ -65,7 +67,15 @@ void Map::draw(float const* mvp)
     );
     glEnableVertexAttribArray(pos);
     glUniform4f(rect, geometry.leftOffset, geometry.topOffset, geometry.width, geometry.height);
-    glUniform3f(color, drawColor.r, drawColor.g, drawColor.b);
+    glUniform1i(colorMap, 0);
+    glActiveTextureARB(GL_TEXTURE0_ARB);
+    glBindTexture(GL_TEXTURE_2D, tex_id);
+    GLuint sampler;
+    glGenSamplers(1, &sampler);
+    glBindSampler(0, sampler);
+    unsigned char pixels[2*2*4]={255,000,000,255,   000,255,000,255,
+                         000,000,255,255,   255,255,255,255};
+    glTexImage2D(GL_TEXTURE_2D, 0, 4, 2, 2, 0, GL_RGBA,GL_UNSIGNED_BYTE, (const GLvoid *)pixels);
     glUniformMatrix3fv(linemvp, 1, GL_FALSE, mvp);
 
     glDrawArrays(GL_QUAD_STRIP, 0, 2 + 4 * (n - 1));

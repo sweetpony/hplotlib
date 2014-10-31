@@ -96,7 +96,7 @@ void Canvas::draw()
 		CoordinateSystem::ID id = csInit.front();
 		csInit.pop();
 		if (csystems.has(id)) {
-			csystems.lookup(id).init(programsDatabase.getLineProgram(), programsDatabase.getTextProgram());
+            csystems.lookup(id).init(programsDatabase.getLineProgram(), programsDatabase.getTextProgram(), programsDatabase.getMapProgram());
 		}
 	}
 		

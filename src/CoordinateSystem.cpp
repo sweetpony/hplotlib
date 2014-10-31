@@ -87,18 +87,24 @@ void CoordinateSystem::updateLimits(double xmin, double xmax, double ymin, doubl
 	}
 }
 	
-void CoordinateSystem::init(GLuint lineprogram, GLuint textprogram)
+void CoordinateSystem::init(GLuint lineprogram, GLuint textprogram, GLuint mapprogram)
 {
 	while (!plotInit.empty()) {
 		Plot::ID id = plotInit.front();
 		plotInit.pop();
 		if (plots.has(id)) {
-			plots.lookup(id).init(lineprogram, textprogram);
+            Plot* p = &plots.lookup(id);
+            if (dynamic_cast<Map*>(p) == 0) {
+                p->init(lineprogram, textprogram);
+            } else {
+                p->init(mapprogram, textprogram);
+            }
 		}
 	}
 
 	this->lineprogram = lineprogram;
 	this->textprogram = textprogram;
+    this->mapprogram = mapprogram;
 	
     glGenBuffers(1, &lineBuffer);
     glGenBuffers(1, &textBuffer);
