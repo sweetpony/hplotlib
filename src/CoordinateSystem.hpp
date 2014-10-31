@@ -50,6 +50,10 @@ public:
     }
     
     void setColor(const Color& c);
+    inline Color getColor() const {
+        return drawColor;
+    }
+
     void setGeometry(Geometry geom);
     
     template<typename T>

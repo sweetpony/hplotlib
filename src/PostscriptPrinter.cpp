@@ -28,6 +28,7 @@ bool PostscriptPrinter::saveToFile(const std::string& fileName, const Registry<C
             if (l != 0) {
                 float* x = l->getX();
                 float* y = l->getY();
+                setColor(o, l->getColor());
 
                 for (int k = 0; k < l->getN()-1; k++) {
                     drawLine(o, x[k], y[k], x[k+1], y[k+1]);
@@ -41,6 +42,7 @@ bool PostscriptPrinter::saveToFile(const std::string& fileName, const Registry<C
             if (p != 0) {
                 float* x = p->getX();
                 float* y = p->getY();
+                setColor(o, p->getColor());
 
                 //! @todo set point size
                 for (int k = 0; k < p->getN(); k++) {
@@ -53,6 +55,7 @@ bool PostscriptPrinter::saveToFile(const std::string& fileName, const Registry<C
             }
         }
         float* lines = cosy->getLines();
+        setColor(o, cosy->getColor());
 
         for (int k = 0; k < cosy->getLinesCount()-3; k+=4) {
             drawLine(o, lines[k], lines[k+1], lines[k+2], lines[k+3]);

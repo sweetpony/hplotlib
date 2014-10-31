@@ -28,6 +28,9 @@ public:
         drawColor = c;
         changed.invoke();
     }
+    virtual inline Color getColor() const {
+        return drawColor;
+    }
     
 	inline void setGeometry(Geometry const& geom) {
 		geometry = geom;
