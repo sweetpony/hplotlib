@@ -7,7 +7,7 @@
 #include "Geometry.hpp"
 #include "Registry.hpp"
 
-#include <GL/glld.h>
+#include "GL/glld.h"
 
 namespace hpl
 {

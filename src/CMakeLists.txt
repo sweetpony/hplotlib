@@ -18,6 +18,8 @@ if (UNIX)
 	list (APPEND SOURCES ${X11_SOURCES})
 endif ()
 
+list (APPEND SOURCES "GL/glld.c")
+
 add_library (hplotlib ${SOURCES})
-target_link_libraries (hplotlib glld ${CMAKE_THREAD_LIBS_INIT} ${OPENGL_LIBRARY})
+target_link_libraries (hplotlib ${CMAKE_THREAD_LIBS_INIT} ${OPENGL_LIBRARY})
 install (TARGETS hplotlib DESTINATION lib)

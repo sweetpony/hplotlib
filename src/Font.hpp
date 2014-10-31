@@ -1,8 +1,9 @@
 #ifndef HPLOTLIB_FONT_HPP
 #define HPLOTLIB_FONT_HPP
 
+#include "GL/glld.h"
+
 #include <string>
-#include <GL/glld.h>
 
 namespace hpl
 {

@@ -10,7 +10,7 @@
 #include "Plot.hpp"
 #include "Statistics.hpp"
 
-#include <GL/glld.h>
+#include "GL/glld.h"
 
 #include <queue>
 

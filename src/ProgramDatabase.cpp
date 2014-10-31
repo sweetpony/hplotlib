@@ -1,5 +1,7 @@
 #include "ProgramDatabase.hpp"
 
+#include <iostream>
+
 namespace hpl
 {
 ProgramDatabase::ProgramDatabase()

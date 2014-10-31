@@ -6,7 +6,7 @@
  */
 #include "Win32Window.hpp"
 
-#include <GL/glld.h>
+#include "../GL/glld.h"
 #include <windowsx.h>
 
 #define WGL_CONTEXT_MAJOR_VERSION_ARB 0x2091

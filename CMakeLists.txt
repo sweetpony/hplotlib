@@ -10,10 +10,6 @@ if (NOT CMAKE_USE_PTHREADS_INIT)
 	error ("Could NOT find pthreads.")
 endif ()
 
-include_directories (
-	${CMAKE_SOURCE_DIR}/ext/glld
-)
-
 set (EXECUTABLE_OUTPUT_PATH ${CMAKE_SOURCE_DIR}/bin)
 set (LIBRARY_OUTPUT_PATH ${CMAKE_SOURCE_DIR}/lib)
 
@@ -24,5 +20,4 @@ set (CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++11 -O2")
 if (BUILD_EXAMPLES)
 	add_subdirectory (examples)
 endif ()
-add_subdirectory (ext)
 add_subdirectory (src)
