@@ -14,6 +14,7 @@
 #include <HorizontalLayout.hpp>
 #include <VerticalLayout.hpp>
 #include <GridLayout.hpp>
+#include <Map.hpp>
 
 #define NUM_POINTS 200
 
@@ -40,8 +41,7 @@ int main()
     plot1.setColor(hpl::Color(1.0f, 0.0f, 0.0f));
 
     hpl::CoordinateSystem& cs2 = canvas.addCoordinateSystem<hpl::CoordinateSystem>();    
-    hpl::Lines& plot2 = cs2.addPlot<hpl::Lines>(NUM_POINTS, x, z);
-    plot2.setColor(hpl::Color(0.0f, 1.0f, 0.0f));
+    hpl::Map& plot2 = cs2.addPlot<hpl::Map>(NUM_POINTS, x, y, z);
     
     hpl::CoordinateSystem& cs3 = canvas.addCoordinateSystem<hpl::CoordinateSystem>(); 
     hpl::Points& plot3 = cs3.addPlot<hpl::Points>(NUM_POINTS, x, z);

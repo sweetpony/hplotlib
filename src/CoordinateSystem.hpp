@@ -58,6 +58,8 @@ public:
     
     template<typename T>
     T& addPlot(int n, double const* x, double const* y);
+    template<typename T>
+    T& addPlot(int n, double const* x, double const* y, double const* z);
 
 	virtual void init(GLuint lineprogram, GLuint textprogram);
 	virtual void destroy();
@@ -108,6 +110,20 @@ T& CoordinateSystem::addPlot(int n, double const* x, double const* y)
     T* plot = new T(n, x, y);
     plot->changed.template bind<Delegate<>, &Delegate<>::invoke>(&changed);
     Plot::ID id = plots.add(plot);    
+    plotInit.push(id);
+    setGeometry(geometry);
+    changed.invoke();
+    return *plot;
+}
+
+template<typename T>
+T& CoordinateSystem::addPlot(int n, double const* x, double const* y, double const* z)
+{
+    updateLimits(hpl::min(n, x), hpl::max(n, x), hpl::min(n, y), hpl::max(n, y));
+
+    T* plot = new T(n, x, y, z);
+    plot->changed.template bind<Delegate<>, &Delegate<>::invoke>(&changed);
+    Plot::ID id = plots.add(plot);
     plotInit.push(id);
     setGeometry(geometry);
     changed.invoke();
