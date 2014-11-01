@@ -1,6 +1,8 @@
 #ifndef MAP_HPP
 #define MAP_HPP
 
+#include "GL/glld.h"
+
 #include "Plot.hpp"
 #include "Statistics.hpp"
 
@@ -19,6 +21,8 @@ private:
     int n;
     float* rectCorners = nullptr;
     double xmin, ymin, xmax, ymax, zmin, zmax;
+
+    GLuint _glyphs;
 
     GLuint mapBuffer;
     GLuint program;

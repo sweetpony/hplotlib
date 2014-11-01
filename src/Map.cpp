@@ -45,12 +45,28 @@ void Map::init(GLuint mapprogram, GLuint)
     colorMap = glGetUniformLocation(program, "ColorMap");
     linemvp = glGetUniformLocation(program, "MVP");
 
-    glEnable(GL_TEXTURE_2D);
+    //glEnable(GL_TEXTURE_1D);
+
+    glGenTextures(1, &_glyphs);
+    glBindTexture(GL_TEXTURE_1D, _glyphs);
+    glTexParameteri(GL_TEXTURE_1D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+    glTexParameteri(GL_TEXTURE_1D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+    glTexParameteri(GL_TEXTURE_1D, GL_TEXTURE_WRAP_S, GL_REPEAT);
+    glTexParameteri(GL_TEXTURE_1D, GL_TEXTURE_WRAP_T, GL_REPEAT);
+
+    unsigned int length = 4;
+    float data[] = {
+        0.0f, 0.0f, 0.0f,   1.0f, 1.0f, 1.0f,
+        1.0f, 1.0f, 1.0f,   0.0f, 0.0f, 0.0f
+    };
+
+    glTexImage1D(GL_TEXTURE_1D, 0, GL_INTENSITY8, length, 0, GL_RGB, GL_FLOAT, data);
 }
 
 void Map::destroy()
 {
     glDeleteBuffers(1, &mapBuffer);
+    glDeleteTextures(1, &_glyphs);
 }
 
 void Map::draw(float const* mvp)
@@ -68,17 +84,13 @@ void Map::draw(float const* mvp)
     glEnableVertexAttribArray(pos);
     glUniform4f(rect, geometry.leftOffset, geometry.topOffset, geometry.width, geometry.height);
     glUniform1i(colorMap, 0);
-    glActiveTextureARB(GL_TEXTURE0_ARB);
-    glBindTexture(GL_TEXTURE_2D, tex_id);
-    GLuint sampler;
-    glGenSamplers(1, &sampler);
-    glBindSampler(0, sampler);
-    unsigned char pixels[2*2*4]={255,000,000,255,   000,255,000,255,
-                         000,000,255,255,   255,255,255,255};
-    glTexImage2D(GL_TEXTURE_2D, 0, 4, 2, 2, 0, GL_RGBA,GL_UNSIGNED_BYTE, (const GLvoid *)pixels);
+    glActiveTexture(GL_TEXTURE1);
+    glBindTexture(GL_TEXTURE_1D, _glyphs);
     glUniformMatrix3fv(linemvp, 1, GL_FALSE, mvp);
-
     glDrawArrays(GL_QUAD_STRIP, 0, 2 + 4 * (n - 1));
     glDisableVertexAttribArray(pos);
+
+
+    //glUniform1i(position, GL_TEXTURE1);
 }
 }
