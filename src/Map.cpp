@@ -45,20 +45,20 @@ void Map::init(GLuint mapprogram, GLuint)
     colorMap = glGetUniformLocation(program, "ColorMap");
     linemvp = glGetUniformLocation(program, "MVP");
 
-    //glEnable(GL_TEXTURE_1D);
-
-    glGenTextures(1, &_glyphs);
-    glBindTexture(GL_TEXTURE_1D, _glyphs);
+    glEnable(GL_TEXTURE_1D);
+    glGenTextures(1, &textureid);
+    glBindTexture(GL_TEXTURE_1D, textureid);
     glTexParameteri(GL_TEXTURE_1D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
     glTexParameteri(GL_TEXTURE_1D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
     glTexParameteri(GL_TEXTURE_1D, GL_TEXTURE_WRAP_S, GL_REPEAT);
-    glTexParameteri(GL_TEXTURE_1D, GL_TEXTURE_WRAP_T, GL_REPEAT);
+    glTexEnvf(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_DECAL);
 
-    unsigned int length = 4;
-    float data[] = {
-        0.0f, 0.0f, 0.0f,   1.0f, 1.0f, 1.0f,
-        1.0f, 1.0f, 1.0f,   0.0f, 0.0f, 0.0f
-    };
+    unsigned int length = 5;
+    float data[] = {0.0f,  0.0f,  0.0f,
+                    0.25f, 0.25f, 0.25f,
+                    0.5f,  0.5f,  0.5f,
+                    0.75f, 0.75f, 0.75f,
+                    1.0f,  1.0f,  1.0f};
 
     glTexImage1D(GL_TEXTURE_1D, 0, GL_INTENSITY8, length, 0, GL_RGB, GL_FLOAT, data);
 }
@@ -66,7 +66,7 @@ void Map::init(GLuint mapprogram, GLuint)
 void Map::destroy()
 {
     glDeleteBuffers(1, &mapBuffer);
-    glDeleteTextures(1, &_glyphs);
+    glDeleteTextures(1, &textureid);
 }
 
 void Map::draw(float const* mvp)
@@ -85,11 +85,12 @@ void Map::draw(float const* mvp)
     glUniform4f(rect, geometry.leftOffset, geometry.topOffset, geometry.width, geometry.height);
     glUniform1i(colorMap, 0);
     glActiveTexture(GL_TEXTURE1);
-    glBindTexture(GL_TEXTURE_1D, _glyphs);
+    glBindTexture(GL_TEXTURE_1D, textureid);
     glUniformMatrix3fv(linemvp, 1, GL_FALSE, mvp);
     glDrawArrays(GL_QUAD_STRIP, 0, 2 + 4 * (n - 1));
     glDisableVertexAttribArray(pos);
 
+    //! @todo how to say which coordinate on texture?
 
     //glUniform1i(position, GL_TEXTURE1);
 }

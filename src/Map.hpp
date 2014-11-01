@@ -22,7 +22,7 @@ private:
     float* rectCorners = nullptr;
     double xmin, ymin, xmax, ymax, zmin, zmax;
 
-    GLuint _glyphs;
+    GLuint textureid;
 
     GLuint mapBuffer;
     GLuint program;
