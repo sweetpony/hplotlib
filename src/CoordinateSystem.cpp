@@ -279,7 +279,7 @@ void CoordinateSystem::draw(float const* mvp)
 		2,
 		GL_FLOAT,
 		GL_FALSE,
-		4*sizeof(float),
+        4*sizeof(GLfloat),
 		(GLvoid const*) (2*sizeof(float))
 	);
 	glEnableVertexAttribArray(textuv);

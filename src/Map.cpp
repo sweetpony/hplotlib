@@ -35,7 +35,7 @@ void Map::init(GLuint mapprogram, GLuint)
 
     glGenBuffers(1, &mapBuffer);
     glBindBuffer(GL_ARRAY_BUFFER, mapBuffer);
-    glBufferData(GL_ARRAY_BUFFER, (4 + 8 * (n - 1)) * sizeof(float), rectCorners, GL_STATIC_DRAW);
+    glBufferData(GL_ARRAY_BUFFER, 4 * sizeof(float), rectCorners, GL_STATIC_DRAW);
     glBindBuffer(GL_ARRAY_BUFFER, 0);
 
     pos = glGetAttribLocation(program, "Position");
@@ -48,16 +48,16 @@ void Map::init(GLuint mapprogram, GLuint)
     glBindTexture(GL_TEXTURE_2D, textureid);
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
 
-    unsigned int length = 5;
+    unsigned int width = 5, height = 5;
+    //! @todo how to specify data
     float data[] = {0.0f,  0.0f,  0.0f,
                     0.25f, 0.25f, 0.25f,
                     0.5f,  0.5f,  0.5f,
                     0.75f, 0.75f, 0.75f,
                     1.0f,  1.0f,  1.0f};
 
-    glTexImage1D(GL_TEXTURE_2D, 0, GL_INTENSITY8, length, 0, GL_RGB, GL_FLOAT, data);
+    glTexImage2D(GL_TEXTURE_2D, 0, GL_INTENSITY8, width, height, 0, GL_RGB, GL_FLOAT, data);
 }
 
 void Map::destroy()
@@ -75,7 +75,7 @@ void Map::draw(float const* mvp)
         2,
         GL_FLOAT,
         GL_FALSE,
-        0,
+        4*sizeof(GLfloat),
         (GLvoid const*) 0
     );
     glEnableVertexAttribArray(pos);
@@ -85,7 +85,7 @@ void Map::draw(float const* mvp)
         2,
         GL_FLOAT,
         GL_FALSE,
-        4*sizeof(float),
+        4*sizeof(GLfloat),
         (GLvoid const*) (2*sizeof(float))
     );
     glEnableVertexAttribArray(uv);
