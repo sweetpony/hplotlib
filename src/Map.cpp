@@ -49,13 +49,12 @@ void Map::init(GLuint mapprogram, GLuint)
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
 
-    unsigned int width = 5, height = 5;
-    //! @todo how to specify data
-    float data[] = {0.0f,  0.0f,  0.0f,
-                    0.25f, 0.25f, 0.25f,
-                    0.5f,  0.5f,  0.5f,
-                    0.75f, 0.75f, 0.75f,
-                    1.0f,  1.0f,  1.0f};
+    unsigned int width = 2, height = 2;
+    //! @todo data points here!
+    float data[] = {0.0f, 0.0f, 0.0f,
+                    1.0f, 0.0f, 0.0f,
+                    0.0f, 1.0f, 0.0f,
+                    0.0f, 0.0f, 1.0f};
 
     glTexImage2D(GL_TEXTURE_2D, 0, GL_INTENSITY8, width, height, 0, GL_RGB, GL_FLOAT, data);
 }
@@ -90,7 +89,7 @@ void Map::draw(float const* mvp)
     );
     glEnableVertexAttribArray(uv);
     glUniform4f(rect, geometry.leftOffset, geometry.topOffset, geometry.width, geometry.height);
-    glUniform1i(colorMap, GL_TEXTURE0);
+    glUniform1i(colorMap, 0);
     glActiveTexture(GL_TEXTURE0);
     glBindTexture(GL_TEXTURE_2D, textureid);
     glUniformMatrix3fv(linemvp, 1, GL_FALSE, mvp);
