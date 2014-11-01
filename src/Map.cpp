@@ -16,14 +16,12 @@ Map::Map(int n, double const* x, double const* y, double const* z)
         rectCorners[(i << 1) + 1] = (y[i] - ymin) / (ymax - ymin);
     }*/
 
-    n = 2;
-    rectCorners = new float[12];
+    n = 1;
+    rectCorners = new float[8];
     rectCorners[0] = 0.78f; rectCorners[1] = 0.78f;
     rectCorners[2] = 0.78f; rectCorners[3] = 0.11f;
-    rectCorners[4] = 0.83f; rectCorners[5] = 0.78f;
-    rectCorners[6] = 0.83f; rectCorners[7] = 0.11f;
-    rectCorners[8] = 0.88f; rectCorners[9] = 0.78f;
-    rectCorners[10] = 0.88f; rectCorners[11] = 0.11f;
+    rectCorners[4] = 0.88f; rectCorners[5] = 0.78f;
+    rectCorners[6] = 0.88f; rectCorners[7] = 0.11f;
 }
 
 Map::~Map()
@@ -41,17 +39,16 @@ void Map::init(GLuint mapprogram, GLuint)
     glBindBuffer(GL_ARRAY_BUFFER, 0);
 
     pos = glGetAttribLocation(program, "Position");
+    uv = glGetAttribLocation(program, "UV");
     rect = glGetUniformLocation(program, "Rect");
     colorMap = glGetUniformLocation(program, "ColorMap");
     linemvp = glGetUniformLocation(program, "MVP");
 
-    glEnable(GL_TEXTURE_1D);
     glGenTextures(1, &textureid);
-    glBindTexture(GL_TEXTURE_1D, textureid);
-    glTexParameteri(GL_TEXTURE_1D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-    glTexParameteri(GL_TEXTURE_1D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
-    glTexParameteri(GL_TEXTURE_1D, GL_TEXTURE_WRAP_S, GL_REPEAT);
-    glTexEnvf(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_DECAL);
+    glBindTexture(GL_TEXTURE_2D, textureid);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
 
     unsigned int length = 5;
     float data[] = {0.0f,  0.0f,  0.0f,
@@ -60,7 +57,7 @@ void Map::init(GLuint mapprogram, GLuint)
                     0.75f, 0.75f, 0.75f,
                     1.0f,  1.0f,  1.0f};
 
-    glTexImage1D(GL_TEXTURE_1D, 0, GL_INTENSITY8, length, 0, GL_RGB, GL_FLOAT, data);
+    glTexImage1D(GL_TEXTURE_2D, 0, GL_INTENSITY8, length, 0, GL_RGB, GL_FLOAT, data);
 }
 
 void Map::destroy()
@@ -82,16 +79,22 @@ void Map::draw(float const* mvp)
         (GLvoid const*) 0
     );
     glEnableVertexAttribArray(pos);
+    glEnableVertexAttribArray(uv);
+    glVertexAttribPointer(
+        uv,
+        2,
+        GL_FLOAT,
+        GL_FALSE,
+        4*sizeof(float),
+        (GLvoid const*) (2*sizeof(float))
+    );
+    glEnableVertexAttribArray(uv);
     glUniform4f(rect, geometry.leftOffset, geometry.topOffset, geometry.width, geometry.height);
-    glUniform1i(colorMap, 0);
-    glActiveTexture(GL_TEXTURE1);
-    glBindTexture(GL_TEXTURE_1D, textureid);
+    glUniform1i(colorMap, GL_TEXTURE0);
+    glActiveTexture(GL_TEXTURE0);
+    glBindTexture(GL_TEXTURE_2D, textureid);
     glUniformMatrix3fv(linemvp, 1, GL_FALSE, mvp);
-    glDrawArrays(GL_QUAD_STRIP, 0, 2 + 4 * (n - 1));
+    glDrawArrays(GL_QUADS, 0, 4);
     glDisableVertexAttribArray(pos);
-
-    //! @todo how to say which coordinate on texture?
-
-    //glUniform1i(position, GL_TEXTURE1);
 }
 }

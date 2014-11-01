@@ -111,8 +111,9 @@ GLuint ProgramDatabase::compileTextureFragmentShader() const
     GLchar const* fsource =
         "#version 120\n"
         "uniform sampler2D colorMap;\n"
+        "varying vec2 vUV;\n"
         "void main(void) {\n"
-        "gl_FragColor = texture2D(colorMap, pos);\n"
+        "gl_FragColor = texture2D(colorMap, vUV);\n"
         "}\n";
 
     glShaderSource(texturefshader, 1, &fsource, NULL);

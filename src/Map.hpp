@@ -27,7 +27,7 @@ private:
     GLuint mapBuffer;
     GLuint program;
 
-    GLint pos, rect, colorMap, linemvp;
+    GLint pos, uv, rect, colorMap, linemvp;
 };
 }
 
