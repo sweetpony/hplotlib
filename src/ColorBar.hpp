@@ -1,6 +1,8 @@
 #ifndef COLORBAR_HPP
 #define COLORBAR_HPP
 
+#include "Color.hpp"
+
 namespace hpl
 {
 struct ColorBar {
@@ -22,7 +24,8 @@ struct ColorBar {
 
     static const ColorBar Rainbow(unsigned int num) {
         ColorBar cb(num);
-        cb.interpolateLinear(0.0, 0.0, 1.0, 1.0, 0.0, 0.0);
+        //! @todo how is hsv defined in color? following values are for 0-360; 0-1; 0-1
+        cb.interpolateLinearHSV(240.0, 1.0, 1.0, 0.0, 1.0, 1.0);
         return cb;
     }
 
@@ -34,6 +37,7 @@ struct ColorBar {
         g = new float[num];
         delete[] b;
         b = new float[num];
+
         for (unsigned int i = 0; i < num; i++) {
             r[i] = cb.r[i];
             g[i] = cb.g[i];
@@ -48,6 +52,10 @@ struct ColorBar {
             g[i] = g1 + i * (g2 - g1) / num;
             b[i] = b1 + i * (b2 - b1) / num;
         }
+    }
+    void interpolateLinearHSV(float h1, float s1, float v1, float h2, float s2, float v2) {
+        Color c1 = Color::fromHSV(h1, s1, v1), c2 = Color::fromHSV(h2, s2, v2);
+        interpolateLinear(c1.r, c1.g, c1.b, c2.r, c2.g, c2.b);
     }
 
     unsigned int num;

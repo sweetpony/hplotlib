@@ -34,7 +34,7 @@ private:
     GLuint textureid, mapBuffer, program;
     GLint pos, uv, rect, colorMap, linemvp;
 
-    ColorBar colorBar = ColorBar::Rainbow(100);
+    ColorBar colorBar = ColorBar::Rainbow(1000);
 };
 }
 
