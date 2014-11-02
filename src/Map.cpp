@@ -17,11 +17,19 @@ Map::Map(int n, double const* x, double const* y, double const* z)
     }*/
 
     n = 1;
-    rectCorners = new float[8];
-    rectCorners[0] = 0.78f; rectCorners[1] = 0.78f;
-    rectCorners[2] = 0.78f; rectCorners[3] = 0.11f;
-    rectCorners[4] = 0.88f; rectCorners[5] = 0.78f;
-    rectCorners[6] = 0.88f; rectCorners[7] = 0.11f;
+    rectCorners = new float[16];
+    rectCorners[0] = 0.0f; rectCorners[1] = 1.0f;
+    rectCorners[2] = 0.0f; rectCorners[3] = 1.0f;
+
+    rectCorners[4] = 0.0f; rectCorners[5] = 0.0f;
+    rectCorners[6] = 0.0f; rectCorners[7] = 0.0f;
+
+    rectCorners[8] = 1.0f; rectCorners[9] = 0.0f;
+    rectCorners[10] = 1.0f; rectCorners[11] = 0.0f;
+
+    rectCorners[12] = 01.0f; rectCorners[13] = 1.00f;
+    rectCorners[14] = 1.0f; rectCorners[15] = 1.0f;
+
 }
 
 Map::~Map()
@@ -35,7 +43,7 @@ void Map::init(GLuint mapprogram, GLuint)
 
     glGenBuffers(1, &mapBuffer);
     glBindBuffer(GL_ARRAY_BUFFER, mapBuffer);
-    glBufferData(GL_ARRAY_BUFFER, 4 * sizeof(float), rectCorners, GL_STATIC_DRAW);
+    glBufferData(GL_ARRAY_BUFFER, 16 * sizeof(float), rectCorners, GL_STATIC_DRAW);
     glBindBuffer(GL_ARRAY_BUFFER, 0);
 
     pos = glGetAttribLocation(program, "Position");
