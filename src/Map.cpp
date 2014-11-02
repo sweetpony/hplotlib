@@ -27,7 +27,7 @@ Map::Map(int n, double const* x, double const* y, double const* z)
     rectCorners[8] = 1.0f; rectCorners[9] = 0.0f;
     rectCorners[10] = 1.0f; rectCorners[11] = 0.0f;
 
-    rectCorners[12] = 1.0f; rectCorners[13] = 1.00f;
+    rectCorners[12] = 1.0f; rectCorners[13] = 1.0f;
     rectCorners[14] = 1.0f; rectCorners[15] = 1.0f;
 
 }
