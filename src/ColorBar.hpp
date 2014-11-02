@@ -24,8 +24,9 @@ struct ColorBar {
 
     static const ColorBar Rainbow(unsigned int num) {
         ColorBar cb(num);
-        //! @todo how is hsv defined in color? following values are for 0-360; 0-1; 0-1
-        cb.interpolateLinearHSV(240.0, 1.0, 1.0, 0.0, 1.0, 1.0);
+        cb.interpolateLinear(0.0, 0.0, 1.0, 1.0, 0.0, 0.0);
+        //! @todo same?
+        //cb.interpolateLinearHSV(240.0/360.0, 1.0, 1.0, 0.0, 1.0, 1.0);
         return cb;
     }
 

@@ -94,7 +94,7 @@ void CoordinateSystem::init(GLuint lineprogram, GLuint textprogram, GLuint mappr
 		plotInit.pop();
 		if (plots.has(id)) {
             Plot* p = &plots.lookup(id);
-            if (dynamic_cast<Map*>(p) == 0) {
+            if (dynamic_cast<Contour*>(p) == 0) {
                 p->init(lineprogram, textprogram);
             } else {
                 p->init(mapprogram, textprogram);

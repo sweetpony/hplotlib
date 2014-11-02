@@ -9,7 +9,7 @@
 
 #include "Plot.hpp"
 #include "Statistics.hpp"
-#include "Map.hpp"
+#include "Contour.hpp"
 
 #include "GL/glld.h"
 
