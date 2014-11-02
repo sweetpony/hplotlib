@@ -5,6 +5,7 @@
 
 #include "Plot.hpp"
 #include "Statistics.hpp"
+#include "ColorBar.hpp"
 
 namespace hpl
 {
@@ -12,6 +13,10 @@ class Map : public Plot {
 public:
     Map(int n, double const* x, double const* y, double const* z);
     virtual ~Map();
+
+    inline void setColorBar(const ColorBar& cb) {
+        colorBar = cb;
+    }
 
     virtual void init(GLuint lineprogram, GLuint);
     virtual void destroy();
@@ -22,12 +27,10 @@ private:
     float* rectCorners = nullptr;
     double xmin, ymin, xmax, ymax, zmin, zmax;
 
-    GLuint textureid;
-
-    GLuint mapBuffer;
-    GLuint program;
-
+    GLuint textureid, mapBuffer, program;
     GLint pos, uv, rect, colorMap, linemvp;
+
+    ColorBar colorBar = ColorBar::Rainbow(100);
 };
 }
 

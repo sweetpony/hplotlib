@@ -41,7 +41,7 @@ int main()
     plot1.setColor(hpl::Color(1.0f, 0.0f, 0.0f));
 
     hpl::CoordinateSystem& cs2 = canvas.addCoordinateSystem<hpl::CoordinateSystem>();    
-    hpl::Map& plot2 = cs2.addPlot<hpl::Map>(NUM_POINTS, x, y, z);
+    hpl::Map& plot2 = cs2.addPlot<hpl::Map>(NUM_POINTS, x, x, z);
     
     hpl::CoordinateSystem& cs3 = canvas.addCoordinateSystem<hpl::CoordinateSystem>(); 
     hpl::Points& plot3 = cs3.addPlot<hpl::Points>(NUM_POINTS, x, z);
