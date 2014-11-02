@@ -15,6 +15,7 @@
 #include <VerticalLayout.hpp>
 #include <GridLayout.hpp>
 #include <Contour.hpp>
+#include <ColorTable.hpp>
 
 #define NUM_POINTS 200
 
@@ -48,6 +49,10 @@ int main()
 
     hpl::CoordinateSystem& cs2 = canvas.addCoordinateSystem<hpl::CoordinateSystem>();    
     hpl::Contour& plot2 = cs2.addPlot<hpl::Contour>(NUM_POINTS, x, x, m);
+
+    //hpl::sleep(1e6);
+
+    //plot2.setColorTable(hpl::ColorTable::BlueRed(256));
     
     hpl::CoordinateSystem& cs3 = canvas.addCoordinateSystem<hpl::CoordinateSystem>(); 
     hpl::Points& plot3 = cs3.addPlot<hpl::Points>(NUM_POINTS, x, z);

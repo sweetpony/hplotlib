@@ -16,7 +16,8 @@ public:
     Contour(int n, double const* x, double const* y, double const* z);
     virtual ~Contour();
 
-    inline void setColorBar(const ColorTable& ct) {
+    //! @todo trigger repaint, sth is wrong when using this
+    inline void setColorTable(const ColorTable& ct) {
         colorTable = ct;
     }
 
