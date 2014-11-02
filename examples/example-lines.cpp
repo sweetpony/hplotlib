@@ -23,12 +23,18 @@ int main()
 	double x[NUM_POINTS];
 	double y[NUM_POINTS];
     double z[NUM_POINTS];
+    double m[NUM_POINTS * NUM_POINTS];
 	
 	for (int i = 0; i < NUM_POINTS; ++i) {
         x[i] = i / static_cast<double>(NUM_POINTS);
 		y[i] = sin(10.0 * x[i]);
         z[i] = cos(20.0 * x[i]);
 	}
+    for (int i = 0; i < NUM_POINTS; ++i) {
+        for (int j = 0; j < NUM_POINTS; ++j) {
+            m[i*NUM_POINTS+j] = sin(10.0 * x[i]) * cos(20.0 * x[j]);
+        }
+    }
 	
 	hpl::Canvas canvas("../fonts/inconsolata.font");
 	canvas.setBackgroundColor(hpl::Color(0.9f, 0.9f, 0.9f));
@@ -41,7 +47,7 @@ int main()
     plot1.setColor(hpl::Color(1.0f, 0.0f, 0.0f));
 
     hpl::CoordinateSystem& cs2 = canvas.addCoordinateSystem<hpl::CoordinateSystem>();    
-    hpl::Map& plot2 = cs2.addPlot<hpl::Map>(NUM_POINTS, x, x, z);
+    hpl::Map& plot2 = cs2.addPlot<hpl::Map>(NUM_POINTS, x, x, m);
     
     hpl::CoordinateSystem& cs3 = canvas.addCoordinateSystem<hpl::CoordinateSystem>(); 
     hpl::Points& plot3 = cs3.addPlot<hpl::Points>(NUM_POINTS, x, z);

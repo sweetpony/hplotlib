@@ -3,21 +3,17 @@
 namespace hpl
 {
 Map::Map(int n, double const* x, double const* y, double const* z)
-    : n(n)
+    : n(n), z(z)
 {
     xmin = hpl::min(n, x);
     xmax = hpl::max(n, x);
     ymin = hpl::min(n, y);
     ymax = hpl::max(n, y);
+    zmin = hpl::min(n*n, z);
+    zmax = hpl::max(n*n, z);
 
-    /*rectCorners = new float[2*n];
-    for (int i = 0; i < n; ++i) {
-        rectCorners[(i << 1)] = (x[i] - xmin) / (xmax - xmin);
-        rectCorners[(i << 1) + 1] = (y[i] - ymin) / (ymax - ymin);
-    }*/
+    //! @todo use x, y
 
-    n = 1;
-    rectCorners = new float[16];
     rectCorners[0] = 0.0f; rectCorners[1] = 1.0f;
     rectCorners[2] = 0.0f; rectCorners[3] = 1.0f;
 
@@ -29,12 +25,11 @@ Map::Map(int n, double const* x, double const* y, double const* z)
 
     rectCorners[12] = 1.0f; rectCorners[13] = 1.0f;
     rectCorners[14] = 1.0f; rectCorners[15] = 1.0f;
-
 }
 
 Map::~Map()
 {
-    delete[] rectCorners;
+    delete[] data;
 }
 
 void Map::init(GLuint mapprogram, GLuint)
@@ -57,14 +52,19 @@ void Map::init(GLuint mapprogram, GLuint)
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
 
-    unsigned int width = 2, height = 2;
-    //! @todo data points here!
-    float data[] = {0.0f, 0.0f, 0.0f,
-                    1.0f, 0.0f, 0.0f,
-                    0.0f, 1.0f, 0.0f,
-                    0.0f, 0.0f, 1.0f};
+    delete[] data;
+    data = new float[3 * n * n];
+    for(int i = 0; i < n*n; ++i) {
+        double zi = (z[i] - zmin) / (zmax - zmin);
+        int imin = static_cast<int>(zi * colorBar.num);
+        int imax = static_cast<int>(ceil(zi * colorBar.num));
+        double delta = zi * colorBar.num - imin;
+        data[i*3] = colorBar.r[imin] * delta + colorBar.r[imax] * (1.0 - delta);
+        data[i*3+1] = colorBar.g[imin] * delta + colorBar.g[imax] * (1.0 - delta);
+        data[i*3+2] = colorBar.b[imin] * delta + colorBar.b[imax] * (1.0 - delta);
+    }
 
-    glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB8, width, height, 0, GL_RGB, GL_FLOAT, data);
+    glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB8, n, n, 0, GL_RGB, GL_FLOAT, data);
 }
 
 void Map::destroy()

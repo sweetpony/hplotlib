@@ -1,6 +1,8 @@
 #ifndef MAP_HPP
 #define MAP_HPP
 
+#include <cmath>
+
 #include "GL/glld.h"
 
 #include "Plot.hpp"
@@ -24,8 +26,10 @@ public:
 
 private:
     int n;
-    float* rectCorners = nullptr;
+    float rectCorners[16];
     double xmin, ymin, xmax, ymax, zmin, zmax;
+    double const* z;
+    float* data = nullptr;
 
     GLuint textureid, mapBuffer, program;
     GLint pos, uv, rect, colorMap, linemvp;
