@@ -49,10 +49,6 @@ int main()
 
     hpl::CoordinateSystem& cs2 = canvas.addCoordinateSystem<hpl::CoordinateSystem>();    
     hpl::Contour& plot2 = cs2.addPlot<hpl::Contour>(NUM_POINTS, x, x, m);
-
-    //hpl::sleep(1e6);
-
-    //plot2.setColorTable(hpl::ColorTable::BlueRed(256));
     
     hpl::CoordinateSystem& cs3 = canvas.addCoordinateSystem<hpl::CoordinateSystem>(); 
     hpl::Points& plot3 = cs3.addPlot<hpl::Points>(NUM_POINTS, x, z);
@@ -66,12 +62,17 @@ int main()
 	canvas.addCoordinateSystemToLayout(cs3.id(), layout2.id());
 
     hpl::sleep(1e6);
+
+    plot2.setColorTable(hpl::ColorTable::BlueRed(256));
+
+    hpl::sleep(1e6);
     
     layout2.changeOrientation(hpl::VerticalLayout::BottomToTop);
 
     hpl::sleep(1e6);
     
     layout1.changeOrientation(hpl::HorizontalLayout::RightToLeft);
+    plot2.setColorTable(hpl::ColorTable::Rainbow());
 
     canvas.saveToFile("testoutput");
 	

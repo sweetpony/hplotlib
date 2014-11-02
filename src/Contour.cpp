@@ -48,26 +48,7 @@ void Contour::init(GLuint mapprogram, GLuint)
     linemvp = glGetUniformLocation(program, "MVP");
 
     glGenTextures(1, &textureid);
-    glBindTexture(GL_TEXTURE_2D, textureid);
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
-
-    delete[] data;
-    data = new float[3 * n * n];
-    for(int i = 0; i < n*n; ++i) {
-        double zi = (z[i] - zmin) / (zmax - zmin);
-        int imin = static_cast<int>(zi * colorTable.num);
-        int imax = static_cast<int>(ceil(zi * colorTable.num));
-        if (imax >= colorTable.num) {
-            imax = colorTable.num - 1;
-        }
-        double delta = zi * colorTable.num - imin;
-        data[i*3] = colorTable.r[imin] * delta + colorTable.r[imax] * (1.0 - delta);
-        data[i*3+1] = colorTable.g[imin] * delta + colorTable.g[imax] * (1.0 - delta);
-        data[i*3+2] = colorTable.b[imin] * delta + colorTable.b[imax] * (1.0 - delta);
-    }
-
-    glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB8, n, n, 0, GL_RGB, GL_FLOAT, data);
+    updateTexture();
 }
 
 void Contour::destroy()
@@ -78,6 +59,11 @@ void Contour::destroy()
 
 void Contour::draw(float const* mvp)
 {
+    if (recalc) {
+        updateTexture();
+        recalc = false;
+    }
+
     glUseProgram(program);
     glBindBuffer(GL_ARRAY_BUFFER, mapBuffer);
     glVertexAttribPointer(
@@ -106,5 +92,29 @@ void Contour::draw(float const* mvp)
     glUniformMatrix3fv(linemvp, 1, GL_FALSE, mvp);
     glDrawArrays(GL_QUADS, 0, 4);
     glDisableVertexAttribArray(pos);
+}
+
+void Contour::updateTexture()
+{
+    glBindTexture(GL_TEXTURE_2D, textureid);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
+
+    delete[] data;
+    data = new float[3 * n * n];
+    for(int i = 0; i < n*n; ++i) {
+        double zi = (z[i] - zmin) / (zmax - zmin);
+        int imin = static_cast<int>(zi * colorTable.num);
+        int imax = static_cast<int>(ceil(zi * colorTable.num));
+        if (imax >= colorTable.num) {
+            imax = colorTable.num - 1;
+        }
+        double delta = zi * colorTable.num - imin;
+        data[i*3] = colorTable.r[imin] * delta + colorTable.r[imax] * (1.0 - delta);
+        data[i*3+1] = colorTable.g[imin] * delta + colorTable.g[imax] * (1.0 - delta);
+        data[i*3+2] = colorTable.b[imin] * delta + colorTable.b[imax] * (1.0 - delta);
+    }
+
+    glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB8, n, n, 0, GL_RGB, GL_FLOAT, data);
 }
 }
