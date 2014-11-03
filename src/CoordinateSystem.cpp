@@ -89,7 +89,7 @@ void CoordinateSystem::updateLimits(double xmin, double xmax, double ymin, doubl
 	
 void CoordinateSystem::init(GLuint lineprogram, GLuint textprogram, GLuint mapprogram)
 {
-	while (!plotInit.empty()) {
+    /*while (!plotInit.empty()) {
 		Plot::ID id = plotInit.front();
 		plotInit.pop();
 		if (plots.has(id)) {
@@ -119,7 +119,7 @@ void CoordinateSystem::init(GLuint lineprogram, GLuint textprogram, GLuint mappr
     textrect = glGetUniformLocation(textprogram, "Rect");
     textglyphs = glGetUniformLocation(textprogram, "Glyphs");
 	textmvp = glGetUniformLocation(textprogram, "MVP");
-	textcolor = glGetUniformLocation(textprogram, "Color");
+    textcolor = glGetUniformLocation(textprogram, "Color");*/
 }
 
 void CoordinateSystem::update()
@@ -227,16 +227,16 @@ void CoordinateSystem::update()
 
 void CoordinateSystem::destroy()
 {
-	for (auto i = plots.begin(); i != plots.end(); i++) {
+    /*for (auto i = plots.begin(); i != plots.end(); i++) {
         i->second->destroy();
     }
 	glDeleteBuffers(1, &lineBuffer);
-	glDeleteBuffers(1, &textBuffer);
+    glDeleteBuffers(1, &textBuffer);*/
 }
 
 void CoordinateSystem::draw(float const* mvp)
 {
-	if (updateLabels) {
+    /*if (updateLabels) {
 		updateLabels = false;
 		update();
 	}
@@ -290,6 +290,6 @@ void CoordinateSystem::draw(float const* mvp)
 	
 	glDrawArrays(GL_QUADS, 0, 4*numChars);
 	glDisableVertexAttribArray(textpos);
-	glDisableVertexAttribArray(textuv);
+    glDisableVertexAttribArray(textuv);*/
 }
 }

@@ -14,29 +14,32 @@ namespace hpl
 {
 class Lines : public Plot {
 public:
+    enum Style {
+        Solid,
+        Dashed,
+        Dotted
+    };
+
     Lines(int n, double const* x, double const* y);
     virtual ~Lines();
 
-    float* getX() const;
-    float* getY() const;
-
-    inline int getN() const {
+    inline int getN() {
         return n;
     }
-
-	virtual void init(GLuint lineprogram, GLuint);
-	virtual void destroy();
-	virtual void draw(float const* mvp);
+    inline double getX(int i) {
+        return x[i];
+    }
+    inline double getY(int i) {
+        return y[i];
+    }
 	
 private:
 	int n;
-	float* interleave = nullptr;
+    double const* x, * y;
+    //float* interleave = nullptr;
     double xmin, ymin, xmax, ymax;
-
-    GLuint lineBuffer;
-    GLuint program;
-    
-    GLint pos, rect, color, linemvp;
+    double thickness = 1.0;
+    Style style = Solid;
 };
 }
 

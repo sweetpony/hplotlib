@@ -20,10 +20,6 @@ public:
     Plot() {}
     virtual ~Plot() {}
 
-	virtual void init(GLuint lineprogram, GLuint textprogram) = 0;
-	virtual void destroy() = 0;
-	virtual void draw(float const* mvp) = 0;
-
     virtual inline void setColor(const Color& c) {
         drawColor = c;
         changed.invoke();

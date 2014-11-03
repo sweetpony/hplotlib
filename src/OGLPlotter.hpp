@@ -29,6 +29,14 @@ protected:
         0.0, 0.0, 1.0
     };
 
+    //! @todo for lines
+    /*
+    GLuint lineBuffer;
+    GLuint program;
+
+    GLint pos, rect, color, linemvp;
+    */
+
 };
 }
 

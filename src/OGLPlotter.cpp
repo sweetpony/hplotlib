@@ -18,6 +18,17 @@ void OGLPlotter::init()
 
     //font.init(fontFile);
 
+    //! @todo for lines:
+    /*glGenBuffers(1, &lineBuffer);
+    glBindBuffer(GL_ARRAY_BUFFER, lineBuffer);
+    glBufferData(GL_ARRAY_BUFFER, 2 * n * sizeof(float), interleave, GL_STATIC_DRAW);
+    glBindBuffer(GL_ARRAY_BUFFER, 0);
+
+    pos = glGetAttribLocation(lineprogram, "Position");
+    rect = glGetUniformLocation(lineprogram, "Rect");
+    color = glGetUniformLocation(lineprogram, "Color");
+    linemvp = glGetUniformLocation(lineprogram, "MVP");*/
+
     programsDatabase.init();
 }
 
@@ -30,6 +41,9 @@ void OGLPlotter::destroy()
     pthread_mutex_unlock(&mutex);*/
 
     programsDatabase.destroy();
+
+    //! @todo for lines
+    //glDeleteBuffers(1, &lineBuffer);
 }
 
 void OGLPlotter::draw()
@@ -49,6 +63,26 @@ void OGLPlotter::draw()
         it->second->draw(mvp);
     }
     pthread_mutex_unlock(&mutex);*/
+
+    //! @todo for lines
+    /*
+    glUseProgram(program);
+    glBindBuffer(GL_ARRAY_BUFFER, lineBuffer);
+    glVertexAttribPointer(
+        pos,
+        2,
+        GL_FLOAT,
+        GL_FALSE,
+        0,
+        (GLvoid const*) 0
+    );
+    glEnableVertexAttribArray(pos);
+    glUniform4f(rect, geometry.leftOffset, geometry.topOffset, geometry.width, geometry.height);
+    glUniform3f(color, drawColor.r, drawColor.g, drawColor.b);
+    glUniformMatrix3fv(linemvp, 1, GL_FALSE, mvp);
+
+    glDrawArrays(GL_LINE_STRIP, 0, n);
+    glDisableVertexAttribArray(pos);*/
 }
 
 void OGLPlotter::resetEvent()
