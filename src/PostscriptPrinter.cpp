@@ -53,7 +53,32 @@ bool PostscriptPrinter::saveToFile(const std::string& fileName, const Registry<C
                 delete[] y;
                 continue;
             }
+            Contour* c = dynamic_cast<Contour*>(j->second);
+            if (c != 0) {
+                double* pixelCorners = c->getPixelCorners();
+                const float* rgbData = c->getRGBData();
+                const unsigned int n = c->getPixelsPerDimension();
+
+                for (unsigned int i = 0; i < n; i++) {
+                    for (unsigned int j = 0; j < n; j++) {
+                        unsigned int k = (i*n+j)*3;
+                        setColor(o, Color(rgbData[k], rgbData[k+1], rgbData[k+2]));
+
+                        std::vector<double> x, y;
+                        for (unsigned l = 0; l < 4; l++) {
+                            unsigned int m = (i*n+j)*8+l*2;
+                            x.push_back(pixelCorners[m]);
+                            y.push_back(pixelCorners[m+1]);
+                        }
+
+                        fillShape(o, x, y);
+                    }
+                }
+
+                delete[] pixelCorners;
+            }
         }
+
         float* lines = cosy->getLines();
         setColor(o, cosy->getColor());
 

@@ -32,6 +32,29 @@ Contour::~Contour()
     delete[] data;
 }
 
+double* Contour::getPixelCorners()
+{
+    double* corners = new double[2 * 4 * n * n];
+    double dx = (rectCorners[8] - rectCorners[0]) / n;
+    double dy = (rectCorners[1] - rectCorners[5]) / n;
+
+    for (unsigned int i = 0; i < n; i++) {
+        for (unsigned int j = 0; j < n; j++) {
+            unsigned int k = (i*n+j)*8;
+            corners[k] = j * dx * geometry.width + geometry.leftOffset;
+            corners[k+1] = i * dy * geometry.height + geometry.topOffset;
+            corners[k+2] = (j+1) * dx * geometry.width + geometry.leftOffset;
+            corners[k+3] = i * dy * geometry.height + geometry.topOffset;
+            corners[k+4] = (j+1) * dx * geometry.width + geometry.leftOffset;
+            corners[k+5] = (i+1) * dy * geometry.height + geometry.topOffset;
+            corners[k+6] = j * dx * geometry.width + geometry.leftOffset;
+            corners[k+7] = (i+1) * dy * geometry.height + geometry.topOffset;
+        }
+    }
+
+    return corners;
+}
+
 void Contour::init(GLuint mapprogram, GLuint)
 {
     program = mapprogram;

@@ -23,6 +23,14 @@ public:
         changed.invoke();
     }
 
+    double* getPixelCorners();
+    inline const float* getRGBData() {
+        return data;
+    }
+    inline unsigned int getPixelsPerDimension() {
+        return n;
+    }
+
     virtual void init(GLuint lineprogram, GLuint);
     virtual void destroy();
     virtual void draw(float const* mvp);
