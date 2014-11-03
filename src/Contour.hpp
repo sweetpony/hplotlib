@@ -16,8 +16,9 @@ public:
     Contour(int n, double const* x, double const* y, double const* z);
     virtual ~Contour();
 
-    inline void setColorTable(const ColorTable& ct) {
-        colorTable = ct;
+    template<ColorTable::Tables t>
+    inline void setColorTable(unsigned int length) {
+        colorTable = ColorTable::getPredefinedTable<t>(length);
         recalc = true;
         changed.invoke();
     }
@@ -40,7 +41,7 @@ private:
     GLuint textureid, mapBuffer, program;
     GLint pos, uv, rect, colorMap, linemvp;
 
-    ColorTable colorTable = ColorTable::Rainbow();
+    ColorTable colorTable = ColorTable::getPredefinedTable<ColorTable::RainbowBlack>(256);
 };
 }
 

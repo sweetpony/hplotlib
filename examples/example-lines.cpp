@@ -63,7 +63,7 @@ int main()
 
     hpl::sleep(1e6);
 
-    plot2.setColorTable(hpl::ColorTable::BlueRed(256));
+    plot2.setColorTable<hpl::ColorTable::Rainbow>(256);
 
     hpl::sleep(1e6);
     
@@ -72,7 +72,7 @@ int main()
     hpl::sleep(1e6);
     
     layout1.changeOrientation(hpl::HorizontalLayout::RightToLeft);
-    plot2.setColorTable(hpl::ColorTable::Rainbow());
+    plot2.setColorTable<hpl::ColorTable::RainbowBlack>(256);
 
     canvas.saveToFile("testoutput");
 	

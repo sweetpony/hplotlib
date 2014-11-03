@@ -18,14 +18,27 @@ ColorTable::~ColorTable() {
     delete[] b;
 }
 
-const ColorTable ColorTable::BlueRed(unsigned int num) {
+template<>
+const ColorTable ColorTable::getPredefinedTable<ColorTable::Tables::BlueRed>(unsigned int num) {
     ColorTable ct(num);
     ct.interpolateLinear(0.0, 0.0, 1.0, 1.0, 0.0, 0.0);
     return ct;
 }
 
-const ColorTable ColorTable::Rainbow() {
-    return readColorTableFromFile("../colortables/rainbow.ctbl");
+template<>
+const ColorTable ColorTable::getPredefinedTable<ColorTable::Tables::Rainbow>(unsigned int num) {
+    ColorTable ct(num);
+    unsigned int n4 = num / 4;
+    ct.interpolateLinear(0.0, 0.0, 1.0, 0.0, 1.0, 1.0, 0, n4);
+    ct.interpolateLinear(0.0, 1.0, 1.0, 0.0, 1.0, 0.0, n4, n4);
+    ct.interpolateLinear(0.0, 1.0, 0.0, 1.0, 1.0, 0.0, 2*n4, n4);
+    ct.interpolateLinear(1.0, 1.0, 0.0, 1.0, 0.0, 0.0, 3*n4, num - 3*n4);
+    return ct;
+}
+
+template<>
+const ColorTable ColorTable::getPredefinedTable<ColorTable::Tables::RainbowBlack>(unsigned int) {
+    return readColorTableFromFile("../colortables/RainbowBlack.ctbl");
 }
 
 ColorTable& ColorTable::operator=(const ColorTable& ct) {
@@ -45,17 +58,20 @@ ColorTable& ColorTable::operator=(const ColorTable& ct) {
     return *this;
 }
 
-void ColorTable::interpolateLinear(float r1, float g1, float b1, float r2, float g2, float b2) {
-    for (unsigned int i = 0; i < num; i++) {
-        r[i] = r1 + i * (r2 - r1) / num;
-        g[i] = g1 + i * (g2 - g1) / num;
-        b[i] = b1 + i * (b2 - b1) / num;
+void ColorTable::interpolateLinear(float r1, float g1, float b1, float r2, float g2, float b2, unsigned int offset, unsigned int length) {
+    if (length == 0) {
+        length = num;
+    }
+    for (unsigned int i = offset, j = 0; j < length; i++, j++) {
+        r[i] = r1 + j * (r2 - r1) / length;
+        g[i] = g1 + j * (g2 - g1) / length;
+        b[i] = b1 + j * (b2 - b1) / length;
     }
 }
 
-void ColorTable::interpolateLinearHSV(float h1, float s1, float v1, float h2, float s2, float v2) {
+void ColorTable::interpolateLinearHSV(float h1, float s1, float v1, float h2, float s2, float v2, unsigned int offset, unsigned int length) {
     Color c1 = Color::fromHSV(h1, s1, v1), c2 = Color::fromHSV(h2, s2, v2);
-    interpolateLinear(c1.r, c1.g, c1.b, c2.r, c2.g, c2.b);
+    interpolateLinear(c1.r, c1.g, c1.b, c2.r, c2.g, c2.b, offset, length);
 }
 
 const ColorTable ColorTable::readColorTableFromFile(const char* fileName)
