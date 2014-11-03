@@ -2,7 +2,7 @@
 
 namespace hpl
 {
-PostscriptPrinter::PostscriptPrinter(Orientation orientation) : PlotPrinter(orientation)
+/*PostscriptPrinter::PostscriptPrinter(Orientation orientation) : PlotPrinter(orientation)
 {
 }
 
@@ -168,5 +168,5 @@ void PostscriptPrinter::writeText(std::ofstream& o, double x, double y, std::str
     Pixel p = transformCoordinates(x, y);
     o << p.first << " " << p.second << " moveto" << std::endl;
     o << "(" << text << ") show" << std::endl;
-}
+}*/
 }

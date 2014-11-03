@@ -7,10 +7,8 @@
 #ifndef HPLOTLIB_CANVAS_HPP
 #define HPLOTLIB_CANVAS_HPP
 
-#include "Window.hpp"
-#include "ProgramDatabase.hpp"
-#include "Font.hpp"
-#include "Color.hpp"
+#include "PaintServer.hpp"
+#include "AbstractPlotter.hpp"
 #include "Geometry.hpp"
 #include "Layout.hpp"
 #include "PostscriptPrinter.hpp"
@@ -22,9 +20,9 @@
 
 namespace hpl
 {
-class Canvas : public Window {
+class Canvas {
 public:
-	Canvas(std::string const& fontFile) : fontFile(fontFile) {}
+    Canvas();
 	~Canvas();
 	
 	void addCoordinateSystemToLayout(CoordinateSystem::ID cs, Layout::ID to) { addSlotToLayout(Slot(cs), to); }
@@ -40,21 +38,6 @@ public:
 	
 	template<typename T>
     T& addCoordinateSystem();
-
-    inline void setBackgroundColor(const Color& c) {
-        backgroundColor = c;
-    }
-
-    bool saveToFile(const std::string& fileName);
-
-
-protected:
-	virtual void init();
-	virtual void destroy();
-	virtual void draw();
-	virtual void moveEvent(int deltax, int deltay);
-	virtual void mouseWheelEvent(int x, int y, double delta);
-	virtual void resetEvent();
 	
 private:
 	struct Slot {
@@ -83,26 +66,13 @@ private:
 	Registry<CoordinateSystem> csystems;
 	std::queue<CoordinateSystem::ID> csInit;
 
-	std::unordered_map<Layout::ID, Rack, std::hash<Layout::ID::Type>> racks;
-
-	std::string fontFile;
-	Font font;
-	pthread_mutex_t mutex = PTHREAD_MUTEX_INITIALIZER;
-    Color backgroundColor = Color(1.0f, 1.0f, 1.0f);
-	
-    ProgramDatabase programsDatabase;
-    
-    float mvp[9] = {
-		1.0, 0.0, 0.0,
-		0.0, 1.0, 0.0,
-		0.0, 0.0, 1.0
-	};
+    std::unordered_map<Layout::ID, Rack, std::hash<Layout::ID::Type>> racks;
 };
 
 template<typename T>
 T& Canvas::addCoordinateSystem()
 {
-    T* cs = new T(&font);
+    /*T* cs = new T(&font);
     cs->changed.template bind<Window, &Window::update>(this);
 
     pthread_mutex_lock(&mutex);
@@ -112,7 +82,7 @@ T& Canvas::addCoordinateSystem()
 
     update();
 
-    return *cs;
+    return *cs;*/
 }
 }
 

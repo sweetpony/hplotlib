@@ -37,7 +37,7 @@ int main()
         }
     }
 	
-	hpl::Canvas canvas("../fonts/inconsolata.font");
+    /*hpl::Canvas canvas("../fonts/inconsolata.font");
 	canvas.setBackgroundColor(hpl::Color(0.9f, 0.9f, 0.9f));
     hpl::HorizontalLayout& layout1 = canvas.addLayout<hpl::HorizontalLayout>();
     hpl::VerticalLayout& layout2 = canvas.addLayout<hpl::VerticalLayout>();
@@ -76,7 +76,7 @@ int main()
 
     canvas.saveToFile("testoutput");
 	
-    canvas.wait();
+    canvas.wait();*/
 
     return 0;
 }
