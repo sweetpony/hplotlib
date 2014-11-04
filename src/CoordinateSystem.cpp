@@ -19,11 +19,11 @@ CoordinateSystem::CoordinateSystem(Font* font)
 
 CoordinateSystem::~CoordinateSystem()
 {
-    delete[] lines;
-    delete[] labels;
+    //delete[] lines;
+    //delete[] labels;
 }
 
-float* CoordinateSystem::getLines() const
+/*float* CoordinateSystem::getLines() const
 {
     const unsigned int m = getLinesCount();
     float* l = new float[m];
@@ -53,7 +53,7 @@ CoordinateSystem::Label* CoordinateSystem::getLabels() const
     }
 
     return l;
-}
+}*/
 
 void CoordinateSystem::setColor(const Color& c)
 {
@@ -69,7 +69,7 @@ void CoordinateSystem::setGeometry(Geometry geom)
 	geom.topOffset += YOffset * geom.height;
 	geom.width *= (1.0 - XOffset);
 	geom.height *= (1.0 - YOffset);
-	for (auto it = plots.begin(); it != plots.end(); ++it) {
+    for (auto it = rawData.begin(); it != rawData.end(); ++it) {
 		it->second->setGeometry(geom);
 	}
 	changed.invoke();
@@ -77,19 +77,18 @@ void CoordinateSystem::setGeometry(Geometry geom)
 
 void CoordinateSystem::updateLimits(double xmin, double xmax, double ymin, double ymax)
 {
-	if (xmin < this->xmin || xmax > this->xmax || ymin < this->ymin || ymax > this->ymax) {
-		this->xmin = std::min(this->xmin, xmin);
-		this->xmax = std::min(this->xmax, xmax);
-		this->ymin = std::min(this->ymin, ymin);
-		this->ymax = std::min(this->ymax, ymax);
-		updateLabels = true;
-		changed.invoke();
-	}
+    this->xmin = std::min(this->xmin, xmin);
+    this->xmax = std::min(this->xmax, xmax);
+    this->ymin = std::min(this->ymin, ymin);
+    this->ymax = std::min(this->ymax, ymax);
+    updateLabels = true;
+    needLimitUpdate = false;
+    changed.invoke();
 }
 	
-void CoordinateSystem::init(GLuint lineprogram, GLuint textprogram, GLuint mapprogram)
+/*void CoordinateSystem::init(GLuint lineprogram, GLuint textprogram, GLuint mapprogram)
 {
-    /*while (!plotInit.empty()) {
+    while (!plotInit.empty()) {
 		Plot::ID id = plotInit.front();
 		plotInit.pop();
 		if (plots.has(id)) {
@@ -119,12 +118,12 @@ void CoordinateSystem::init(GLuint lineprogram, GLuint textprogram, GLuint mappr
     textrect = glGetUniformLocation(textprogram, "Rect");
     textglyphs = glGetUniformLocation(textprogram, "Glyphs");
 	textmvp = glGetUniformLocation(textprogram, "MVP");
-    textcolor = glGetUniformLocation(textprogram, "Color");*/
+    textcolor = glGetUniformLocation(textprogram, "Color");
 }
 
 void CoordinateSystem::update()
 {	
-	delete[] lines;
+    delete[] lines;
     lines = new float[8 + 2*Ticks*4]{
 		XOffset, 1.0f,
 		XOffset, YOffset,
@@ -231,12 +230,12 @@ void CoordinateSystem::destroy()
         i->second->destroy();
     }
 	glDeleteBuffers(1, &lineBuffer);
-    glDeleteBuffers(1, &textBuffer);*/
+    glDeleteBuffers(1, &textBuffer);
 }
 
 void CoordinateSystem::draw(float const* mvp)
 {
-    /*if (updateLabels) {
+    if (updateLabels) {
 		updateLabels = false;
 		update();
 	}
@@ -290,6 +289,6 @@ void CoordinateSystem::draw(float const* mvp)
 	
 	glDrawArrays(GL_QUADS, 0, 4*numChars);
 	glDisableVertexAttribArray(textpos);
-    glDisableVertexAttribArray(textuv);*/
-}
+    glDisableVertexAttribArray(textuv);
+}*/
 }

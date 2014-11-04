@@ -10,6 +10,7 @@
 #include "Plot.hpp"
 #include "Statistics.hpp"
 #include "Contour.hpp"
+#include "PaintServer.hpp"
 
 #include "GL/glld.h"
 
@@ -47,7 +48,7 @@ public:
     }
 
     inline Registry<Plot>& getPlots() {
-        return plots;
+        return rawData;
     }
     
     void setColor(const Color& c);
@@ -58,15 +59,17 @@ public:
     void setGeometry(Geometry geom);
     
     template<typename T>
-    T& addPlot(int n, double const* x, double const* y);
+    T& addPlot(int n, double const* x, double const* y, PaintServer& paintServer);
     template<typename T>
-    T& addPlot(int n, double const* x, double const* y, double const* z);
+    T& addPlot(int n, double const* x, double const* y, double const* z, PaintServer& paintServer);
 
-    virtual void init(GLuint lineprogram, GLuint textprogram, GLuint mapprogram);
+    /*virtual void init(GLuint lineprogram, GLuint textprogram, GLuint mapprogram);
 	virtual void destroy();
 	virtual void draw(float const* mvp);
 	
-	virtual void update();
+    virtual void update();*/
+
+    void updateLimits(double xmin, double xmax, double ymin, double ymax);
 
     Delegate<> changed;
     
@@ -74,23 +77,21 @@ public:
     inline void setId(ID id) { csId = id; }
 	
 private:
-    void updateLimits(double xmin, double xmax, double ymin, double ymax);
-
-    Registry<Plot> plots;
+    Registry<Plot> rawData;
 	std::queue<Plot::ID> plotInit;
     ID csId;
 	Geometry geometry;
 
 	Font* font;
 	Color drawColor;
-	bool updateLabels = false;
+    bool updateLabels = false, needLimitUpdate = true;
 
 	double xmin = std::numeric_limits<double>::min();
 	double xmax = std::numeric_limits<double>::max();
 	double ymin = std::numeric_limits<double>::min();
 	double ymax = std::numeric_limits<double>::max();
 
-    GLuint lineBuffer;
+    /*GLuint lineBuffer;
     GLuint textBuffer;
     GLuint lineprogram;
     GLuint textprogram;
@@ -101,35 +102,39 @@ private:
 	int numChars = 0;
 
     float* lines = nullptr;
-    Label* labels = nullptr;
+    Label* labels = nullptr;*/
 };
 
 template<typename T>
-T& CoordinateSystem::addPlot(int n, double const* x, double const* y)
+T& CoordinateSystem::addPlot(int n, double const* x, double const* y, PaintServer& paintServer)
 {
-	updateLimits(hpl::min(n, x), hpl::max(n, x), hpl::min(n, y), hpl::max(n, y));
+    if (needLimitUpdate) {
+        updateLimits(hpl::min(n, x), hpl::max(n, x), hpl::min(n, y), hpl::max(n, y));
+    }
 	
     T* plot = new T(n, x, y);
     plot->changed.template bind<Delegate<>, &Delegate<>::invoke>(&changed);
-    Plot::ID id = plots.add(plot);    
-    plotInit.push(id);
+    Plot::ID id1 = rawData.add(plot);
+    Plot::ID id2 = paintServer.addPlot<T>(plot, xmin, xmax, ymin, ymax);
+    //! @todo need connection id1->id2 for further referencing
+    plotInit.push(id2);
     setGeometry(geometry);
     changed.invoke();
     return *plot;
 }
 
 template<typename T>
-T& CoordinateSystem::addPlot(int n, double const* x, double const* y, double const* z)
+T& CoordinateSystem::addPlot(int n, double const* x, double const* y, double const* z, PaintServer& paintServer)
 {
-    updateLimits(hpl::min(n, x), hpl::max(n, x), hpl::min(n, y), hpl::max(n, y));
+    /*updateLimits(hpl::min(n, x), hpl::max(n, x), hpl::min(n, y), hpl::max(n, y));
 
     T* plot = new T(n, x, y, z);
     plot->changed.template bind<Delegate<>, &Delegate<>::invoke>(&changed);
-    Plot::ID id = plots.add(plot);
+    Plot::ID id = rawData.add(plot);
     plotInit.push(id);
     setGeometry(geometry);
     changed.invoke();
-    return *plot;
+    return *plot;*/
 }
 }
 

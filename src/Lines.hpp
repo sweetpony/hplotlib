@@ -23,21 +23,27 @@ public:
     Lines(int n, double const* x, double const* y);
     virtual ~Lines();
 
-    inline int getN() {
-        return n;
+    void resetData(int n, double const* x, double const* y, bool del);
+
+    inline void setThickness(double thick) {
+        thickness = thick;
+        changed.invoke();
     }
-    inline double getX(int i) {
-        return x[i];
+    inline double getThickness() {
+        return thickness;
     }
-    inline double getY(int i) {
-        return y[i];
+
+    inline void setStyle(Style s) {
+        style = s;
+        changed.invoke();
     }
-	
+    inline Style getStyle() {
+        return style;
+    }
+
 private:
-	int n;
-    double const* x, * y;
-    //float* interleave = nullptr;
-    double xmin, ymin, xmax, ymax;
+    int n;
+    double const* x, * y; //! @todo for some need to delete these afterwards, handle this somehow
     double thickness = 1.0;
     Style style = Solid;
 };
