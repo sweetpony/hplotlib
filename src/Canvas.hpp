@@ -38,6 +38,7 @@ public:
 	template<typename T>
     T& addCoordinateSystem();
 
+    //! @todo Canvas should not be the one to instantiate the plotter
     template<typename T>
     T& plotCanvas();
 	

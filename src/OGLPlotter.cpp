@@ -24,6 +24,8 @@ void OGLPlotter::init()
 
     //font.init(fontFile);
 
+    programsDatabase.init();
+
     for (auto it = lineCollection.begin(); it != lineCollection.end(); ++it) {
         const Lines* l = static_cast<const Lines*>(&plots.lookup(it->first));
 
@@ -43,8 +45,6 @@ void OGLPlotter::init()
         it->second.color = glGetUniformLocation(programsDatabase.getLineProgram(), "Color");
         it->second.linemvp = glGetUniformLocation(programsDatabase.getLineProgram(), "MVP");
     }
-
-    programsDatabase.init();
 }
 
 void OGLPlotter::destroy()
@@ -55,11 +55,11 @@ void OGLPlotter::destroy()
     }
     pthread_mutex_unlock(&mutex);*/
 
-    programsDatabase.destroy();
-
     for (auto it = lineCollection.begin(); it != lineCollection.end(); ++it) {
         glDeleteBuffers(1, &it->second.lineBuffer);
     }
+
+    programsDatabase.destroy();
 }
 
 void OGLPlotter::draw()

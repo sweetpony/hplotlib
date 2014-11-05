@@ -16,6 +16,8 @@
 
 #include <queue>
 
+#include <iostream>
+
 namespace hpl
 {
 class CoordinateSystem {
@@ -111,6 +113,7 @@ T& CoordinateSystem::addPlot(int n, double const* x, double const* y)
 	
     T* plot = new T(n, x, y);
     plot->changed.template bind<Delegate<>, &Delegate<>::invoke>(&changed);
+    plot->setLimits(xmin, ymin, xmax, ymax);
     Drawable::ID id = data.add(plot);
     addNewPlot(id);
     return *plot;
