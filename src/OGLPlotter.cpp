@@ -3,6 +3,12 @@
 namespace hpl {
 OGLPlotter::OGLPlotter(const Registry<Drawable>& plots) : AbstractPlotter(plots), Window()
 {
+    for (auto it = plots.cbegin(); it != plots.cend(); ++it) {
+        Lines* l = dynamic_cast<Lines*>(it->second);
+        if (l != 0) {
+            lineCollection[it->first] = LineCollection();
+        }
+    }
 }
 
 OGLPlotter::~OGLPlotter()
@@ -18,7 +24,7 @@ void OGLPlotter::init()
 
     //font.init(fontFile);
 
-    for (auto it = lineCollection.begin(); it != lineCollection.end(); it++) {
+    for (auto it = lineCollection.begin(); it != lineCollection.end(); ++it) {
         const Lines* l = static_cast<const Lines*>(&plots.lookup(it->first));
 
         float* interleave = new float[2 * l->n];
@@ -51,7 +57,7 @@ void OGLPlotter::destroy()
 
     programsDatabase.destroy();
 
-    for (auto it = lineCollection.begin(); it != lineCollection.end(); it++) {
+    for (auto it = lineCollection.begin(); it != lineCollection.end(); ++it) {
         glDeleteBuffers(1, &it->second.lineBuffer);
     }
 }
@@ -74,7 +80,7 @@ void OGLPlotter::draw()
     }
     pthread_mutex_unlock(&mutex);*/
 
-    for (auto it = lineCollection.begin(); it != lineCollection.end(); it++) {
+    for (auto it = lineCollection.begin(); it != lineCollection.end(); ++it) {
         const Lines* l = static_cast<const Lines*>(&plots.lookup(it->first));
         Geometry g = l->getGeometry();
         Color c = l->getColor();

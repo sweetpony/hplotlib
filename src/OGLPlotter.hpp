@@ -5,6 +5,8 @@
 #include "Window.hpp"
 #include "ProgramDatabase.hpp"
 
+#include <iostream>
+
 namespace hpl {
 class OGLPlotter : public AbstractPlotter, public Window
 {
@@ -33,7 +35,6 @@ protected:
         0.0, 1.0, 0.0,
         0.0, 0.0, 1.0
     };
-
 
     std::map<Drawable::ID, LineCollection> lineCollection;
 
