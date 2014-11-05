@@ -1,12 +1,12 @@
 #ifndef POINTS_H
 #define POINTS_H
 
-#include "Plot.hpp"
+#include "Drawable.hpp"
 #include "Statistics.hpp"
 
 namespace hpl
 {
-class Points : public Plot
+class Points : public Drawable
 {
 
 public:

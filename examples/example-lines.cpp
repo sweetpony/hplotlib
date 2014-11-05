@@ -8,7 +8,7 @@
 #include <cmath>
 
 #include <Canvas.hpp>
-#include <Plot.hpp>
+#include <Drawable.hpp>
 #include <Color.hpp>
 #include <Geometry.hpp>
 #include <HorizontalLayout.hpp>
@@ -16,6 +16,7 @@
 #include <GridLayout.hpp>
 #include <Contour.hpp>
 #include <ColorTable.hpp>
+#include <OGLPlotter.hpp>
 
 #define NUM_POINTS 200
 
@@ -37,31 +38,33 @@ int main()
         }
     }
 	
-    /*hpl::Canvas canvas("../fonts/inconsolata.font");
-	canvas.setBackgroundColor(hpl::Color(0.9f, 0.9f, 0.9f));
+    hpl::Canvas canvas/*("../fonts/inconsolata.font")*/;
+    //canvas.setBackgroundColor(hpl::Color(0.9f, 0.9f, 0.9f));
     hpl::HorizontalLayout& layout1 = canvas.addLayout<hpl::HorizontalLayout>();
-    hpl::VerticalLayout& layout2 = canvas.addLayout<hpl::VerticalLayout>();
+    //hpl::VerticalLayout& layout2 = canvas.addLayout<hpl::VerticalLayout>();
 
     hpl::CoordinateSystem& cs1 = canvas.addCoordinateSystem<hpl::CoordinateSystem>();
     cs1.setColor(hpl::Color(0.6f, 0.6f, 0.6f));
     hpl::Lines& plot1 = cs1.addPlot<hpl::Lines>(NUM_POINTS, x, y);
     plot1.setColor(hpl::Color(1.0f, 0.0f, 0.0f));
 
-    hpl::CoordinateSystem& cs2 = canvas.addCoordinateSystem<hpl::CoordinateSystem>();    
+    /*hpl::CoordinateSystem& cs2 = canvas.addCoordinateSystem<hpl::CoordinateSystem>();
     hpl::Contour& plot2 = cs2.addPlot<hpl::Contour>(NUM_POINTS, x, x, m);
     
     hpl::CoordinateSystem& cs3 = canvas.addCoordinateSystem<hpl::CoordinateSystem>(); 
     hpl::Points& plot3 = cs3.addPlot<hpl::Points>(NUM_POINTS, x, z);
     plot3.setColor(hpl::Color(0.0f, 0.0f, 1.0f));
     hpl::Lines& plot4 = cs3.addPlot<hpl::Lines>(NUM_POINTS, x, y);
-    plot4.setColor(hpl::Color(0.0f, 0.0f, 0.0f));
+    plot4.setColor(hpl::Color(0.0f, 0.0f, 0.0f));*/
 	
 	canvas.addCoordinateSystemToLayout(cs1.id(), layout1.id());
-	canvas.addLayoutToLayout(layout2.id(), layout1.id());
-	canvas.addCoordinateSystemToLayout(cs2.id(), layout2.id());
-	canvas.addCoordinateSystemToLayout(cs3.id(), layout2.id());
+    /*canvas.addLayoutToLayout(layout2.id(), layout1.id());
+    canvas.addCoordinateSystemToLayout(cs2.id(), layout2.id());
+    canvas.addCoordinateSystemToLayout(cs3.id(), layout2.id());*/
 
-    hpl::sleep(1e6);
+    hpl::OGLPlotter& plotter = canvas.plotCanvas<hpl::OGLPlotter>();
+
+    /*hpl::sleep(1e6);
 
     plot2.setColorTable<hpl::ColorTable::Rainbow>(256);
 
@@ -77,6 +80,7 @@ int main()
     canvas.saveToFile("testoutput");
 	
     canvas.wait();*/
+    plotter.wait();
 
     return 0;
 }

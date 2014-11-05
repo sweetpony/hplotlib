@@ -7,15 +7,15 @@
 #ifndef HPLOTLIB_CANVAS_HPP
 #define HPLOTLIB_CANVAS_HPP
 
+#include <vector>
+#include <string>
+#include <queue>
+
 #include "AbstractPlotter.hpp"
 #include "Geometry.hpp"
 #include "Layout.hpp"
 #include "PostscriptPrinter.hpp"
 #include "Registry.hpp"
-
-#include <vector>
-#include <string>
-#include <queue>
 
 namespace hpl
 {
@@ -37,6 +37,9 @@ public:
 	
 	template<typename T>
     T& addCoordinateSystem();
+
+    template<typename T>
+    T& plotCanvas();
 	
 private:
 	struct Slot {
@@ -65,7 +68,7 @@ private:
 	Registry<CoordinateSystem> csystems;
 	std::queue<CoordinateSystem::ID> csInit;
 
-    Registry<Plot> rawData;
+    Registry<Drawable> rawData;
 
     std::unordered_map<Layout::ID, Rack, std::hash<Layout::ID::Type>> racks;
 };
@@ -84,6 +87,12 @@ T& Canvas::addCoordinateSystem()
     //update();
 
     return *cs;
+}
+
+template<typename T>
+T& Canvas::plotCanvas() {
+    T* plotter = new T(rawData);
+    return *plotter;
 }
 }
 

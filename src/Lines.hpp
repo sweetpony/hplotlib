@@ -7,12 +7,12 @@
 #ifndef HPLOTLIB_LINES_HPP
 #define HPLOTLIB_LINES_HPP
 
-#include "Plot.hpp"
+#include "Drawable.hpp"
 #include "Statistics.hpp"
 
 namespace hpl
 {
-class Lines : public Plot {
+class Lines : public Drawable {
 public:
     enum Style {
         Solid,
@@ -20,7 +20,7 @@ public:
         Dotted
     };
 
-    Lines(int n, double const* x, double const* y) : n(n), x(x), y(y) {}
+    Lines(int n, double const* x, double const* y, bool seperate = false) : n(n), x(x), y(y), separate(seperate) {}
     virtual ~Lines() {}
 
     inline void setThickness(double thick) {
@@ -41,6 +41,7 @@ public:
 
     const int n;
     const double* x, * y;
+    const bool separate;
 private:
     double thickness = 1.0;
     Style style = Solid;

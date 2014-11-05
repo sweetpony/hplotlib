@@ -12,13 +12,13 @@
 namespace hpl
 {
 class Layout;
-class Plot
+class Drawable
 {
 public:
-	typedef IDBase<Plot> ID;
+	typedef IDBase<Drawable> ID;
 
-    Plot() {}
-    virtual ~Plot() {}
+    Drawable() {}
+    virtual ~Drawable() {}
 
     inline void setLimits(double xmin, double ymin, double xmax, double ymax) {
         this->xmin = xmin;
@@ -26,6 +26,19 @@ public:
         this->xmax = xmax;
         this->ymax = ymax;
         changed.invoke();
+    }
+
+    inline double getXmin() const {
+        return xmin;
+    }
+    inline double getYmin() const {
+        return ymin;
+    }
+    inline double getXmax() const {
+        return xmax;
+    }
+    inline double getYmax() const {
+        return ymax;
     }
 
     virtual inline void setColor(const Color& c) {
@@ -39,6 +52,9 @@ public:
 	inline void setGeometry(Geometry const& geom) {
 		geometry = geom;
 		changed.invoke();
+    }
+    inline Geometry getGeometry() const {
+        return geometry;
     }
     
     Delegate<> changed;

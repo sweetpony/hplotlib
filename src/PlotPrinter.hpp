@@ -4,7 +4,7 @@
 #include <string>
 #include <map>
 
-#include "Plot.hpp"
+#include "Drawable.hpp"
 #include "Lines.hpp"
 #include "Points.hpp"
 #include "CoordinateSystem.hpp"

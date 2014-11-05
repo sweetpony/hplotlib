@@ -7,7 +7,7 @@
 #ifndef HPLOTLIB_COORDINATESYSTEM_HPP
 #define HPLOTLIB_COORDINATESYSTEM_HPP
 
-#include "Plot.hpp"
+#include "Drawable.hpp"
 #include "Statistics.hpp"
 #include "Contour.hpp"
 #include "Registry.hpp"
@@ -33,7 +33,7 @@ public:
 	static constexpr int Ticks = 8;
 	static constexpr float TickLength = 0.02f;
 
-    CoordinateSystem(Registry<Plot>& dataContainer);
+    CoordinateSystem(Registry<Drawable>& dataContainer);
     ~CoordinateSystem();
 
     float* getLines() const;
@@ -72,11 +72,11 @@ public:
     inline void setId(ID id) { csId = id; }
 	
 private:
-    void addNewPlot(Plot::ID id);
+    void addNewPlot(Drawable::ID id);
 
-    Registry<Plot>& data;
-    std::queue<Plot::ID> plotInit;
-    std::vector<Plot::ID> myPlots;
+    Registry<Drawable>& data;
+    std::queue<Drawable::ID> plotInit;
+    std::vector<Drawable::ID> myPlots;
     ID csId;
 	Geometry geometry;
 
@@ -111,7 +111,7 @@ T& CoordinateSystem::addPlot(int n, double const* x, double const* y)
 	
     T* plot = new T(n, x, y);
     plot->changed.template bind<Delegate<>, &Delegate<>::invoke>(&changed);
-    Plot::ID id = data.add(plot);
+    Drawable::ID id = data.add(plot);
     addNewPlot(id);
     return *plot;
 }
@@ -126,7 +126,7 @@ T& CoordinateSystem::addPlot(int n, double const* x, double const* y, double con
     T* plot = new T(n, x, y, z);
     plot->changed.template bind<Delegate<>, &Delegate<>::invoke>(&changed);
     plot->setLimits(xmin, ymin, xmax, ymax);
-    Plot::ID id = data.add(plot);
+    Drawable::ID id = data.add(plot);
     addNewPlot(id);
     return *plot;
 }

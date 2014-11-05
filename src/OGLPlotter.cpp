@@ -1,7 +1,7 @@
 #include "OGLPlotter.hpp"
 
 namespace hpl {
-OGLPlotter::OGLPlotter(const Registry<Plot>& plots) : AbstractPlotter(plots), Window()
+OGLPlotter::OGLPlotter(const Registry<Drawable>& plots) : AbstractPlotter(plots), Window()
 {
 }
 
@@ -22,7 +22,10 @@ void OGLPlotter::init()
         const Lines* l = static_cast<const Lines*>(&plots.lookup(it->first));
 
         float* interleave = new float[2 * l->n];
-        //! @todo fill interleave
+        for (int i = 0; i < l->n; i++) {
+            interleave[(i << 1)] = (l->x[i] - l->getXmin()) / (l->getXmax() - l->getXmin());
+            interleave[(i << 1) + 1] = (l->y[i] - l->getYmin()) / (l->getYmax() - l->getYmin());
+        }
 
         glGenBuffers(1, &it->second.lineBuffer);
         glBindBuffer(GL_ARRAY_BUFFER, it->second.lineBuffer);
@@ -48,8 +51,9 @@ void OGLPlotter::destroy()
 
     programsDatabase.destroy();
 
-    //! @todo for lines
-    //glDeleteBuffers(1, &lineBuffer);
+    for (auto it = lineCollection.begin(); it != lineCollection.end(); it++) {
+        glDeleteBuffers(1, &it->second.lineBuffer);
+    }
 }
 
 void OGLPlotter::draw()
@@ -70,25 +74,29 @@ void OGLPlotter::draw()
     }
     pthread_mutex_unlock(&mutex);*/
 
-    //! @todo for lines
-    /*
-    glUseProgram(program);
-    glBindBuffer(GL_ARRAY_BUFFER, lineBuffer);
-    glVertexAttribPointer(
-        pos,
-        2,
-        GL_FLOAT,
-        GL_FALSE,
-        0,
-        (GLvoid const*) 0
-    );
-    glEnableVertexAttribArray(pos);
-    glUniform4f(rect, geometry.leftOffset, geometry.topOffset, geometry.width, geometry.height);
-    glUniform3f(color, drawColor.r, drawColor.g, drawColor.b);
-    glUniformMatrix3fv(linemvp, 1, GL_FALSE, mvp);
+    for (auto it = lineCollection.begin(); it != lineCollection.end(); it++) {
+        const Lines* l = static_cast<const Lines*>(&plots.lookup(it->first));
+        Geometry g = l->getGeometry();
+        Color c = l->getColor();
 
-    glDrawArrays(GL_LINE_STRIP, 0, n);
-    glDisableVertexAttribArray(pos);*/
+        glUseProgram(programsDatabase.getLineProgram());
+        glBindBuffer(GL_ARRAY_BUFFER, it->second.lineBuffer);
+        glVertexAttribPointer(
+            it->second.pos,
+            2,
+            GL_FLOAT,
+            GL_FALSE,
+            0,
+            (GLvoid const*) 0
+        );
+        glEnableVertexAttribArray(it->second.pos);
+        glUniform4f(it->second.rect, g.leftOffset, g.topOffset, g.width, g.height);
+        glUniform3f(it->second.color, c.r, c.g, c.b);
+        glUniformMatrix3fv(it->second.linemvp, 1, GL_FALSE, mvp);
+
+        glDrawArrays((l->separate ? GL_LINES : GL_LINE_STRIP), 0, l->n);
+        glDisableVertexAttribArray(it->second.pos);
+    }
 }
 
 void OGLPlotter::resetEvent()

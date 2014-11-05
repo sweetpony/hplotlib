@@ -3,7 +3,7 @@
 
 #include <map>
 #include "Registry.hpp"
-#include "Plot.hpp"
+#include "Drawable.hpp"
 #include "Lines.hpp"
 #include "Color.hpp"
 
@@ -12,18 +12,18 @@ class AbstractPlotter
 {
 
 public:
-    AbstractPlotter(const Registry<Plot>& plots);
+    AbstractPlotter(const Registry<Drawable>& plots);
     virtual ~AbstractPlotter();
 
 protected:
-    virtual void fillBackground() = 0;
-    virtual void drawPoints(/*Points points*/) = 0;
-    virtual void drawLines(/*Lines lines*/) = 0;
-    virtual void drawContour(/*Contour*/) = 0;
-    virtual void drawText(/*Text text*/) = 0;
+    //virtual void fillBackground() = 0;
+    //virtual void drawPoints(/*Points points*/) = 0;
+    //virtual void drawLines(/*Lines lines*/) = 0;
+    //virtual void drawContour(/*Contour*/) = 0;
+    //virtual void drawText(/*Text text*/) = 0;
 
-    const Registry<Plot>& plots;
-    std::map<Plot::ID, unsigned int> revision;
+    const Registry<Drawable>& plots;
+    std::map<Drawable::ID, unsigned int> revision;
     Color backgroundColor = Color(1.0f, 1.0f, 1.0f);
 
 };

@@ -11,7 +11,7 @@
 
 namespace hpl
 {
-CoordinateSystem::CoordinateSystem(Registry<Plot>& dataContainer)
+CoordinateSystem::CoordinateSystem(Registry<Drawable>& dataContainer)
     : data(dataContainer), drawColor(0.0f, 0.0f, 0.0f)
 {
 }
@@ -296,7 +296,7 @@ void CoordinateSystem::draw(float const* mvp)
     glDisableVertexAttribArray(textuv);
 }*/
 
-void CoordinateSystem::addNewPlot(Plot::ID id)
+void CoordinateSystem::addNewPlot(Drawable::ID id)
 {
     plotInit.push(id);
     myPlots.push_back(id);

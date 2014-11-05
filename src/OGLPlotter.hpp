@@ -10,7 +10,7 @@ class OGLPlotter : public AbstractPlotter, public Window
 {
 
 public:
-    OGLPlotter(const Registry<Plot>& plots);
+    OGLPlotter(const Registry<Drawable>& plots);
     virtual ~OGLPlotter();
 
 protected:
@@ -35,7 +35,7 @@ protected:
     };
 
 
-    std::map<Plot::ID, LineCollection> lineCollection;
+    std::map<Drawable::ID, LineCollection> lineCollection;
 
 };
 }

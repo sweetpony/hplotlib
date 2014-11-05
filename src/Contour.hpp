@@ -5,13 +5,13 @@
 
 #include "GL/glld.h"
 
-#include "Plot.hpp"
+#include "Drawable.hpp"
 #include "Statistics.hpp"
 #include "ColorTable.hpp"
 
 namespace hpl
 {
-class Contour : public Plot {
+class Contour : public Drawable {
 public:
     Contour(int n, double const* x, double const* y, double const* z);
     virtual ~Contour();
