@@ -10,10 +10,15 @@ class OGLPlotter : public AbstractPlotter, public Window
 {
 
 public:
-    OGLPlotter(const PaintServer& paintServer);
+    OGLPlotter(const Registry<Plot>& plots);
     virtual ~OGLPlotter();
 
 protected:
+    struct LineCollection {
+        GLuint lineBuffer;
+        GLint pos, rect, color, linemvp;
+    };
+
     virtual void init();
     virtual void destroy();
     virtual void draw();
@@ -29,13 +34,8 @@ protected:
         0.0, 0.0, 1.0
     };
 
-    //! @todo for lines
-    /*
-    GLuint lineBuffer;
-    GLuint program;
 
-    GLint pos, rect, color, linemvp;
-    */
+    std::map<Plot::ID, LineCollection> lineCollection;
 
 };
 }

@@ -20,6 +20,14 @@ public:
     Plot() {}
     virtual ~Plot() {}
 
+    inline void setLimits(double xmin, double ymin, double xmax, double ymax) {
+        this->xmin = xmin;
+        this->ymin = ymin;
+        this->xmax = xmax;
+        this->ymax = ymax;
+        changed.invoke();
+    }
+
     virtual inline void setColor(const Color& c) {
         drawColor = c;
         changed.invoke();
@@ -39,6 +47,7 @@ public:
     inline void setId(ID id) { plotId = id; }
 
 protected:
+    double xmin, ymin, xmax, ymax;
     Color drawColor = Color(0.0f, 0.0f, 0.0f);
     Geometry geometry;
     ID plotId;

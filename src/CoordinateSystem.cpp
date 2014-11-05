@@ -8,12 +8,11 @@
 #include <cstdio>
 #include <algorithm>
 #include "Statistics.hpp"
-#include "Font.hpp"
 
 namespace hpl
 {
-CoordinateSystem::CoordinateSystem(Font* font)
-    : font(font), drawColor(0.0f, 0.0f, 0.0f)
+CoordinateSystem::CoordinateSystem(Registry<Plot>& dataContainer)
+    : data(dataContainer), drawColor(0.0f, 0.0f, 0.0f)
 {
 }
 
@@ -69,8 +68,8 @@ void CoordinateSystem::setGeometry(Geometry geom)
 	geom.topOffset += YOffset * geom.height;
 	geom.width *= (1.0 - XOffset);
 	geom.height *= (1.0 - YOffset);
-    for (auto it = rawData.begin(); it != rawData.end(); ++it) {
-		it->second->setGeometry(geom);
+    for (auto it = myPlots.begin(); it != myPlots.end(); ++it) {
+        data.lookup(*it).setGeometry(geom);
 	}
 	changed.invoke();
 }
@@ -81,6 +80,11 @@ void CoordinateSystem::updateLimits(double xmin, double xmax, double ymin, doubl
     this->xmax = std::min(this->xmax, xmax);
     this->ymin = std::min(this->ymin, ymin);
     this->ymax = std::min(this->ymax, ymax);
+
+    for (auto it = myPlots.begin(); it != myPlots.end(); ++it) {
+        data.lookup(*it).setLimits(xmin, ymin, xmax, ymax);
+    }
+
     updateLabels = true;
     needLimitUpdate = false;
     changed.invoke();
@@ -291,4 +295,12 @@ void CoordinateSystem::draw(float const* mvp)
 	glDisableVertexAttribArray(textpos);
     glDisableVertexAttribArray(textuv);
 }*/
+
+void CoordinateSystem::addNewPlot(Plot::ID id)
+{
+    plotInit.push(id);
+    myPlots.push_back(id);
+    setGeometry(geometry);
+    changed.invoke();
+}
 }

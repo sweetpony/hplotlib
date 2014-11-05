@@ -1,7 +1,10 @@
 #ifndef ABSTRACTPLOTTER_HPP
 #define ABSTRACTPLOTTER_HPP
 
-#include "PaintServer.hpp"
+#include <map>
+#include "Registry.hpp"
+#include "Plot.hpp"
+#include "Lines.hpp"
 #include "Color.hpp"
 
 namespace hpl {
@@ -9,7 +12,7 @@ class AbstractPlotter
 {
 
 public:
-    AbstractPlotter(const PaintServer& paintServer);
+    AbstractPlotter(const Registry<Plot>& plots);
     virtual ~AbstractPlotter();
 
 protected:
@@ -19,8 +22,8 @@ protected:
     virtual void drawContour(/*Contour*/) = 0;
     virtual void drawText(/*Text text*/) = 0;
 
-    const PaintServer& paintServer;
-
+    const Registry<Plot>& plots;
+    std::map<Plot::ID, unsigned int> revision;
     Color backgroundColor = Color(1.0f, 1.0f, 1.0f);
 
 };

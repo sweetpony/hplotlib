@@ -7,7 +7,6 @@
 #ifndef HPLOTLIB_CANVAS_HPP
 #define HPLOTLIB_CANVAS_HPP
 
-#include "PaintServer.hpp"
 #include "AbstractPlotter.hpp"
 #include "Geometry.hpp"
 #include "Layout.hpp"
@@ -66,23 +65,25 @@ private:
 	Registry<CoordinateSystem> csystems;
 	std::queue<CoordinateSystem::ID> csInit;
 
+    Registry<Plot> rawData;
+
     std::unordered_map<Layout::ID, Rack, std::hash<Layout::ID::Type>> racks;
 };
 
 template<typename T>
 T& Canvas::addCoordinateSystem()
 {
-    /*T* cs = new T(&font);
-    cs->changed.template bind<Window, &Window::update>(this);
+    T* cs = new T(rawData);
+    //cs->changed.template bind<Window, &Window::update>(this);
 
-    pthread_mutex_lock(&mutex);
+    //pthread_mutex_lock(&mutex);
     CoordinateSystem::ID id = csystems.add(cs);
     csInit.push(id);
-	pthread_mutex_unlock(&mutex);
+    //pthread_mutex_unlock(&mutex);
 
-    update();
+    //update();
 
-    return *cs;*/
+    return *cs;
 }
 }
 

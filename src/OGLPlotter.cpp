@@ -1,7 +1,7 @@
 #include "OGLPlotter.hpp"
 
 namespace hpl {
-OGLPlotter::OGLPlotter(const PaintServer& paintServer) : AbstractPlotter(paintServer), Window()
+OGLPlotter::OGLPlotter(const Registry<Plot>& plots) : AbstractPlotter(plots), Window()
 {
 }
 
@@ -18,16 +18,22 @@ void OGLPlotter::init()
 
     //font.init(fontFile);
 
-    //! @todo for lines:
-    /*glGenBuffers(1, &lineBuffer);
-    glBindBuffer(GL_ARRAY_BUFFER, lineBuffer);
-    glBufferData(GL_ARRAY_BUFFER, 2 * n * sizeof(float), interleave, GL_STATIC_DRAW);
-    glBindBuffer(GL_ARRAY_BUFFER, 0);
+    for (auto it = lineCollection.begin(); it != lineCollection.end(); it++) {
+        const Lines* l = static_cast<const Lines*>(&plots.lookup(it->first));
 
-    pos = glGetAttribLocation(lineprogram, "Position");
-    rect = glGetUniformLocation(lineprogram, "Rect");
-    color = glGetUniformLocation(lineprogram, "Color");
-    linemvp = glGetUniformLocation(lineprogram, "MVP");*/
+        float* interleave = new float[2 * l->n];
+        //! @todo fill interleave
+
+        glGenBuffers(1, &it->second.lineBuffer);
+        glBindBuffer(GL_ARRAY_BUFFER, it->second.lineBuffer);
+        glBufferData(GL_ARRAY_BUFFER, 2 * l->n * sizeof(float), interleave, GL_STATIC_DRAW);
+        glBindBuffer(GL_ARRAY_BUFFER, 0);
+
+        it->second.pos = glGetAttribLocation(programsDatabase.getLineProgram(), "Position");
+        it->second.rect = glGetUniformLocation(programsDatabase.getLineProgram(), "Rect");
+        it->second.color = glGetUniformLocation(programsDatabase.getLineProgram(), "Color");
+        it->second.linemvp = glGetUniformLocation(programsDatabase.getLineProgram(), "MVP");
+    }
 
     programsDatabase.init();
 }

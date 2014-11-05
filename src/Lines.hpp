@@ -20,10 +20,8 @@ public:
         Dotted
     };
 
-    Lines(int n, double const* x, double const* y);
-    virtual ~Lines();
-
-    void resetData(int n, double const* x, double const* y, bool del);
+    Lines(int n, double const* x, double const* y) : n(n), x(x), y(y) {}
+    virtual ~Lines() {}
 
     inline void setThickness(double thick) {
         thickness = thick;
@@ -41,9 +39,9 @@ public:
         return style;
     }
 
+    const int n;
+    const double* x, * y;
 private:
-    int n;
-    double const* x, * y; //! @todo for some need to delete these afterwards, handle this somehow
     double thickness = 1.0;
     Style style = Solid;
 };

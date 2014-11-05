@@ -10,7 +10,7 @@
 #include "Plot.hpp"
 #include "Statistics.hpp"
 #include "Contour.hpp"
-#include "PaintServer.hpp"
+#include "Registry.hpp"
 
 #include "GL/glld.h"
 
@@ -18,7 +18,6 @@
 
 namespace hpl
 {
-class Font;
 class CoordinateSystem {
 public:
 	typedef IDBase<CoordinateSystem> ID;
@@ -34,7 +33,7 @@ public:
 	static constexpr int Ticks = 8;
 	static constexpr float TickLength = 0.02f;
 
-    CoordinateSystem(Font* font);
+    CoordinateSystem(Registry<Plot>& dataContainer);
     ~CoordinateSystem();
 
     float* getLines() const;
@@ -46,10 +45,6 @@ public:
     inline unsigned int getLabelsCount() const {
         return 2*Ticks;
     }
-
-    inline Registry<Plot>& getPlots() {
-        return rawData;
-    }
     
     void setColor(const Color& c);
     inline Color getColor() const {
@@ -59,9 +54,9 @@ public:
     void setGeometry(Geometry geom);
     
     template<typename T>
-    T& addPlot(int n, double const* x, double const* y, PaintServer& paintServer);
+    T& addPlot(int n, double const* x, double const* y);
     template<typename T>
-    T& addPlot(int n, double const* x, double const* y, double const* z, PaintServer& paintServer);
+    T& addPlot(int n, double const* x, double const* y, double const* z);
 
     /*virtual void init(GLuint lineprogram, GLuint textprogram, GLuint mapprogram);
 	virtual void destroy();
@@ -77,12 +72,14 @@ public:
     inline void setId(ID id) { csId = id; }
 	
 private:
-    Registry<Plot> rawData;
-	std::queue<Plot::ID> plotInit;
+    void addNewPlot(Plot::ID id);
+
+    Registry<Plot>& data;
+    std::queue<Plot::ID> plotInit;
+    std::vector<Plot::ID> myPlots;
     ID csId;
 	Geometry geometry;
 
-	Font* font;
 	Color drawColor;
     bool updateLabels = false, needLimitUpdate = true;
 
@@ -106,7 +103,7 @@ private:
 };
 
 template<typename T>
-T& CoordinateSystem::addPlot(int n, double const* x, double const* y, PaintServer& paintServer)
+T& CoordinateSystem::addPlot(int n, double const* x, double const* y)
 {
     if (needLimitUpdate) {
         updateLimits(hpl::min(n, x), hpl::max(n, x), hpl::min(n, y), hpl::max(n, y));
@@ -114,27 +111,24 @@ T& CoordinateSystem::addPlot(int n, double const* x, double const* y, PaintServe
 	
     T* plot = new T(n, x, y);
     plot->changed.template bind<Delegate<>, &Delegate<>::invoke>(&changed);
-    Plot::ID id1 = rawData.add(plot);
-    Plot::ID id2 = paintServer.addPlot<T>(plot, xmin, xmax, ymin, ymax);
-    //! @todo need connection id1->id2 for further referencing
-    plotInit.push(id2);
-    setGeometry(geometry);
-    changed.invoke();
+    Plot::ID id = data.add(plot);
+    addNewPlot(id);
     return *plot;
 }
 
 template<typename T>
-T& CoordinateSystem::addPlot(int n, double const* x, double const* y, double const* z, PaintServer& paintServer)
+T& CoordinateSystem::addPlot(int n, double const* x, double const* y, double const* z)
 {
-    /*updateLimits(hpl::min(n, x), hpl::max(n, x), hpl::min(n, y), hpl::max(n, y));
+    if (needLimitUpdate) {
+        updateLimits(hpl::min(n, x), hpl::max(n, x), hpl::min(n, y), hpl::max(n, y));
+    }
 
     T* plot = new T(n, x, y, z);
     plot->changed.template bind<Delegate<>, &Delegate<>::invoke>(&changed);
-    Plot::ID id = rawData.add(plot);
-    plotInit.push(id);
-    setGeometry(geometry);
-    changed.invoke();
-    return *plot;*/
+    plot->setLimits(xmin, ymin, xmax, ymax);
+    Plot::ID id = data.add(plot);
+    addNewPlot(id);
+    return *plot;
 }
 }
 

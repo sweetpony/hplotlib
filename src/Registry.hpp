@@ -24,7 +24,10 @@ public:
 	
 	inline T& lookup(typename T::ID id) {
 		return *objects[id];
-	}
+    }
+    inline const T& lookup(typename T::ID id) const {
+        return *objects[id];
+    }
 	
 	inline typename T::ID add(T* object) {
 		typename T::ID id = nextID;
