@@ -26,7 +26,7 @@ public:
 		return *objects[id];
     }
     inline const T& lookup(typename T::ID id) const {
-        return *objects[id];
+        return *objects.at(id);
     }
 	
 	inline typename T::ID add(T* object) {
