@@ -67,7 +67,7 @@ public:
 
     void updateLimits(double xmin, double xmax, double ymin, double ymax);
 
-    Delegate<> changed;
+    Delegate<Drawable::ID> changed;
     
     inline ID id() const { return csId; }
     inline void setId(ID id) { csId = id; }
@@ -112,9 +112,10 @@ T& CoordinateSystem::addPlot(int n, double const* x, double const* y)
     }
 	
     T* plot = new T(n, x, y);
-    plot->changed.template bind<Delegate<>, &Delegate<>::invoke>(&changed);
     plot->setLimits(xmin, ymin, xmax, ymax);
     Drawable::ID id = data.add(plot);
+    plot->setId(id);
+    plot->changed.template bind<Delegate<Drawable::ID>, &Delegate<Drawable::ID>::invoke>(&changed);
     addNewPlot(id);
     return *plot;
 }
@@ -127,9 +128,10 @@ T& CoordinateSystem::addPlot(int n, double const* x, double const* y, double con
     }
 
     T* plot = new T(n, x, y, z);
-    plot->changed.template bind<Delegate<>, &Delegate<>::invoke>(&changed);
     plot->setLimits(xmin, ymin, xmax, ymax);
     Drawable::ID id = data.add(plot);
+    plot->setId(id);
+    plot->changed.template bind<Delegate<Drawable::ID>, &Delegate<Drawable::ID>::invoke>(&changed);
     addNewPlot(id);
     return *plot;
 }

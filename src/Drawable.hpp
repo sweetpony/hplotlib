@@ -25,7 +25,7 @@ public:
         this->ymin = ymin;
         this->xmax = xmax;
         this->ymax = ymax;
-        changed.invoke();
+        changed.invoke(plotId);
     }
 
     inline double getXmin() const {
@@ -43,7 +43,7 @@ public:
 
     virtual inline void setColor(const Color& c) {
         drawColor = c;
-        changed.invoke();
+        changed.invoke(plotId);
     }
     virtual inline Color getColor() const {
         return drawColor;
@@ -51,13 +51,13 @@ public:
     
 	inline void setGeometry(Geometry const& geom) {
 		geometry = geom;
-		changed.invoke();
+        changed.invoke(plotId);
     }
     inline Geometry getGeometry() const {
         return geometry;
     }
     
-    Delegate<> changed;
+    Delegate<ID> changed;
     
     inline ID id() const { return plotId; }
     inline void setId(ID id) { plotId = id; }

@@ -20,7 +20,7 @@ public:
     inline void setColorTable(unsigned int length) {
         colorTable = ColorTable::getPredefinedTable<t>(length);
         recalc = true;
-        changed.invoke();
+        changed.invoke(plotId);
     }
 
     double* getPixelCorners();

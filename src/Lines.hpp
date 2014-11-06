@@ -25,7 +25,7 @@ public:
 
     inline void setThickness(double thick) {
         thickness = thick;
-        changed.invoke();
+        changed.invoke(plotId);
     }
     inline double getThickness() {
         return thickness;
@@ -33,7 +33,7 @@ public:
 
     inline void setStyle(Style s) {
         style = s;
-        changed.invoke();
+        changed.invoke(plotId);
     }
     inline Style getStyle() {
         return style;

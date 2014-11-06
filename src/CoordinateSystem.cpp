@@ -57,7 +57,7 @@ CoordinateSystem::Label* CoordinateSystem::getLabels() const
 void CoordinateSystem::setColor(const Color& c)
 {
     drawColor = c;
-    changed.invoke();
+    //changed.invoke();
 }
 
 void CoordinateSystem::setGeometry(Geometry geom)
@@ -71,7 +71,7 @@ void CoordinateSystem::setGeometry(Geometry geom)
     for (auto it = myPlots.begin(); it != myPlots.end(); ++it) {
         data.lookup(*it).setGeometry(geom);
 	}
-	changed.invoke();
+    //changed.invoke();
 }
 
 void CoordinateSystem::updateLimits(double xmin, double xmax, double ymin, double ymax)
@@ -87,7 +87,7 @@ void CoordinateSystem::updateLimits(double xmin, double xmax, double ymin, doubl
 
     updateLabels = true;
     needLimitUpdate = false;
-    changed.invoke();
+    //changed.invoke();
 }
 	
 /*void CoordinateSystem::init(GLuint lineprogram, GLuint textprogram, GLuint mapprogram)
@@ -302,6 +302,6 @@ void CoordinateSystem::addNewPlot(Drawable::ID id)
     myPlots.push_back(id);
     dataRevisions[id] = 1;
     setGeometry(geometry);
-    changed.invoke();
+    changed.invoke(id);
 }
 }
