@@ -11,8 +11,8 @@
 
 namespace hpl
 {
-CoordinateSystem::CoordinateSystem(Registry<Drawable>& dataContainer)
-    : data(dataContainer), drawColor(0.0f, 0.0f, 0.0f)
+CoordinateSystem::CoordinateSystem(Registry<Drawable>& dataContainer, std::map<Drawable::ID, unsigned int>& dataRevisions)
+    : data(dataContainer), dataRevisions(dataRevisions), drawColor(0.0f, 0.0f, 0.0f)
 {
 }
 
@@ -300,6 +300,7 @@ void CoordinateSystem::addNewPlot(Drawable::ID id)
 {
     plotInit.push(id);
     myPlots.push_back(id);
+    dataRevisions[id] = 1;
     setGeometry(geometry);
     changed.invoke();
 }

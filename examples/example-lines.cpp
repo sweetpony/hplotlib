@@ -39,9 +39,13 @@ int main()
     }
 	
     hpl::Canvas canvas/*("../fonts/inconsolata.font")*/;
+
+    hpl::OGLPlotter plotter;
+    canvas.connectToPlotter(&plotter);
+
     //canvas.setBackgroundColor(hpl::Color(0.9f, 0.9f, 0.9f));
     hpl::HorizontalLayout& layout1 = canvas.addLayout<hpl::HorizontalLayout>();
-    //hpl::VerticalLayout& layout2 = canvas.addLayout<hpl::VerticalLayout>();
+    hpl::VerticalLayout& layout2 = canvas.addLayout<hpl::VerticalLayout>();
 
     hpl::CoordinateSystem& cs1 = canvas.addCoordinateSystem<hpl::CoordinateSystem>();
     cs1.setColor(hpl::Color(0.6f, 0.6f, 0.6f));
@@ -49,25 +53,22 @@ int main()
     plot1.setColor(hpl::Color(1.0f, 0.0f, 0.0f));
 
     /*hpl::CoordinateSystem& cs2 = canvas.addCoordinateSystem<hpl::CoordinateSystem>();
-    hpl::Contour& plot2 = cs2.addPlot<hpl::Contour>(NUM_POINTS, x, x, m);
+    hpl::Contour& plot2 = cs2.addPlot<hpl::Contour>(NUM_POINTS, x, x, m);*/
     
     hpl::CoordinateSystem& cs3 = canvas.addCoordinateSystem<hpl::CoordinateSystem>(); 
-    hpl::Points& plot3 = cs3.addPlot<hpl::Points>(NUM_POINTS, x, z);
-    plot3.setColor(hpl::Color(0.0f, 0.0f, 1.0f));
+    /*hpl::Points& plot3 = cs3.addPlot<hpl::Points>(NUM_POINTS, x, z);
+    plot3.setColor(hpl::Color(0.0f, 0.0f, 1.0f));*/
     hpl::Lines& plot4 = cs3.addPlot<hpl::Lines>(NUM_POINTS, x, y);
-    plot4.setColor(hpl::Color(0.0f, 0.0f, 0.0f));*/
+    plot4.setColor(hpl::Color(0.0f, 0.0f, 0.0f));
 	
 	canvas.addCoordinateSystemToLayout(cs1.id(), layout1.id());
-    /*canvas.addLayoutToLayout(layout2.id(), layout1.id());
-    canvas.addCoordinateSystemToLayout(cs2.id(), layout2.id());
-    canvas.addCoordinateSystemToLayout(cs3.id(), layout2.id());*/
-
-    hpl::OGLPlotter plotter;
-    canvas.connectToPlotter(&plotter);
+    canvas.addLayoutToLayout(layout2.id(), layout1.id());
+    //canvas.addCoordinateSystemToLayout(cs2.id(), layout2.id());
+    canvas.addCoordinateSystemToLayout(cs3.id(), layout2.id());
 
     /*hpl::sleep(1e6);
 
-    plot2.setColorTable<hpl::ColorTable::Rainbow>(256);
+    plot2.setColorTable<hpl::ColorTable::Rainbow>(256);*/
 
     hpl::sleep(1e6);
     
@@ -76,7 +77,7 @@ int main()
     hpl::sleep(1e6);
     
     layout1.changeOrientation(hpl::HorizontalLayout::RightToLeft);
-    plot2.setColorTable<hpl::ColorTable::RainbowBlack>(256);
+    /*plot2.setColorTable<hpl::ColorTable::RainbowBlack>(256);
 
     canvas.saveToFile("testoutput");
 	

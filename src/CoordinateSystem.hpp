@@ -7,16 +7,15 @@
 #ifndef HPLOTLIB_COORDINATESYSTEM_HPP
 #define HPLOTLIB_COORDINATESYSTEM_HPP
 
+#include <queue>
+#include <map>
+
 #include "Drawable.hpp"
 #include "Statistics.hpp"
 #include "Contour.hpp"
 #include "Registry.hpp"
 
 #include "GL/glld.h"
-
-#include <queue>
-
-#include <iostream>
 
 namespace hpl
 {
@@ -35,7 +34,7 @@ public:
 	static constexpr int Ticks = 8;
 	static constexpr float TickLength = 0.02f;
 
-    CoordinateSystem(Registry<Drawable>& dataContainer);
+    CoordinateSystem(Registry<Drawable>& dataContainer, std::map<Drawable::ID, unsigned int>& dataRevisions);
     ~CoordinateSystem();
 
     float* getLines() const;
@@ -77,6 +76,7 @@ private:
     void addNewPlot(Drawable::ID id);
 
     Registry<Drawable>& data;
+    std::map<Drawable::ID, unsigned int>& dataRevisions;
     std::queue<Drawable::ID> plotInit;
     std::vector<Drawable::ID> myPlots;
     ID csId;

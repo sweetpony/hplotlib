@@ -13,9 +13,12 @@ void OGLPlotter::init()
 {
     if (plots != 0) {
         for (auto it = plots->cbegin(); it != plots->cend(); ++it) {
-            Lines* l = dynamic_cast<Lines*>(it->second);
-            if (l != 0) {
-                lineCollection[it->first] = LineCollection();
+            if (revision.find(it->first) == revision.end()) {
+                Lines* l = dynamic_cast<Lines*>(it->second);
+                if (l != 0) {
+                    lineCollection[it->first] = LineCollection();
+                }
+                revision[it->first] = 0;
             }
         }
     }
@@ -30,23 +33,28 @@ void OGLPlotter::init()
     programsDatabase.init();
 
     for (auto it = lineCollection.begin(); it != lineCollection.end(); ++it) {
-        const Lines* l = static_cast<const Lines*>(&plots->lookup(it->first));
+        unsigned int ar = actualRevision->at(it->first);
+        if (ar != revision[it->first]) {
+            const Lines* l = static_cast<const Lines*>(&plots->lookup(it->first));
 
-        float* interleave = new float[2 * l->n];
-        for (int i = 0; i < l->n; i++) {
-            interleave[(i << 1)] = (l->x[i] - l->getXmin()) / (l->getXmax() - l->getXmin());
-            interleave[(i << 1) + 1] = (l->y[i] - l->getYmin()) / (l->getYmax() - l->getYmin());
+            float* interleave = new float[2 * l->n];
+            for (int i = 0; i < l->n; i++) {
+                interleave[(i << 1)] = (l->x[i] - l->getXmin()) / (l->getXmax() - l->getXmin());
+                interleave[(i << 1) + 1] = (l->y[i] - l->getYmin()) / (l->getYmax() - l->getYmin());
+            }
+
+            glGenBuffers(1, &it->second.lineBuffer);
+            glBindBuffer(GL_ARRAY_BUFFER, it->second.lineBuffer);
+            glBufferData(GL_ARRAY_BUFFER, 2 * l->n * sizeof(float), interleave, GL_STATIC_DRAW);
+            glBindBuffer(GL_ARRAY_BUFFER, 0);
+
+            it->second.pos = glGetAttribLocation(programsDatabase.getLineProgram(), "Position");
+            it->second.rect = glGetUniformLocation(programsDatabase.getLineProgram(), "Rect");
+            it->second.color = glGetUniformLocation(programsDatabase.getLineProgram(), "Color");
+            it->second.linemvp = glGetUniformLocation(programsDatabase.getLineProgram(), "MVP");
+
+            revision[it->first] = ar;
         }
-
-        glGenBuffers(1, &it->second.lineBuffer);
-        glBindBuffer(GL_ARRAY_BUFFER, it->second.lineBuffer);
-        glBufferData(GL_ARRAY_BUFFER, 2 * l->n * sizeof(float), interleave, GL_STATIC_DRAW);
-        glBindBuffer(GL_ARRAY_BUFFER, 0);
-
-        it->second.pos = glGetAttribLocation(programsDatabase.getLineProgram(), "Position");
-        it->second.rect = glGetUniformLocation(programsDatabase.getLineProgram(), "Rect");
-        it->second.color = glGetUniformLocation(programsDatabase.getLineProgram(), "Color");
-        it->second.linemvp = glGetUniformLocation(programsDatabase.getLineProgram(), "MVP");
     }
 }
 

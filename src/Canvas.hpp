@@ -39,7 +39,7 @@ public:
     T& addCoordinateSystem();
 
     inline void connectToPlotter(AbstractPlotter* plotter) {
-        plotter->setPlots(&rawData);
+        plotter->setPlots(&rawData, &dataRevisions);
     }
 	
 private:
@@ -70,6 +70,7 @@ private:
 	std::queue<CoordinateSystem::ID> csInit;
 
     Registry<Drawable> rawData;
+    std::map<Drawable::ID, unsigned int> dataRevisions;
 
     std::unordered_map<Layout::ID, Rack, std::hash<Layout::ID::Type>> racks;
 };
@@ -77,7 +78,7 @@ private:
 template<typename T>
 T& Canvas::addCoordinateSystem()
 {
-    T* cs = new T(rawData);
+    T* cs = new T(rawData, dataRevisions);
     //cs->changed.template bind<Window, &Window::update>(this);
 
     //pthread_mutex_lock(&mutex);
