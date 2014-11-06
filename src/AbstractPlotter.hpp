@@ -12,8 +12,12 @@ class AbstractPlotter
 {
 
 public:
-    AbstractPlotter(const Registry<Drawable>& plots);
-    virtual ~AbstractPlotter();
+    AbstractPlotter() {}
+    virtual ~AbstractPlotter() {}
+
+    inline void setPlots(const Registry<Drawable>* plots) {
+        this->plots = plots;
+    }
 
 protected:
     //virtual void fillBackground() = 0;
@@ -22,7 +26,7 @@ protected:
     //virtual void drawContour(/*Contour*/) = 0;
     //virtual void drawText(/*Text text*/) = 0;
 
-    const Registry<Drawable>& plots;
+    const Registry<Drawable>* plots = nullptr;
     std::map<Drawable::ID, unsigned int> revision;
     Color backgroundColor = Color(1.0f, 1.0f, 1.0f);
 

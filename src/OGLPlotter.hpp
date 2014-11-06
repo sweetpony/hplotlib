@@ -10,7 +10,7 @@ class OGLPlotter : public AbstractPlotter, public Window
 {
 
 public:
-    OGLPlotter(const Registry<Drawable>& plots);
+    OGLPlotter();
     virtual ~OGLPlotter();
 
 protected:

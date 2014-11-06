@@ -62,7 +62,8 @@ int main()
     canvas.addCoordinateSystemToLayout(cs2.id(), layout2.id());
     canvas.addCoordinateSystemToLayout(cs3.id(), layout2.id());*/
 
-    hpl::OGLPlotter& plotter = canvas.plotCanvas<hpl::OGLPlotter>();
+    hpl::OGLPlotter plotter;
+    canvas.connectToPlotter(&plotter);
 
     /*hpl::sleep(1e6);
 

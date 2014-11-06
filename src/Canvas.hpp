@@ -38,9 +38,9 @@ public:
 	template<typename T>
     T& addCoordinateSystem();
 
-    //! @todo Canvas should not be the one to instantiate the plotter
-    template<typename T>
-    T& plotCanvas();
+    inline void connectToPlotter(AbstractPlotter* plotter) {
+        plotter->setPlots(&rawData);
+    }
 	
 private:
 	struct Slot {
@@ -88,12 +88,6 @@ T& Canvas::addCoordinateSystem()
     //update();
 
     return *cs;
-}
-
-template<typename T>
-T& Canvas::plotCanvas() {
-    T* plotter = new T(rawData);
-    return *plotter;
 }
 }
 

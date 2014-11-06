@@ -1,14 +1,8 @@
 #include "OGLPlotter.hpp"
 
 namespace hpl {
-OGLPlotter::OGLPlotter(const Registry<Drawable>& plots) : AbstractPlotter(plots), Window()
+OGLPlotter::OGLPlotter() : AbstractPlotter(), Window()
 {
-    for (auto it = plots.cbegin(); it != plots.cend(); ++it) {
-        Lines* l = dynamic_cast<Lines*>(it->second);
-        if (l != 0) {
-            lineCollection[it->first] = LineCollection();
-        }
-    }
 }
 
 OGLPlotter::~OGLPlotter()
@@ -17,6 +11,15 @@ OGLPlotter::~OGLPlotter()
 
 void OGLPlotter::init()
 {
+    if (plots != 0) {
+        for (auto it = plots->cbegin(); it != plots->cend(); ++it) {
+            Lines* l = dynamic_cast<Lines*>(it->second);
+            if (l != 0) {
+                lineCollection[it->first] = LineCollection();
+            }
+        }
+    }
+
     glClearColor(backgroundColor.r, backgroundColor.g, backgroundColor.b, 1.0);
     glEnable(GL_MULTISAMPLE);
     glEnable(GL_BLEND);
@@ -27,7 +30,7 @@ void OGLPlotter::init()
     programsDatabase.init();
 
     for (auto it = lineCollection.begin(); it != lineCollection.end(); ++it) {
-        const Lines* l = static_cast<const Lines*>(&plots.lookup(it->first));
+        const Lines* l = static_cast<const Lines*>(&plots->lookup(it->first));
 
         float* interleave = new float[2 * l->n];
         for (int i = 0; i < l->n; i++) {
@@ -81,7 +84,7 @@ void OGLPlotter::draw()
     pthread_mutex_unlock(&mutex);*/
 
     for (auto it = lineCollection.begin(); it != lineCollection.end(); ++it) {
-        const Lines* l = static_cast<const Lines*>(&plots.lookup(it->first));
+        const Lines* l = static_cast<const Lines*>(&plots->lookup(it->first));
         Geometry g = l->getGeometry();
         Color c = l->getColor();
 
