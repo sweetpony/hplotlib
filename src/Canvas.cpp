@@ -61,4 +61,10 @@ void Canvas::recalculateLayout(Layout::ID layout)
 	
     //update();
 }
+
+void Canvas::processUpdate(Drawable::ID) {
+    for (auto it = connectedPlotters.begin(); it != connectedPlotters.end(); it++) {
+        (*it)->update();
+    }
+}
 }

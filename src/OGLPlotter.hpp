@@ -13,6 +13,10 @@ public:
     OGLPlotter();
     virtual ~OGLPlotter();
 
+    virtual inline void update() {
+        Window::update();
+    }
+
 protected:
     struct LineCollection {
         GLuint lineBuffer;

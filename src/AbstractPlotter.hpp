@@ -20,6 +20,8 @@ public:
         this->actualRevision = actualRevision;
     }
 
+    virtual void update() = 0;
+
 protected:
     //virtual void fillBackground() = 0;
     //virtual void drawPoints(/*Points points*/) = 0;

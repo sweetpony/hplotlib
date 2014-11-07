@@ -40,6 +40,7 @@ public:
 
     inline void connectToPlotter(AbstractPlotter* plotter) {
         plotter->setPlots(&rawData, &dataRevisions);
+        connectedPlotters.push_back(plotter);
     }
 	
 private:
@@ -65,6 +66,8 @@ private:
 	void addSlotToLayout(Slot const& slot, Layout::ID to);
 	void recalculateLayout(Layout::ID layout);
 
+    void processUpdate(Drawable::ID = 0);
+
 	Registry<Layout> layouts;
 	Registry<CoordinateSystem> csystems;
 	std::queue<CoordinateSystem::ID> csInit;
@@ -73,13 +76,15 @@ private:
     std::map<Drawable::ID, unsigned int> dataRevisions;
 
     std::unordered_map<Layout::ID, Rack, std::hash<Layout::ID::Type>> racks;
+
+    std::vector<AbstractPlotter*> connectedPlotters;
 };
 
 template<typename T>
 T& Canvas::addCoordinateSystem()
 {
     T* cs = new T(rawData, dataRevisions);
-    //cs->changed.template bind<Window, &Window::update>(this);
+    cs->changed.template bind<Canvas, &Canvas::processUpdate>(this);
 
     //pthread_mutex_lock(&mutex);
     CoordinateSystem::ID id = csystems.add(cs);

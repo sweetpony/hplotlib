@@ -22,7 +22,8 @@ namespace hpl
 		void wait() {
 			pthread_join(windowThread, nullptr);			
 		}
-		void update() { needsRepaint = true; }
+
+        virtual void update() { needsRepaint = true; }
 	protected:
 		Window() { pthread_create(&windowThread, nullptr, run, this); }
 
