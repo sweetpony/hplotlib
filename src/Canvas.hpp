@@ -66,7 +66,7 @@ private:
 	void addSlotToLayout(Slot const& slot, Layout::ID to);
 	void recalculateLayout(Layout::ID layout);
 
-    void processUpdate(Drawable::ID = 0);
+    void processUpdate(Drawable::ID = Drawable::ID());
 
 	Registry<Layout> layouts;
 	Registry<CoordinateSystem> csystems;
