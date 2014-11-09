@@ -58,8 +58,8 @@ void Canvas::recalculateLayout(Layout::ID layout)
 			recalculateLayout(s->layout);
 		}
 	}
-	
-    //update();
+
+    processUpdate();
 }
 
 void Canvas::processUpdate(Drawable::ID) {

@@ -86,10 +86,8 @@ T& Canvas::addCoordinateSystem()
     T* cs = new T(rawData, dataRevisions);
     cs->changed.template bind<Canvas, &Canvas::processUpdate>(this);
 
-    //pthread_mutex_lock(&mutex);
     CoordinateSystem::ID id = csystems.add(cs);
     csInit.push(id);
-    //pthread_mutex_unlock(&mutex);
 
     processUpdate();
 
