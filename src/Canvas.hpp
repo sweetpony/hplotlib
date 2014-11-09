@@ -91,7 +91,7 @@ T& Canvas::addCoordinateSystem()
     csInit.push(id);
     //pthread_mutex_unlock(&mutex);
 
-    //update();
+    processUpdate();
 
     return *cs;
 }
