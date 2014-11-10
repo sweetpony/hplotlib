@@ -303,18 +303,21 @@ Drawable::ID CoordinateSystem::addNewPlot(Drawable* plot)
 {
     Drawable::ID id = data.add(plot);
     plot->setId(id);
-    plot->changed.template bind<Delegate<Drawable::ID>, &Delegate<Drawable::ID>::invoke>(&changed);
+    dataRevisions[id] = 1;
     plotInit.push(id);
     myPlots.push_back(id);
-    dataRevisions[id] = 1;
-    setGeometry(geometry);
+    //! @todo sufficient to set this for plot? beware of infinite loop with coordLines
+    plot->setGeometry(geometry);
+    plot->changed.template bind<Delegate<Drawable::ID>, &Delegate<Drawable::ID>::invoke>(&changed);
     changed.invoke(id);
     return id;
 }
 
 void CoordinateSystem::removePlot(Drawable::ID id)
 {
-    data.remove(id);
+    if (data.has(id)) {
+        data.remove(id);
+    }
 
     for (auto it = myPlots.begin(); it != myPlots.end(); it++) {
         if (*it == id) {

@@ -92,6 +92,7 @@ void OGLPlotter::draw()
     pthread_mutex_unlock(&mutex);*/
 
     for (auto it = lineCollection.begin(); it != lineCollection.end(); ++it) {
+        //! @todo out_of_range here: something is looked up without being in there
         const Lines* l = static_cast<const Lines*>(&plots->lookup(it->first));
         Geometry g = l->getGeometry();
         Color c = l->getColor();

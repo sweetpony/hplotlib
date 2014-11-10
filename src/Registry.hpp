@@ -18,7 +18,7 @@ public:
 		}
 	}
 
-	inline bool has(typename T::ID id) {
+    inline bool has(typename T::ID id) const {
 		return objects.count(id) > 0;
 	}
 	
