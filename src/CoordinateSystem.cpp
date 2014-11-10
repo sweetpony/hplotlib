@@ -19,7 +19,6 @@ CoordinateSystem::CoordinateSystem(Registry<Drawable>& dataContainer, std::map<D
 
 CoordinateSystem::~CoordinateSystem()
 {
-    delete coordLines;
     delete[] linesX;
     delete[] linesY;
     //delete[] labels;
@@ -360,7 +359,6 @@ void CoordinateSystem::setUpCoordLines()
 
     if (coordLines != nullptr) {
         removePlot(coordLinesID);
-        delete coordLines;
     }
 
     coordLines = new Lines(n, linesX, linesY, true);
