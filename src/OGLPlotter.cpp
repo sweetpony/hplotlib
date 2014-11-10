@@ -92,7 +92,6 @@ void OGLPlotter::draw()
     pthread_mutex_unlock(&mutex);*/
 
     for (auto it = lineCollection.begin(); it != lineCollection.end(); ++it) {
-        //! @todo out_of_range here: something is looked up without being in there
         const Lines* l = static_cast<const Lines*>(&plots->lookup(it->first));
         Geometry g = l->getGeometry();
         Color c = l->getColor();
@@ -147,5 +146,16 @@ void OGLPlotter::mouseWheelEvent(int x, int y, double delta)
     double ys = (1.0 - y / static_cast<double>(height) - mvp[7]) / old;
     mvp[6] += (old-mvp[0]) * xs;
     mvp[7] += (old-mvp[4]) * ys;
+}
+
+void OGLPlotter::checkAndCleanCollections()
+{
+    for (auto it = lineCollection.begin(); it != lineCollection.end();) {
+        if (!plots->has(it->first)) {
+            lineCollection.erase(it++);
+        } else {
+            ++it;
+        }
+    }
 }
 }

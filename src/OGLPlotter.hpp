@@ -14,6 +14,7 @@ public:
     virtual ~OGLPlotter();
 
     virtual inline void update() {
+        checkAndCleanCollections();
         Window::update();
     }
 
@@ -29,6 +30,8 @@ protected:
     virtual void moveEvent(int deltax, int deltay);
     virtual void mouseWheelEvent(int x, int y, double delta);
     virtual void resetEvent();
+
+    void checkAndCleanCollections();
 
     ProgramDatabase programsDatabase;
 
