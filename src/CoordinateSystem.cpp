@@ -12,13 +12,16 @@
 namespace hpl
 {
 CoordinateSystem::CoordinateSystem(Registry<Drawable>& dataContainer, std::map<Drawable::ID, unsigned int>& dataRevisions)
-    : data(dataContainer), dataRevisions(dataRevisions), drawColor(0.0f, 0.0f, 0.0f)
+    : data(dataContainer), dataRevisions(dataRevisions)
 {
+    setUpCoordLines();
 }
 
 CoordinateSystem::~CoordinateSystem()
 {
-    //delete[] lines;
+    delete coordLines;
+    delete[] linesX;
+    delete[] linesY;
     //delete[] labels;
 }
 
@@ -56,8 +59,7 @@ CoordinateSystem::Label* CoordinateSystem::getLabels() const
 
 void CoordinateSystem::setColor(const Color& c)
 {
-    drawColor = c;
-    //changed.invoke();
+    coordLines->setColor(c);
 }
 
 void CoordinateSystem::setGeometry(Geometry geom)
@@ -68,10 +70,12 @@ void CoordinateSystem::setGeometry(Geometry geom)
 	geom.topOffset += YOffset * geom.height;
 	geom.width *= (1.0 - XOffset);
 	geom.height *= (1.0 - YOffset);
+
+    setUpCoordLines();
+
     for (auto it = myPlots.begin(); it != myPlots.end(); ++it) {
         data.lookup(*it).setGeometry(geom);
-	}
-    //changed.invoke();
+    }
 }
 
 void CoordinateSystem::updateLimits(double xmin, double xmax, double ymin, double ymax)
@@ -87,7 +91,7 @@ void CoordinateSystem::updateLimits(double xmin, double xmax, double ymin, doubl
 
     updateLabels = true;
     needLimitUpdate = false;
-    //changed.invoke();
+    changed.invoke(Drawable::ID());
 }
 	
 /*void CoordinateSystem::init(GLuint lineprogram, GLuint textprogram, GLuint mapprogram)
@@ -296,12 +300,71 @@ void CoordinateSystem::draw(float const* mvp)
     glDisableVertexAttribArray(textuv);
 }*/
 
-void CoordinateSystem::addNewPlot(Drawable::ID id)
+Drawable::ID CoordinateSystem::addNewPlot(Drawable* plot)
 {
+    Drawable::ID id = data.add(plot);
+    plot->setId(id);
+    plot->changed.template bind<Delegate<Drawable::ID>, &Delegate<Drawable::ID>::invoke>(&changed);
     plotInit.push(id);
     myPlots.push_back(id);
     dataRevisions[id] = 1;
     setGeometry(geometry);
     changed.invoke(id);
+    return id;
+}
+
+void CoordinateSystem::removePlot(Drawable::ID id)
+{
+    data.remove(id);
+
+    for (auto it = myPlots.begin(); it != myPlots.end(); it++) {
+        if (*it == id) {
+            myPlots.erase(it);
+            break;
+        }
+    }
+
+    for (auto it = dataRevisions.begin(); it != dataRevisions.end(); it++) {
+        if (it->first == id) {
+            dataRevisions.erase(it);
+            break;
+        }
+    }
+}
+
+//! @todo probably wrong, since geometry is still applied to this? correct for that!
+void CoordinateSystem::setUpCoordLines()
+{
+    constexpr int n = 4 + 4*Ticks;
+    delete[] linesX;
+    delete[] linesY;
+    linesX = new double[n] {XOffset, XOffset, XOffset, 1.0};
+    linesY = new double[n] {1.0, YOffset, YOffset, YOffset};
+
+    float xspacing = (1.0 - XOffset) / (Ticks + 1.0f);
+    for (int i = 0; i < Ticks; ++i) {
+        float x = XOffset + (i+1) * xspacing;
+        linesX[4 + 2*i] = x;
+        linesY[4 + 2*i] = YOffset - TickLength / 2.0f;
+        linesX[4 + 2*i + 1] = x;
+        linesY[4 + 2*i + 1] = YOffset + TickLength / 2.0f;
+    }
+
+    for (int i = Ticks; i < 2*Ticks; ++i) {
+        float y = YOffset + (1.0 - YOffset) * (i-Ticks+1) / (Ticks + 1.0f);
+        linesX[4 + 2*i] = XOffset + TickLength / 2.0f;
+        linesY[4 + 2*i] = y;
+        linesX[4 + 2*i + 1] = XOffset - TickLength / 2.0f;
+        linesY[4 + 2*i + 1] = y;
+    }
+
+    if (coordLines != nullptr) {
+        removePlot(coordLinesID);
+        delete coordLines;
+    }
+
+    coordLines = new Lines(n, linesX, linesY, true);
+
+    coordLinesID = addNewPlot(coordLines);
 }
 }
