@@ -77,7 +77,6 @@ private:
 
     Registry<Drawable>& data;
     std::map<Drawable::ID, unsigned int>& dataRevisions;
-    std::queue<Drawable::ID> plotInit;
     std::vector<Drawable::ID> myPlots;
     ID csId;
 	Geometry geometry;
@@ -122,7 +121,6 @@ T& CoordinateSystem::addPlot(int n, double const* x, double const* y, double con
     }
 
     T* plot = new T(n, x, y, z);
-    plot->setLimits(xmin, ymin, xmax, ymax);
     addNewPlot(plot);
     return *plot;
 }

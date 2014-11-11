@@ -84,8 +84,12 @@ void CoordinateSystem::updateLimits(double xmin, double xmax, double ymin, doubl
     this->ymin = std::min(this->ymin, ymin);
     this->ymax = std::min(this->ymax, ymax);
 
+    if (coordLines != nullptr) {
+        coordLines->setLimits(this->xmin, this->ymin, this->xmax, this->ymax);
+    }
+
     for (auto it = myPlots.begin(); it != myPlots.end(); ++it) {
-        data.lookup(*it).setLimits(xmin, ymin, xmax, ymax);
+        data.lookup(*it).setLimits(this->xmin, this->ymin, this->xmax, this->ymax);
     }
 
     updateLabels = true;
@@ -304,10 +308,10 @@ Drawable::ID CoordinateSystem::addNewPlot(Drawable* plot)
     Drawable::ID id = data.add(plot);
     plot->setId(id);
     dataRevisions[id] = 1;
-    plotInit.push(id);
     myPlots.push_back(id);
     //! @todo sufficient to set this for plot? beware of infinite loop with coordLines
     plot->setGeometry(geometry);
+    plot->setLimits(xmin, ymin, xmax, ymax);
     plot->changed.template bind<Delegate<Drawable::ID>, &Delegate<Drawable::ID>::invoke>(&changed);
     changed.invoke(id);
     return id;
@@ -367,5 +371,6 @@ void CoordinateSystem::setUpCoordLines()
     coordLines = new Lines(n, linesX, linesY, true);
 
     coordLinesID = addNewPlot(coordLines);
+    coordLines->setLimits(0.0, 0.0, 1.0, 1.0);
 }
 }
