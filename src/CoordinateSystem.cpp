@@ -63,17 +63,19 @@ void CoordinateSystem::setColor(const Color& c)
 
 void CoordinateSystem::setGeometry(Geometry geom)
 {
-	geometry = geom;
-
-	geom.leftOffset += XOffset * geom.width;
-	geom.topOffset += YOffset * geom.height;
-	geom.width *= (1.0 - XOffset);
-	geom.height *= (1.0 - YOffset);
+    geometry = geom;
 
     setUpCoordLines();
 
+    geom.leftOffset += XOffset * geom.width;
+    geom.topOffset += YOffset * geom.height;
+    geom.width *= (1.0 - XOffset);
+    geom.height *= (1.0 - YOffset);
+
     for (auto it = myPlots.begin(); it != myPlots.end(); ++it) {
-        data.lookup(*it).setGeometry(geom);
+        if (*it != coordLinesID) {
+            data.lookup(*it).setGeometry(geom);
+        }
     }
 }
 
@@ -309,7 +311,6 @@ Drawable::ID CoordinateSystem::addNewPlot(Drawable* plot)
     plot->setId(id);
     dataRevisions[id] = 1;
     myPlots.push_back(id);
-    //! @todo sufficient to set this for plot? beware of infinite loop with coordLines
     plot->setGeometry(geometry);
     plot->setLimits(xmin, ymin, xmax, ymax);
     plot->changed.template bind<Delegate<Drawable::ID>, &Delegate<Drawable::ID>::invoke>(&changed);
@@ -338,7 +339,6 @@ void CoordinateSystem::removePlot(Drawable::ID id)
     }
 }
 
-//! @todo probably wrong, since geometry is still applied to this? correct for that!
 void CoordinateSystem::setUpCoordLines()
 {
     constexpr int n = 4 + 4*Ticks;
