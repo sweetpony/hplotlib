@@ -75,6 +75,8 @@ void OGLPlotter::destroy()
 
 void OGLPlotter::draw()
 {
+    init();
+
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
     /*pthread_mutex_lock(&mutex);
