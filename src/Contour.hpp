@@ -1,54 +1,52 @@
 #ifndef CONTOUR_HPP
 #define CONTOUR_HPP
 
-#include <cmath>
-
-#include "GL/glld.h"
-
 #include "Drawable.hpp"
 #include "Statistics.hpp"
 #include "ColorTable.hpp"
 
 namespace hpl
 {
-class Contour : public Drawable {
+class Contour : public Drawable
+{
+
 public:
-    Contour(int n, double const* x, double const* y, double const* z);
-    virtual ~Contour();
+    Contour(int n, double const* x, double const* y, double const* z) : Drawable(), n(n), x(x), y(y), z(z) {
+        zmin = hpl::min(n*n, z);
+        zmax = hpl::max(n*n, z);
+    }
+    virtual ~Contour() {}
+
+    inline virtual void setLimits(double xmin, double ymin, double xmax, double ymax, double zmin, double zmax) {
+        this->xmin = xmin;
+        this->ymin = ymin;
+        this->xmax = xmax;
+        this->ymax = ymax;
+        this->zmin = zmin;
+        this->zmax = zmax;
+        changed.invoke(plotId);
+    }
+    inline double getZmin() const {
+        return zmin;
+    }
+    inline double getZmax() const {
+        return zmax;
+    }
 
     template<ColorTable::Tables t>
     inline void setColorTable(unsigned int length) {
         colorTable = ColorTable::getPredefinedTable<t>(length);
-        recalc = true;
         changed.invoke(plotId);
     }
-
-    double* getPixelCorners();
-    inline const float* getRGBData() {
-        return data;
-    }
-    inline unsigned int getPixelsPerDimension() {
-        return n;
+    inline const ColorTable& getColorTable() const {
+        return colorTable;
     }
 
-    virtual void init(GLuint lineprogram, GLuint);
-    virtual void destroy();
-    virtual void draw(float const* mvp);
+    const int n;
+    const double* x, * y, * z;
 
-private:
-    void updateTexture();
-
-    int n;
-    float rectCorners[16];
-    double xmin, ymin, xmax, ymax, zmin, zmax;
-    double const* z;
-    float* data = nullptr;
-
-    bool recalc = false;
-
-    GLuint textureid, mapBuffer, program;
-    GLint pos, uv, rect, colorMap, linemvp;
-
+protected:
+    double zmin, zmax;
     ColorTable colorTable = ColorTable::getPredefinedTable<ColorTable::RainbowBlack>(256);
 };
 }

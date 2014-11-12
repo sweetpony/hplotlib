@@ -27,6 +27,10 @@ protected:
         GLuint pointBuffer;
         GLint pos, rect, color, pointmvp;
     };
+    struct ContourCollection {
+        GLuint textureid, mapBuffer;
+        GLint pos, uv, rect, colorMap, contourmvp;
+    };
 
     virtual void init();
     virtual void destroy();
@@ -47,6 +51,7 @@ protected:
 
     std::map<Drawable::ID, LineCollection> lineCollection;
     std::map<Drawable::ID, PointCollection> pointCollection;
+    std::map<Drawable::ID, ContourCollection> contourCollection;
 
 };
 }

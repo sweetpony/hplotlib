@@ -6,6 +6,7 @@
 #include "Drawable.hpp"
 #include "Lines.hpp"
 #include "Points.hpp"
+#include "Contour.hpp"
 #include "Color.hpp"
 
 namespace hpl {

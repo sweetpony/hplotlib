@@ -19,7 +19,7 @@ public:
         Dotted
     };
 
-    Lines(int n, double const* x, double const* y, bool seperate = false) : n(n), x(x), y(y), separate(seperate) {}
+    Lines(int n, double const* x, double const* y, bool seperate = false) : Drawable(), n(n), x(x), y(y), separate(seperate) {}
     virtual ~Lines() {}
 
     virtual inline void setColor(const Color& c) {
@@ -34,7 +34,7 @@ public:
         thickness = thick;
         changed.invoke(plotId);
     }
-    inline double getThickness() {
+    inline double getThickness() const {
         return thickness;
     }
 
@@ -42,14 +42,15 @@ public:
         style = s;
         changed.invoke(plotId);
     }
-    inline Style getStyle() {
+    inline Style getStyle() const {
         return style;
     }
 
     const int n;
     const double* x, * y;
     const bool separate;
-private:
+
+protected:
     Color color = Color(0.0f, 0.0f, 0.0f);
     double thickness = 1.0;
     Style style = Solid;

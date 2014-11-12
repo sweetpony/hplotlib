@@ -18,7 +18,7 @@ public:
         Cross
     };
 
-    Points(int n, double const* x, double const* y) : n(n), x(x), y(y){}
+    Points(int n, double const* x, double const* y) : Drawable(), n(n), x(x), y(y){}
     virtual ~Points() {}
 
     virtual inline void setColor(const Color& c) {
@@ -33,7 +33,7 @@ public:
         size = thick;
         changed.invoke(plotId);
     }
-    inline double getSymbolSize() {
+    inline double getSymbolSize() const {
         return size;
     }
 
@@ -41,13 +41,14 @@ public:
         style = s;
         changed.invoke(plotId);
     }
-    inline Style getStyle() {
+    inline Style getStyle() const {
         return style;
     }
 
     const int n;
     const double* x, * y;
-private:
+
+protected:
     Color color = Color(0.0f, 0.0f, 0.0f);
     double size = 1.0;
     Style style = Dot;

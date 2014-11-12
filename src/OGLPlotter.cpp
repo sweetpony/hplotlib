@@ -17,10 +17,16 @@ void OGLPlotter::init()
                 Lines* l = dynamic_cast<Lines*>(it->second);
                 if (l != 0) {
                     lineCollection[it->first] = LineCollection();
-                }
-                Points* p = dynamic_cast<Points*>(it->second);
-                if (p != 0) {
-                    pointCollection[it->first] = PointCollection();
+                } else {
+                    Points* p = dynamic_cast<Points*>(it->second);
+                    if (p != 0) {
+                        pointCollection[it->first] = PointCollection();
+                    } else {
+                        Contour* c = dynamic_cast<Contour*>(it->second);
+                        if (c != 0) {
+                            contourCollection[it->first] = ContourCollection();
+                        }
+                    }
                 }
                 revision[it->first] = 0;
             }
@@ -41,6 +47,7 @@ void OGLPlotter::init()
         if (ar != revision[it->first]) {
             const Lines* l = static_cast<const Lines*>(&plots->lookup(it->first));
 
+            //! @todo when can i delete this?
             float* interleave = new float[2 * l->n];
             for (int i = 0; i < l->n; i++) {
                 interleave[(i << 1)] = (l->x[i] - l->getXmin()) / (l->getXmax() - l->getXmin());
@@ -66,6 +73,7 @@ void OGLPlotter::init()
         if (ar != revision[it->first]) {
             const Points* p = static_cast<const Points*>(&plots->lookup(it->first));
 
+            //! @todo when can i delete this?
             float* interleave = new float[2 * p->n];
             for (int i = 0; i < p->n; i++) {
                 interleave[(i << 1)] = (p->x[i] - p->getXmin()) / (p->getXmax() - p->getXmin());
@@ -81,6 +89,60 @@ void OGLPlotter::init()
             it->second.rect = glGetUniformLocation(programsDatabase.getLineProgram(), "Rect");
             it->second.color = glGetUniformLocation(programsDatabase.getLineProgram(), "Color");
             it->second.pointmvp = glGetUniformLocation(programsDatabase.getLineProgram(), "MVP");
+
+            revision[it->first] = ar;
+        }
+    }
+
+    for (auto it = contourCollection.begin(); it != contourCollection.end(); ++it) {
+        unsigned int ar = actualRevision->at(it->first);
+        if (ar != revision[it->first]) {
+            const Contour* c = static_cast<const Contour*>(&plots->lookup(it->first));
+            const ColorTable& colorTable = c->getColorTable();
+
+            float rectCorners[16];
+            rectCorners[0] = 0.0f; rectCorners[1] = 1.0f;
+            rectCorners[2] = 0.0f; rectCorners[3] = 1.0f;
+            rectCorners[4] = 0.0f; rectCorners[5] = 0.0f;
+            rectCorners[6] = 0.0f; rectCorners[7] = 0.0f;
+            rectCorners[8] = 1.0f; rectCorners[9] = 0.0f;
+            rectCorners[10] = 1.0f; rectCorners[11] = 0.0f;
+            rectCorners[12] = 1.0f; rectCorners[13] = 1.0f;
+            rectCorners[14] = 1.0f; rectCorners[15] = 1.0f;
+
+            glGenBuffers(1, &it->second.mapBuffer);
+            glBindBuffer(GL_ARRAY_BUFFER, it->second.mapBuffer);
+            glBufferData(GL_ARRAY_BUFFER, 16 * sizeof(float), rectCorners, GL_STATIC_DRAW);
+            glBindBuffer(GL_ARRAY_BUFFER, 0);
+
+            it->second.pos = glGetAttribLocation(programsDatabase.getMapProgram(), "Position");
+            it->second.uv = glGetAttribLocation(programsDatabase.getMapProgram(), "UV");
+            it->second.rect = glGetUniformLocation(programsDatabase.getMapProgram(), "Rect");
+            it->second.colorMap = glGetUniformLocation(programsDatabase.getMapProgram(), "ColorMap");
+            it->second.contourmvp = glGetUniformLocation(programsDatabase.getMapProgram(), "MVP");
+
+            glGenTextures(1, &it->second.textureid);
+
+            glBindTexture(GL_TEXTURE_2D, it->second.textureid);
+            glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
+            glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
+
+            //! @todo when can i delete this?
+            float* data = new float[3 * c->n * c->n];
+            for(int i = 0; i < c->n*c->n; ++i) {
+                double zi = (c->z[i] - c->getZmin()) / (c->getZmax() - c->getZmin());
+                int imin = static_cast<int>(zi * colorTable.num);
+                int imax = static_cast<int>(ceil(zi * colorTable.num));
+                if (imax >= colorTable.num) {
+                    imax = colorTable.num - 1;
+                }
+                double delta = zi * colorTable.num - imin;
+                data[i*3] = colorTable.r[imin] * delta + colorTable.r[imax] * (1.0 - delta);
+                data[i*3+1] = colorTable.g[imin] * delta + colorTable.g[imax] * (1.0 - delta);
+                data[i*3+2] = colorTable.b[imin] * delta + colorTable.b[imax] * (1.0 - delta);
+            }
+
+            glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB8, c->n, c->n, 0, GL_RGB, GL_FLOAT, data);
 
             revision[it->first] = ar;
         }
@@ -101,6 +163,11 @@ void OGLPlotter::destroy()
 
     for (auto it = pointCollection.begin(); it != pointCollection.end(); ++it) {
         glDeleteBuffers(1, &it->second.pointBuffer);
+    }
+
+    for (auto it = contourCollection.begin(); it != contourCollection.end(); ++it) {
+        glDeleteBuffers(1, &it->second.mapBuffer);
+        glDeleteTextures(1, &it->second.textureid);
     }
 
     programsDatabase.destroy();
@@ -171,6 +238,40 @@ void OGLPlotter::draw()
         glUniformMatrix3fv(it->second.pointmvp, 1, GL_FALSE, mvp);
 
         glDrawArrays(GL_POINTS, 0, p->n);
+        glDisableVertexAttribArray(it->second.pos);
+    }
+
+    for (auto it = contourCollection.begin(); it != contourCollection.end(); ++it) {
+        const Contour* c = static_cast<const Contour*>(&plots->lookup(it->first));
+        Geometry g = c->getGeometry();
+
+        glUseProgram(programsDatabase.getMapProgram());
+        glBindBuffer(GL_ARRAY_BUFFER, it->second.mapBuffer);
+        glVertexAttribPointer(
+            it->second.pos,
+            2,
+            GL_FLOAT,
+            GL_FALSE,
+            4*sizeof(GLfloat),
+            (GLvoid const*) 0
+        );
+        glEnableVertexAttribArray(it->second.pos);
+        glEnableVertexAttribArray(it->second.uv);
+        glVertexAttribPointer(
+            it->second.uv,
+            2,
+            GL_FLOAT,
+            GL_FALSE,
+            4*sizeof(GLfloat),
+            (GLvoid const*) (2*sizeof(float))
+        );
+        glUniform4f(it->second.rect, g.leftOffset, g.topOffset, g.width, g.height);
+        glUniform1i(it->second.colorMap, 0);
+        glActiveTexture(GL_TEXTURE0);
+        glBindTexture(GL_TEXTURE_2D, it->second.textureid);
+        glUniformMatrix3fv(it->second.contourmvp, 1, GL_FALSE, mvp);
+
+        glDrawArrays(GL_QUADS, 0, 4);
         glDisableVertexAttribArray(it->second.pos);
     }
 }
