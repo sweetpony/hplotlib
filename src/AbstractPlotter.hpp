@@ -22,6 +22,11 @@ public:
         this->actualRevision = actualRevision;
     }
 
+    inline void setBackgroundColor(const Color& c) {
+        backgroundColor = c;
+        update();
+    }
+
     virtual void update() = 0;
 
 protected:

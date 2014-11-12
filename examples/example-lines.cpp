@@ -42,8 +42,8 @@ int main()
 
     hpl::OGLPlotter plotter;
     canvas.connectToPlotter(&plotter);
+    plotter.setBackgroundColor(hpl::Color(0.9f, 0.9f, 0.9f));
 
-    //canvas.setBackgroundColor(hpl::Color(0.9f, 0.9f, 0.9f));
     hpl::HorizontalLayout& layout1 = canvas.addLayout<hpl::HorizontalLayout>();
     hpl::VerticalLayout& layout2 = canvas.addLayout<hpl::VerticalLayout>();
 
