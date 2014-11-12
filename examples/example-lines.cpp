@@ -56,8 +56,8 @@ int main()
     hpl::Contour& plot2 = cs2.addPlot<hpl::Contour>(NUM_POINTS, x, x, m);*/
     
     hpl::CoordinateSystem& cs3 = canvas.addCoordinateSystem<hpl::CoordinateSystem>(); 
-    /*hpl::Points& plot3 = cs3.addPlot<hpl::Points>(NUM_POINTS, x, z);
-    plot3.setColor(hpl::Color(0.0f, 0.0f, 1.0f));*/
+    hpl::Points& plot3 = cs3.addPlot<hpl::Points>(NUM_POINTS, x, z);
+    plot3.setColor(hpl::Color(0.0f, 0.0f, 1.0f));
     hpl::Lines& plot4 = cs3.addPlot<hpl::Lines>(NUM_POINTS, x, y);
     plot4.setColor(hpl::Color(0.0f, 0.0f, 0.0f));
 	

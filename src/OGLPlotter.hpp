@@ -23,6 +23,10 @@ protected:
         GLuint lineBuffer;
         GLint pos, rect, color, linemvp;
     };
+    struct PointCollection {
+        GLuint pointBuffer;
+        GLint pos, rect, color, pointmvp;
+    };
 
     virtual void init();
     virtual void destroy();
@@ -42,6 +46,7 @@ protected:
     };
 
     std::map<Drawable::ID, LineCollection> lineCollection;
+    std::map<Drawable::ID, PointCollection> pointCollection;
 
 };
 }

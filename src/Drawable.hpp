@@ -40,14 +40,6 @@ public:
     inline double getYmax() const {
         return ymax;
     }
-
-    virtual inline void setColor(const Color& c) {
-        drawColor = c;
-        changed.invoke(plotId);
-    }
-    virtual inline Color getColor() const {
-        return drawColor;
-    }
     
 	inline void setGeometry(Geometry const& geom) {
 		geometry = geom;
@@ -64,7 +56,6 @@ public:
 
 protected:
     double xmin, ymin, xmax, ymax;
-    Color drawColor = Color(0.0f, 0.0f, 0.0f);
     Geometry geometry;
     ID plotId;
 };

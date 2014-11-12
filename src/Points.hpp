@@ -2,7 +2,6 @@
 #define POINTS_H
 
 #include "Drawable.hpp"
-#include "Statistics.hpp"
 
 namespace hpl
 {
@@ -10,29 +9,48 @@ class Points : public Drawable
 {
 
 public:
-    Points(int n, double const* x, double const* y);
-    virtual ~Points();
+    enum Style {
+        Dot,
+        Asterisk,
+        Plus,
+        Circle,
+        FilledCircle,
+        Cross
+    };
 
-    float* getX() const;
-    float* getY() const;
+    Points(int n, double const* x, double const* y) : n(n), x(x), y(y){}
+    virtual ~Points() {}
 
-    inline int getN() const {
-        return n;
+    virtual inline void setColor(const Color& c) {
+        color = c;
+        changed.invoke(plotId);
+    }
+    virtual inline Color getColor() const {
+        return color;
     }
 
-    virtual void init(GLuint lineprogram, GLuint);
-    virtual void destroy();
-    virtual void draw(float const* mvp);
+    inline void setSymbolSize(double thick) {
+        size = thick;
+        changed.invoke(plotId);
+    }
+    inline double getSymbolSize() {
+        return size;
+    }
 
+    inline void setStyle(Style s) {
+        style = s;
+        changed.invoke(plotId);
+    }
+    inline Style getStyle() {
+        return style;
+    }
+
+    const int n;
+    const double* x, * y;
 private:
-    int n;
-    float* points = nullptr;
-    double xmin, ymin, xmax, ymax;
-
-    GLuint pointBuffer;
-    GLuint program;
-
-    GLint pos, rect, color, pointmvp;
+    Color color = Color(0.0f, 0.0f, 0.0f);
+    double size = 1.0;
+    Style style = Dot;
 
 };
 }

@@ -8,7 +8,6 @@
 #define HPLOTLIB_LINES_HPP
 
 #include "Drawable.hpp"
-#include "Statistics.hpp"
 
 namespace hpl
 {
@@ -22,6 +21,14 @@ public:
 
     Lines(int n, double const* x, double const* y, bool seperate = false) : n(n), x(x), y(y), separate(seperate) {}
     virtual ~Lines() {}
+
+    virtual inline void setColor(const Color& c) {
+        color = c;
+        changed.invoke(plotId);
+    }
+    virtual inline Color getColor() const {
+        return color;
+    }
 
     inline void setThickness(double thick) {
         thickness = thick;
@@ -43,6 +50,7 @@ public:
     const double* x, * y;
     const bool separate;
 private:
+    Color color = Color(0.0f, 0.0f, 0.0f);
     double thickness = 1.0;
     Style style = Solid;
 };

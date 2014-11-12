@@ -18,6 +18,10 @@ void OGLPlotter::init()
                 if (l != 0) {
                     lineCollection[it->first] = LineCollection();
                 }
+                Points* p = dynamic_cast<Points*>(it->second);
+                if (p != 0) {
+                    pointCollection[it->first] = PointCollection();
+                }
                 revision[it->first] = 0;
             }
         }
@@ -56,6 +60,31 @@ void OGLPlotter::init()
             revision[it->first] = ar;
         }
     }
+
+    for (auto it = pointCollection.begin(); it != pointCollection.end(); ++it) {
+        unsigned int ar = actualRevision->at(it->first);
+        if (ar != revision[it->first]) {
+            const Points* p = static_cast<const Points*>(&plots->lookup(it->first));
+
+            float* interleave = new float[2 * p->n];
+            for (int i = 0; i < p->n; i++) {
+                interleave[(i << 1)] = (p->x[i] - p->getXmin()) / (p->getXmax() - p->getXmin());
+                interleave[(i << 1) + 1] = (p->y[i] - p->getYmin()) / (p->getYmax() - p->getYmin());
+            }
+
+            glGenBuffers(1, &it->second.pointBuffer);
+            glBindBuffer(GL_ARRAY_BUFFER, it->second.pointBuffer);
+            glBufferData(GL_ARRAY_BUFFER, 2 * p->n * sizeof(float), interleave, GL_STATIC_DRAW);
+            glBindBuffer(GL_ARRAY_BUFFER, 0);
+
+            it->second.pos = glGetAttribLocation(programsDatabase.getLineProgram(), "Position");
+            it->second.rect = glGetUniformLocation(programsDatabase.getLineProgram(), "Rect");
+            it->second.color = glGetUniformLocation(programsDatabase.getLineProgram(), "Color");
+            it->second.pointmvp = glGetUniformLocation(programsDatabase.getLineProgram(), "MVP");
+
+            revision[it->first] = ar;
+        }
+    }
 }
 
 void OGLPlotter::destroy()
@@ -68,6 +97,10 @@ void OGLPlotter::destroy()
 
     for (auto it = lineCollection.begin(); it != lineCollection.end(); ++it) {
         glDeleteBuffers(1, &it->second.lineBuffer);
+    }
+
+    for (auto it = pointCollection.begin(); it != pointCollection.end(); ++it) {
+        glDeleteBuffers(1, &it->second.pointBuffer);
     }
 
     programsDatabase.destroy();
@@ -114,6 +147,30 @@ void OGLPlotter::draw()
         glUniformMatrix3fv(it->second.linemvp, 1, GL_FALSE, mvp);
 
         glDrawArrays((l->separate ? GL_LINES : GL_LINE_STRIP), 0, l->n);
+        glDisableVertexAttribArray(it->second.pos);
+    }
+
+    for (auto it = pointCollection.begin(); it != pointCollection.end(); ++it) {
+        const Points* p = static_cast<const Points*>(&plots->lookup(it->first));
+        Geometry g = p->getGeometry();
+        Color c = p->getColor();
+
+        glUseProgram(programsDatabase.getLineProgram());
+        glBindBuffer(GL_ARRAY_BUFFER, it->second.pointBuffer);
+        glVertexAttribPointer(
+            it->second.pos,
+            2,
+            GL_FLOAT,
+            GL_FALSE,
+            0,
+            (GLvoid const*) 0
+        );
+        glEnableVertexAttribArray(it->second.pos);
+        glUniform4f(it->second.rect, g.leftOffset, g.topOffset, g.width, g.height);
+        glUniform3f(it->second.color, c.r, c.g, c.b);
+        glUniformMatrix3fv(it->second.pointmvp, 1, GL_FALSE, mvp);
+
+        glDrawArrays(GL_POINTS, 0, p->n);
         glDisableVertexAttribArray(it->second.pos);
     }
 }

@@ -5,6 +5,7 @@
 #include "Registry.hpp"
 #include "Drawable.hpp"
 #include "Lines.hpp"
+#include "Points.hpp"
 #include "Color.hpp"
 
 namespace hpl {
