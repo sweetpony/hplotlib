@@ -47,7 +47,6 @@ void OGLPlotter::init()
         if (ar != revision[it->first]) {
             const Lines* l = static_cast<const Lines*>(&plots->lookup(it->first));
 
-            //! @todo when can i delete this?
             float* interleave = new float[2 * l->n];
             for (int i = 0; i < l->n; i++) {
                 interleave[(i << 1)] = (l->x[i] - l->getXmin()) / (l->getXmax() - l->getXmin());
@@ -64,6 +63,7 @@ void OGLPlotter::init()
             it->second.color = glGetUniformLocation(programsDatabase.getLineProgram(), "Color");
             it->second.linemvp = glGetUniformLocation(programsDatabase.getLineProgram(), "MVP");
 
+            delete[] interleave;
             revision[it->first] = ar;
         }
     }
@@ -73,7 +73,6 @@ void OGLPlotter::init()
         if (ar != revision[it->first]) {
             const Points* p = static_cast<const Points*>(&plots->lookup(it->first));
 
-            //! @todo when can i delete this?
             float* interleave = new float[2 * p->n];
             for (int i = 0; i < p->n; i++) {
                 interleave[(i << 1)] = (p->x[i] - p->getXmin()) / (p->getXmax() - p->getXmin());
@@ -90,6 +89,7 @@ void OGLPlotter::init()
             it->second.color = glGetUniformLocation(programsDatabase.getLineProgram(), "Color");
             it->second.pointmvp = glGetUniformLocation(programsDatabase.getLineProgram(), "MVP");
 
+            delete[] interleave;
             revision[it->first] = ar;
         }
     }
@@ -127,7 +127,6 @@ void OGLPlotter::init()
             glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
             glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
 
-            //! @todo when can i delete this?
             float* data = new float[3 * c->n * c->n];
             for(int i = 0; i < c->n*c->n; ++i) {
                 double zi = (c->z[i] - c->getZmin()) / (c->getZmax() - c->getZmin());
@@ -144,6 +143,7 @@ void OGLPlotter::init()
 
             glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB8, c->n, c->n, 0, GL_RGB, GL_FLOAT, data);
 
+            delete[] data;
             revision[it->first] = ar;
         }
     }
