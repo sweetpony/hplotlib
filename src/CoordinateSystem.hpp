@@ -85,10 +85,10 @@ private:
 	Color drawColor;
 	bool updateLabels = false;
 
-	double xmin = std::numeric_limits<double>::min();
-	double xmax = std::numeric_limits<double>::max();
-	double ymin = std::numeric_limits<double>::min();
-	double ymax = std::numeric_limits<double>::max();
+    double xmin = std::numeric_limits<double>::max();
+    double xmax = std::numeric_limits<double>::min();
+    double ymin = std::numeric_limits<double>::max();
+    double ymax = std::numeric_limits<double>::min();
 
     GLuint lineBuffer;
     GLuint textBuffer;
