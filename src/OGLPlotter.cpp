@@ -53,6 +53,9 @@ void OGLPlotter::init()
                 interleave[(i << 1) + 1] = (l->y[i] - l->getYmin()) / (l->getYmax() - l->getYmin());
             }
 
+            if (revision[it->first] != 0) {
+                glDeleteBuffers(1, &it->second.lineBuffer);
+            }
             glGenBuffers(1, &it->second.lineBuffer);
             glBindBuffer(GL_ARRAY_BUFFER, it->second.lineBuffer);
             glBufferData(GL_ARRAY_BUFFER, 2 * l->n * sizeof(float), interleave, GL_STATIC_DRAW);
@@ -79,6 +82,9 @@ void OGLPlotter::init()
                 interleave[(i << 1) + 1] = (p->y[i] - p->getYmin()) / (p->getYmax() - p->getYmin());
             }
 
+            if (revision[it->first] != 0) {
+                glDeleteBuffers(1, &it->second.pointBuffer);
+            }
             glGenBuffers(1, &it->second.pointBuffer);
             glBindBuffer(GL_ARRAY_BUFFER, it->second.pointBuffer);
             glBufferData(GL_ARRAY_BUFFER, 2 * p->n * sizeof(float), interleave, GL_STATIC_DRAW);
@@ -110,6 +116,9 @@ void OGLPlotter::init()
             rectCorners[12] = 1.0f; rectCorners[13] = 1.0f;
             rectCorners[14] = 1.0f; rectCorners[15] = 1.0f;
 
+            if (revision[it->first] != 0) {
+                glDeleteBuffers(1, &it->second.mapBuffer);
+            }
             glGenBuffers(1, &it->second.mapBuffer);
             glBindBuffer(GL_ARRAY_BUFFER, it->second.mapBuffer);
             glBufferData(GL_ARRAY_BUFFER, 16 * sizeof(float), rectCorners, GL_STATIC_DRAW);
@@ -121,6 +130,9 @@ void OGLPlotter::init()
             it->second.colorMap = glGetUniformLocation(programsDatabase.getMapProgram(), "ColorMap");
             it->second.contourmvp = glGetUniformLocation(programsDatabase.getMapProgram(), "MVP");
 
+            if (revision[it->first] != 0) {
+                glDeleteTextures(1, &it->second.textureid);
+            }
             glGenTextures(1, &it->second.textureid);
 
             glBindTexture(GL_TEXTURE_2D, it->second.textureid);
