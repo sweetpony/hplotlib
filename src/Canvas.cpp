@@ -62,7 +62,11 @@ void Canvas::recalculateLayout(Layout::ID layout)
     processUpdate();
 }
 
-void Canvas::processUpdate(Drawable::ID) {
+void Canvas::processUpdate(Drawable::ID id) {
+    if (id != Drawable::ID()) {
+        ++ dataRevisions[id];
+    }
+
     for (auto it = connectedPlotters.begin(); it != connectedPlotters.end(); it++) {
         (*it)->update();
     }

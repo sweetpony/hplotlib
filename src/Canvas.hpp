@@ -66,11 +66,10 @@ private:
 	void addSlotToLayout(Slot const& slot, Layout::ID to);
 	void recalculateLayout(Layout::ID layout);
 
-    void processUpdate(Drawable::ID = Drawable::ID());
+    void processUpdate(Drawable::ID id = Drawable::ID());
 
 	Registry<Layout> layouts;
-	Registry<CoordinateSystem> csystems;
-	std::queue<CoordinateSystem::ID> csInit;
+    Registry<CoordinateSystem> csystems;
 
     Registry<Drawable> rawData;
     std::map<Drawable::ID, unsigned int> dataRevisions;
@@ -87,7 +86,6 @@ T& Canvas::addCoordinateSystem()
     cs->changed.template bind<Canvas, &Canvas::processUpdate>(this);
 
     CoordinateSystem::ID id = csystems.add(cs);
-    csInit.push(id);
 
     processUpdate();
 
