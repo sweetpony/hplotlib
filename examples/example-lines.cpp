@@ -66,7 +66,7 @@ int main()
     canvas.addCoordinateSystemToLayout(cs2.id(), layout2.id());
     canvas.addCoordinateSystemToLayout(cs3.id(), layout2.id());
 
-    hpl::sleep(1e6);
+    /*hpl::sleep(1e6);
 
     plot2.setColorTable<hpl::ColorTable::BlueRed>(256);
 
@@ -77,7 +77,7 @@ int main()
     hpl::sleep(1e6);
 
     layout1.changeOrientation(hpl::HorizontalLayout::RightToLeft);
-    plot2.setColorTable<hpl::ColorTable::RainbowBlack>(256);
+    plot2.setColorTable<hpl::ColorTable::RainbowBlack>(256);*/
 
     //canvas.saveToFile("testoutput");
     plotter.wait();

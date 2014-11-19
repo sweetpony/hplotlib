@@ -225,7 +225,9 @@ void OGLPlotter::draw()
         glUniform3f(it->second.color, c.r, c.g, c.b);
         glUniformMatrix3fv(it->second.linemvp, 1, GL_FALSE, mvp);
 
-        glDrawArrays((l->separate() ? GL_LINES : GL_LINE_STRIP), 0, l->n());
+        bool sep = l->separate();
+        std::cout << "Plotter sep: " << sep << std::endl;
+        glDrawArrays((sep ? GL_LINES : GL_LINE_STRIP), 0, l->n());
         glDisableVertexAttribArray(it->second.pos);
     }
 
