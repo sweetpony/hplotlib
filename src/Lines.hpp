@@ -11,16 +11,7 @@
 
 namespace hpl
 {
-struct SimpleLines {
-    SimpleLines(int n, double const* x, double const* y, bool separate) : _n(n), _x(x), _y(y), _separate(separate) {}
-    virtual ~SimpleLines() {}
-
-    const int _n;
-    const double* _x, * _y;
-    const bool _separate;
-};
-
-class Lines : public Drawable, private SimpleLines {
+class Lines : public Drawable {
 public:
     enum Style {
         Solid,
@@ -28,26 +19,8 @@ public:
         Dotted
     };
 
-    Lines(int n, double const* x, double const* y, bool separate = false) : Drawable(), SimpleLines(n, x, y, separate), lines(new SimpleLines(n, x, y, separate)) {}
-    virtual ~Lines() {
-        delete lines;
-    }
-
-    virtual inline int n() const {
-        return lines->_n;
-    }
-
-    virtual inline const double* x() const {
-        return lines->_x;
-    }
-
-    virtual inline const double* y() const {
-        return lines->_y;
-    }
-
-    virtual inline bool separate() const {
-        lines->_separate;
-    }
+    Lines(int n, double const* x, double const* y, bool seperate = false) : Drawable(), n(n), x(x), y(y), separate(seperate) {}
+    virtual ~Lines() {}
 
     virtual inline void setColor(const Color& c) {
         color = c;
@@ -57,18 +30,27 @@ public:
         return color;
     }
 
-    void setThickness(double thick);
+    inline void setThickness(double thick) {
+        thickness = thick;
+        changed.invoke(plotId);
+    }
     inline double getThickness() const {
         return thickness;
     }
 
-    void setStyle(Style s);
+    inline void setStyle(Style s) {
+        style = s;
+        changed.invoke(plotId);
+    }
     inline Style getStyle() const {
         return style;
     }
 
+    const int n;
+    const double* x, * y;
+    const bool separate;
+
 protected:
-    SimpleLines* lines;
     Color color = Color(0.0f, 0.0f, 0.0f);
     double thickness = 1.0;
     Style style = Solid;
