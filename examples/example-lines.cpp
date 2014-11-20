@@ -43,7 +43,6 @@ int main()
     hpl::FileBrowser fb;
     fb.addSearchPath("../fonts/");
     std::string fontPath = fb.getFontPath("inconsolata");
-    std::cout << "Font: " << fontPath << std::endl;
 
     hpl::Canvas canvas/*("../fonts/inconsolata.font")*/;
 
