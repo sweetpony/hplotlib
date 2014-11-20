@@ -52,7 +52,7 @@ public:
 
     virtual inline bool separate() const {
         std::cout << "seperate() " << this << ": " << _separate << " " << lines->_separate << std::endl;
-        lines->_separate;
+        return lines->_separate;
     }
 
     virtual inline void setColor(const Color& c) {
