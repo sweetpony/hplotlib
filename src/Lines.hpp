@@ -8,11 +8,14 @@
 #define HPLOTLIB_LINES_HPP
 
 #include "Drawable.hpp"
+#include <iostream>
 
 namespace hpl
 {
 struct SimpleLines {
-    SimpleLines(int n, double const* x, double const* y, bool separate) : _n(n), _x(x), _y(y), _separate(separate) {}
+    SimpleLines(int n, double const* x, double const* y, bool separate) : _n(n), _x(x), _y(y), _separate(separate) {
+        std::cout << "SimpleLines: " << separate << " " << _separate << std::endl;
+    }
     virtual ~SimpleLines() {}
 
     const int _n;
@@ -28,7 +31,9 @@ public:
         Dotted
     };
 
-    Lines(int n, double const* x, double const* y, bool separate = false) : Drawable(), SimpleLines(n, x, y, separate), lines(new SimpleLines(n, x, y, separate)) {}
+    Lines(int n, double const* x, double const* y, bool separate = false) : Drawable(), SimpleLines(n, x, y, separate), lines(new SimpleLines(n, x, y, separate)) {
+        std::cout << "Lines " << this << ": " << separate << " " << _separate << " " << lines->_separate << " " << this->separate() << std::endl;
+    }
     virtual ~Lines() {
         delete lines;
     }
@@ -46,6 +51,7 @@ public:
     }
 
     virtual inline bool separate() const {
+        std::cout << "seperate() " << this << ": " << _separate << " " << lines->_separate << std::endl;
         lines->_separate;
     }
 
