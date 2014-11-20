@@ -225,7 +225,7 @@ void OGLPlotter::draw()
         glUniform3f(it->second.color, c.r, c.g, c.b);
         glUniformMatrix3fv(it->second.linemvp, 1, GL_FALSE, mvp);
 
-        glDrawArrays((l->separate() ? GL_LINES : GL_LINE_STRIP), 0, l->n());
+        glDrawArrays(convert(l->getDataType()), 0, l->n());
         glDisableVertexAttribArray(it->second.pos);
     }
 
@@ -249,7 +249,7 @@ void OGLPlotter::draw()
         glUniform3f(it->second.color, c.r, c.g, c.b);
         glUniformMatrix3fv(it->second.pointmvp, 1, GL_FALSE, mvp);
 
-        glDrawArrays(GL_POINTS, 0, p->n);
+        glDrawArrays(convert(p->getDataType()), 0, p->n);
         glDisableVertexAttribArray(it->second.pos);
     }
 
@@ -283,7 +283,7 @@ void OGLPlotter::draw()
         glBindTexture(GL_TEXTURE_2D, it->second.textureid);
         glUniformMatrix3fv(it->second.contourmvp, 1, GL_FALSE, mvp);
 
-        glDrawArrays(GL_QUADS, 0, 4);
+        glDrawArrays(convert(c->getDataType()), 0, 4);
         glDisableVertexAttribArray(it->second.pos);
     }
 }
@@ -329,5 +329,20 @@ void OGLPlotter::checkAndCleanCollections()
             ++it;
         }
     }
+}
+
+GLenum OGLPlotter::convert(Drawable::Type type)
+{
+    switch(type) {
+        case Drawable::Type_Lines:
+            return GL_LINES;
+        case Drawable::Type_LineStrips:
+            return GL_LINE_STRIP;
+        case Drawable::Type_Points:
+            return GL_POINTS;
+        case Drawable::Type_Texture:
+            return GL_QUADS;
+    }
+    return 0;
 }
 }

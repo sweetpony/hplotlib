@@ -41,6 +41,8 @@ protected:
 
     void checkAndCleanCollections();
 
+    GLenum convert(Drawable::Type type);
+
     ProgramDatabase programsDatabase;
 
     float mvp[9] = {

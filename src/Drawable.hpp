@@ -17,7 +17,14 @@ class Drawable
 public:
 	typedef IDBase<Drawable> ID;
 
-    Drawable() {}
+    enum Type {
+        Type_Lines,
+        Type_LineStrips,
+        Type_Points,
+        Type_Texture
+    };
+
+    Drawable(Type type) : type(type) {}
     virtual ~Drawable() {}
 
     inline void setLimits(double xmin, double ymin, double xmax, double ymax) {
@@ -48,6 +55,10 @@ public:
     inline Geometry getGeometry() const {
         return geometry;
     }
+
+    inline Type getDataType() const {
+        return type;
+    }
     
     Delegate<ID> changed;
     
@@ -58,6 +69,7 @@ protected:
     double xmin, ymin, xmax, ymax;
     Geometry geometry;
     ID plotId;
+    Type type;
 };
 }
 

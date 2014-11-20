@@ -18,7 +18,7 @@ public:
         Cross
     };
 
-    Points(int n, double const* x, double const* y) : Drawable(), n(n), x(x), y(y){}
+    Points(int n, double const* x, double const* y) : Drawable(Type_Points), n(n), x(x), y(y){}
     virtual ~Points() {}
 
     virtual inline void setColor(const Color& c) {

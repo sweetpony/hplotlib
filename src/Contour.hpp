@@ -11,7 +11,7 @@ class Contour : public Drawable
 {
 
 public:
-    Contour(int n, double const* x, double const* y, double const* z) : Drawable(), n(n), x(x), y(y), z(z) {
+    Contour(int n, double const* x, double const* y, double const* z) : Drawable(Type_Texture), n(n), x(x), y(y), z(z) {
         zmin = hpl::min(n*n, z);
         zmax = hpl::max(n*n, z);
     }

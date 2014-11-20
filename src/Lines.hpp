@@ -12,12 +12,17 @@
 namespace hpl
 {
 struct SimpleLines {
-    SimpleLines(int n, double const* x, double const* y, bool separate) : _n(n), _x(x), _y(y), _separate(separate) {}
-    virtual ~SimpleLines() {}
+    SimpleLines(int n, double const* x, double const* y, bool separate, bool ownsData) : _n(n), _x(x), _y(y), _separate(separate), _ownsData(ownsData) {}
+    virtual ~SimpleLines() {
+        if (_ownsData) {
+            delete[] _x;
+            delete[] _y;
+        }
+    }
 
     const int _n;
     const double* _x, * _y;
-    const bool _separate;
+    const bool _separate, _ownsData;
 };
 
 class Lines : public Drawable, private SimpleLines {
@@ -28,7 +33,8 @@ public:
         Dotted
     };
 
-    Lines(int n, double const* x, double const* y, bool separate = false) : Drawable(), SimpleLines(n, x, y, separate), lines(new SimpleLines(n, x, y, separate)) {}
+    Lines(int n, double const* x, double const* y, bool separate = false) :
+        Drawable((separate ? Type_Lines : Type_LineStrips)), SimpleLines(n, x, y, separate, false), lines(new SimpleLines(n, x, y, separate, false)) {}
     virtual ~Lines() {
         delete lines;
     }
@@ -43,10 +49,6 @@ public:
 
     virtual inline const double* y() const {
         return lines->_y;
-    }
-
-    virtual inline bool separate() const {
-        return lines->_separate;
     }
 
     virtual inline void setColor(const Color& c) {

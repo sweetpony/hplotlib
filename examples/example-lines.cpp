@@ -79,6 +79,7 @@ int main()
     hpl::sleep(1e6);
 
     layout2.changeOrientation(hpl::VerticalLayout::BottomToTop);
+    plot1.setStyle(hpl::Lines::Dashed);
 
     hpl::sleep(1e6);
 
