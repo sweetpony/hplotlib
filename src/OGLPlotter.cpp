@@ -142,8 +142,8 @@ void OGLPlotter::init()
             float* data = new float[3 * c->n * c->n];
             for(int i = 0; i < c->n*c->n; ++i) {
                 double zi = (c->z[i] - c->getZmin()) / (c->getZmax() - c->getZmin());
-                int imin = static_cast<int>(zi * colorTable.num);
-                int imax = static_cast<int>(ceil(zi * colorTable.num));
+                unsigned int imin = static_cast<unsigned int>(zi * colorTable.num);
+                unsigned int imax = static_cast<unsigned int>(ceil(zi * colorTable.num));
                 if (imax >= colorTable.num) {
                     imax = colorTable.num - 1;
                 }
@@ -225,9 +225,7 @@ void OGLPlotter::draw()
         glUniform3f(it->second.color, c.r, c.g, c.b);
         glUniformMatrix3fv(it->second.linemvp, 1, GL_FALSE, mvp);
 
-        bool sep = l->separate();
-        std::cout << "Plotter sep: " << sep << std::endl;
-        glDrawArrays((sep ? GL_LINES : GL_LINE_STRIP), 0, l->n());
+        glDrawArrays((l->separate() ? GL_LINES : GL_LINE_STRIP), 0, l->n());
         glDisableVertexAttribArray(it->second.pos);
     }
 

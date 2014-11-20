@@ -16,7 +16,7 @@ struct Header {
 };
 
 struct Char {
-	char id;
+    unsigned char id;
 	float x;
 	float y;
 	float width;
@@ -33,7 +33,7 @@ public:
     void bind(GLint position, GLuint textureUnit);
     
     inline Header const& header() const { return _header; }
-    inline Char const& ch(char id) const { return _chars[id]; }
+    inline Char const& ch(unsigned char id) const { return _chars[id]; }
 
 private:  
     GLuint _glyphs;

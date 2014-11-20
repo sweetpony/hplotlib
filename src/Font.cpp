@@ -14,7 +14,7 @@ void Font::init(std::string const& path)
     fclose(in);
     
     for (int i = _header.count-1; i >= 0; --i) {
-		char id = _chars[i].id;
+        unsigned char id = _chars[i].id;
 		_chars[id] = _chars[i];
 	}
 

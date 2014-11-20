@@ -11,7 +11,6 @@ vector<string> Dir::list(int flags)
     
     WIN32_FIND_DATA data;
     HANDLE hfind = INVALID_HANDLE_VALUE;
-    DWORD err;
 
     auto checkAndAdd = [&entries, &flags] (WIN32_FIND_DATA data) {
         if (data.cFileName[0] != '.'

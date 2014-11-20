@@ -239,7 +239,7 @@ void CoordinateSystem::update()
 
 void CoordinateSystem::destroy()
 {
-    /*for (auto i = plots.begin(); i != plots.end(); i++) {
+    for (auto i = plots.begin(); i != plots.end(); i++) {
         i->second->destroy();
     }
 	glDeleteBuffers(1, &lineBuffer);

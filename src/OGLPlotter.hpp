@@ -4,7 +4,6 @@
 #include "AbstractPlotter.hpp"
 #include "Window.hpp"
 #include "ProgramDatabase.hpp"
-#include <iostream>
 
 namespace hpl {
 class OGLPlotter : public AbstractPlotter, public Window

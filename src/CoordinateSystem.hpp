@@ -9,7 +9,6 @@
 
 #include <queue>
 #include <map>
-#include <iostream>
 
 #include "Drawable.hpp"
 #include "Statistics.hpp"
@@ -110,7 +109,6 @@ T& CoordinateSystem::addPlot(int n, double const* x, double const* y)
     }
 
     T* plot = new T(n, x, y);
-    std::cout << "New plot was " << plot << std::endl;
     addNewPlot(plot);
     return *plot;
 }

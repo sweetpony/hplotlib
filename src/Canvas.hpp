@@ -30,7 +30,7 @@ public:
 	template<typename T>
 	T& addLayout() {
 		T* layout = new T;
-		Layout::ID id = layouts.add(layout);
+        layouts.add(layout);
 		layout->changed.template bind<Canvas, &Canvas::recalculateLayout>(this);
 		return *layout;
 	}
@@ -85,7 +85,7 @@ T& Canvas::addCoordinateSystem()
     T* cs = new T(rawData, dataRevisions);
     cs->changed.template bind<Canvas, &Canvas::processUpdate>(this);
 
-    CoordinateSystem::ID id = csystems.add(cs);
+    csystems.add(cs);
 
     processUpdate();
 
