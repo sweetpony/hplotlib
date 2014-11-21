@@ -8,6 +8,7 @@
 #define HPLOTLIB_LINES_HPP
 
 #include "Drawable.hpp"
+#include "Statistics.hpp"
 
 namespace hpl
 {
@@ -70,6 +71,8 @@ public:
     }
 
 protected:
+    void calculateInterpolationDots();
+
     SimpleLines* lines;
     Color color = Color(0.0f, 0.0f, 0.0f);
     double thickness = 1.0;

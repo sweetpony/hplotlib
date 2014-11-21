@@ -23,4 +23,10 @@ double max(int size, double const* x)
 	}
 	return xmax;
 }
+
+double interpolate(double x, double x1, double y1, double x2, double y2)
+{
+    double alpha = (x - x1) / (x2 - x1);
+    return y1 + (y2 - y1) * alpha;
+}
 }

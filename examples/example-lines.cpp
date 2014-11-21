@@ -80,6 +80,7 @@ int main()
 
     layout2.changeOrientation(hpl::VerticalLayout::BottomToTop);
     plot1.setStyle(hpl::Lines::Dashed);
+    plot4.setStyle(hpl::Lines::Dotted);
 
     hpl::sleep(1e6);
 
