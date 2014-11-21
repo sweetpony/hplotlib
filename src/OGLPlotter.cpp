@@ -225,7 +225,11 @@ void OGLPlotter::draw()
         glUniform3f(it->second.color, c.r, c.g, c.b);
         glUniformMatrix3fv(it->second.linemvp, 1, GL_FALSE, mvp);
 
+        glLineWidth(l->getThickness());
+        glPointSize(l->getThickness());
         glDrawArrays(convert(l->getDataType()), 0, l->n());
+        glLineWidth(1.0f);
+        glPointSize(1.0f);
         glDisableVertexAttribArray(it->second.pos);
     }
 
@@ -249,7 +253,9 @@ void OGLPlotter::draw()
         glUniform3f(it->second.color, c.r, c.g, c.b);
         glUniformMatrix3fv(it->second.pointmvp, 1, GL_FALSE, mvp);
 
+        glPointSize(p->getSymbolSize());
         glDrawArrays(convert(p->getDataType()), 0, p->n);
+        glPointSize(1.0f);
         glDisableVertexAttribArray(it->second.pos);
     }
 

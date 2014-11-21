@@ -57,6 +57,7 @@ int main()
     cs1.setColor(hpl::Color(0.6f, 0.6f, 0.6f));
     hpl::Lines& plot1 = cs1.addPlot<hpl::Lines>(NUM_POINTS, x, y);
     plot1.setColor(hpl::Color(1.0f, 0.0f, 0.0f));
+    plot1.setThickness(5.0);
 
     hpl::CoordinateSystem& cs2 = canvas.addCoordinateSystem<hpl::CoordinateSystem>();
     hpl::Contour& plot2 = cs2.addPlot<hpl::Contour>(NUM_POINTS, x, x, m);
@@ -75,12 +76,14 @@ int main()
     hpl::sleep(1e6);
 
     plot2.setColorTable<hpl::ColorTable::BlueRed>(256);
+    plot3.setSymbolSize(2.0);
 
     hpl::sleep(1e6);
 
     layout2.changeOrientation(hpl::VerticalLayout::BottomToTop);
     plot1.setStyle(hpl::Lines::Dashed);
     plot4.setStyle(hpl::Lines::Dotted);
+    plot4.setThickness(3.0);
 
     hpl::sleep(1e6);
 
