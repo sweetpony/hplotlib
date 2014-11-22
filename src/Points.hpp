@@ -31,8 +31,30 @@ public:
         Plus,
         Cross,
         Asterisk,
+        Diamond,
         Circle,
-        FilledCircle
+        CirclePlus,
+        CircleCross,
+        Triangle,
+        DownwardTriangle,
+        RightwardTriangle,
+        LeftwardTriangle,
+        Square,
+        Hourglass,
+        Bowtie,
+        VerticalBar,
+        HorizontalBar,
+        FilledDiamond,
+        FilledCircle,
+        FilledTriangle,
+        FilledDownwardTriangle,
+        FilledRightwardTriangle,
+        FilledLeftwardTriangle,
+        FilledSquare,
+        FilledHourglass,
+        FilledBowtie,
+        FilledVerticalBar,
+        FilledHorizontalBar
     };
 
     Points(int n, double const* x, double const* y) : Drawable(Type_Points), SimplePoints(n, x, y, false), points(new SimplePoints(n, x, y, false)){}
@@ -74,7 +96,7 @@ public:
     }
     //! @todo how to handle filling of symbols
     inline bool isFilledSymbol() const {
-        return symbol >= FilledCircle;
+        return symbol >= FilledDiamond;
     }
 
 protected:

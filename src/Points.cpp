@@ -44,39 +44,159 @@ void Points::setSymbol(Symbol s)
 std::vector<std::pair<double, double> > Points::getSymbolVertices() const
 {
     std::vector<std::pair<double, double> > vert;
+    double l = 0.5*size;
 
     switch(symbol) {
     case Dot:
         METH_PB(0.0, 0.0);
         break;
     case Plus:
-        METH_PB(0.0, 0.5*size);
-        METH_PB(0.0, -0.5*size);
-        METH_PB(0.5*size, 0.0);
-        METH_PB(-0.5*size, 0.0);
+        METH_PB(0.0, l);
+        METH_PB(0.0, -l);
+        METH_PB(l, 0.0);
+        METH_PB(-l, 0.0);
         break;
     case Cross:
-        METH_PB(0.5*size, 0.5*size);
-        METH_PB(-0.5*size, -0.5*size);
-        METH_PB(0.5*size, -0.5*size);
-        METH_PB(-0.5*size, 0.5*size);
+        METH_PB(l, l);
+        METH_PB(-l, -l);
+        METH_PB(l, -l);
+        METH_PB(-l, l);
         break;
     case Asterisk:
-        METH_PB(0.0, 0.5*size);
-        METH_PB(0.0, -0.5*size);
-        METH_PB(0.5*size, 0.0);
-        METH_PB(-0.5*size, 0.0);
-        METH_PB(0.5*size, 0.5*size);
-        METH_PB(-0.5*size, -0.5*size);
-        METH_PB(0.5*size, -0.5*size);
-        METH_PB(-0.5*size, 0.5*size);
+        METH_PB(0.0, l);
+        METH_PB(0.0, -l);
+        METH_PB(l, 0.0);
+        METH_PB(-l, 0.0);
+        METH_PB(l, l);
+        METH_PB(-l, -l);
+        METH_PB(l, -l);
+        METH_PB(-l, l);
+        break;
+    case Diamond:
+    case FilledDiamond:
+        METH_PB(0.0, l);
+        METH_PB(l, 0.0);
+        METH_PB(0.0, -l);
+        METH_PB(-l, 0.0);
+        METH_PB(0.0, l);
         break;
     case Circle:
     case FilledCircle:
-        for (unsigned int i = 0; i < maxSymbolVertices; i++) {
-            METH_PB(std::cos(i * 2 * M_PI / maxSymbolVertices), std::sin(i * 2 * M_PI / maxSymbolVertices));
-            METH_PB(std::cos((i+1) * 2 * M_PI / maxSymbolVertices), std::sin((i+1) * 2 * M_PI / maxSymbolVertices));
+        for (unsigned int i = 0; i < maxSymbolVertices/2; i++) {
+            METH_PB(std::cos(i * 4 * M_PI / maxSymbolVertices), std::sin(i * 4 * M_PI / maxSymbolVertices));
+            METH_PB(std::cos((i+1) * 4 * M_PI / maxSymbolVertices), std::sin((i+1) * 4 * M_PI / maxSymbolVertices));
         }
+        break;
+    case CirclePlus:
+        METH_PB(0.0, l);
+        METH_PB(0.0, -l);
+        METH_PB(l, 0.0);
+        METH_PB(-l, 0.0);
+        for (unsigned int i = 0; i < (maxSymbolVertices-4)/2; i++) {
+            METH_PB(std::cos(i * 4 * M_PI / (maxSymbolVertices-4)), std::sin(i * 4 * M_PI / (maxSymbolVertices-4)));
+            METH_PB(std::cos((i+1) * 4 * M_PI / (maxSymbolVertices-4)), std::sin((i+1) * 4 * M_PI / (maxSymbolVertices-4)));
+        }
+        break;
+    case CircleCross:
+        METH_PB(l, l);
+        METH_PB(-l, -l);
+        METH_PB(l, -l);
+        METH_PB(-l, l);
+        for (unsigned int i = 0; i < (maxSymbolVertices-4)/2; i++) {
+            METH_PB(std::cos(i * 4 * M_PI / (maxSymbolVertices-4)), std::sin(i * 4 * M_PI / (maxSymbolVertices-4)));
+            METH_PB(std::cos((i+1) * 4 * M_PI / (maxSymbolVertices-4)), std::sin((i+1) * 4 * M_PI / (maxSymbolVertices-4)));
+        }
+        break;
+    case Triangle:
+    case FilledTriangle:
+        METH_PB(-l, -l);
+        METH_PB(0.0, l);
+        METH_PB(0.0, l);
+        METH_PB(l, -l);
+        METH_PB(l, -l);
+        METH_PB(-l, -l);
+        break;
+    case DownwardTriangle:
+    case FilledDownwardTriangle:
+        METH_PB(-l, l);
+        METH_PB(0.0, -l);
+        METH_PB(0.0, -l);
+        METH_PB(l, l);
+        METH_PB(l, l);
+        METH_PB(-l, l);
+        break;
+    case RightwardTriangle:
+    case FilledRightwardTriangle:
+        METH_PB(-l, l);
+        METH_PB(l, 0.0);
+        METH_PB(l, 0.0);
+        METH_PB(-l, -l);
+        METH_PB(-l, -l);
+        METH_PB(-l, l);
+        break;
+    case LeftwardTriangle:
+    case FilledLeftwardTriangle:
+        METH_PB(l, l);
+        METH_PB(-l, 0.0);
+        METH_PB(-l, 0.0);
+        METH_PB(l, -l);
+        METH_PB(l, -l);
+        METH_PB(l, l);
+        break;
+    case Square:
+    case FilledSquare:
+        METH_PB(-l, l);
+        METH_PB(l, l);
+        METH_PB(l, l);
+        METH_PB(l, -l);
+        METH_PB(l, -l);
+        METH_PB(-l, -l);
+        METH_PB(-l, -l);
+        METH_PB(-l, l);
+        break;
+    case Hourglass:
+    case FilledHourglass:
+        METH_PB(-l, -l);
+        METH_PB(l, -l);
+        METH_PB(l, -l);
+        METH_PB(-l, l);
+        METH_PB(-l, l);
+        METH_PB(l, l);
+        METH_PB(l, l);
+        METH_PB(-l, -l);
+        break;
+    case Bowtie:
+    case FilledBowtie:
+        METH_PB(-l, -l);
+        METH_PB(-l, l);
+        METH_PB(-l, l);
+        METH_PB(l, -l);
+        METH_PB(l, -l);
+        METH_PB(l, l);
+        METH_PB(l, l);
+        METH_PB(-l, -l);
+        break;
+    case VerticalBar:
+    case FilledVerticalBar:
+        METH_PB(-0.5*l, -l);
+        METH_PB(-0.5*l, l);
+        METH_PB(-0.5*l, l);
+        METH_PB(0.5*l, l);
+        METH_PB(0.5*l, l);
+        METH_PB(0.5*l, -l);
+        METH_PB(0.5*l, -l);
+        METH_PB(-0.5*l, -l);
+        break;
+    case HorizontalBar:
+    case FilledHorizontalBar:
+        METH_PB(-l, -0.5*l);
+        METH_PB(-l, 0.5*l);
+        METH_PB(-l, 0.5*l);
+        METH_PB(l, 0.5*l);
+        METH_PB(l, 0.5*l);
+        METH_PB(l, -0.5*l);
+        METH_PB(l, -0.5*l);
+        METH_PB(-l, -0.5*l);
         break;
     }
 
@@ -89,11 +209,7 @@ void Points::setTypeForSymbol()
     case Dot:
         type = Type_Points;
         break;
-    case Plus:
-    case Cross:
-    case Asterisk:
-    case Circle:
-    case FilledCircle:
+    default:
         type = Type_Lines;
         break;
     }
