@@ -76,6 +76,7 @@ int main()
     hpl::sleep(1e6);
 
     plot2.setColorTable<hpl::ColorTable::BlueRed>(256);
+    plot3.setSymbol(hpl::Points::FilledCircle);
     plot3.setSymbolSize(2.0);
 
     hpl::sleep(1e6);

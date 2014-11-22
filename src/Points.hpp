@@ -8,11 +8,25 @@
 
 namespace hpl
 {
-class Points : public Drawable
+struct SimplePoints {
+    SimplePoints(int n, double const* x, double const* y, bool ownsData) : _n(n), _x(x), _y(y), _ownsData(ownsData) {}
+    virtual ~SimplePoints() {
+        if (_ownsData) {
+            delete[] _x;
+            delete[] _y;
+        }
+    }
+
+    const int _n;
+    const double* _x, * _y;
+    const bool _ownsData;
+};
+
+class Points : public Drawable, private SimplePoints
 {
 
 public:
-    enum Style {
+    enum Symbol {
         Dot,
         Plus,
         Cross,
@@ -21,8 +35,22 @@ public:
         FilledCircle
     };
 
-    Points(int n, double const* x, double const* y) : Drawable(Type_Points), n(n), x(x), y(y){}
-    virtual ~Points() {}
+    Points(int n, double const* x, double const* y) : Drawable(Type_Points), SimplePoints(n, x, y, false), points(new SimplePoints(n, x, y, false)){}
+    virtual ~Points() {
+        delete points;
+    }
+
+    virtual inline int n() const {
+        return points->_n;
+    }
+
+    virtual inline const double* x() const {
+        return points->_x;
+    }
+
+    virtual inline const double* y() const {
+        return points->_y;
+    }
 
     virtual inline void setColor(const Color& c) {
         color = c;
@@ -40,26 +68,25 @@ public:
         return size;
     }
 
-    inline void setStyle(Style s) {
-        style = s;
-        changed.invoke(plotId);
+    void setSymbol(Symbol s);
+    inline Symbol getSymbol() const {
+        return symbol;
     }
-    inline Style getStyle() const {
-        return style;
+    //! @todo how to handle filling of symbols
+    inline bool isFilledSymbol() const {
+        return symbol >= FilledCircle;
     }
-
-    const int n;
-    const double* x, * y;
 
 protected:
-    template<Style s>
     std::vector<std::pair<double, double> > getSymbolVertices() const;
+    void setTypeForSymbol();
 
+    SimplePoints* points;
     Color color = Color(0.0f, 0.0f, 0.0f);
     double size = 1.0;
-    Style style = Dot;
+    Symbol symbol = Dot;
 
-    const unsigned int maxSymbolVertices = 50;
+    const unsigned int maxSymbolVertices = 64;
 
 };
 }

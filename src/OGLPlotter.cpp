@@ -76,10 +76,10 @@ void OGLPlotter::init()
         if (ar != revision[it->first]) {
             const Points* p = static_cast<const Points*>(&plots->lookup(it->first));
 
-            float* interleave = new float[2 * p->n];
-            for (int i = 0; i < p->n; i++) {
-                interleave[(i << 1)] = (p->x[i] - p->getXmin()) / (p->getXmax() - p->getXmin());
-                interleave[(i << 1) + 1] = (p->y[i] - p->getYmin()) / (p->getYmax() - p->getYmin());
+            float* interleave = new float[2 * p->n()];
+            for (int i = 0; i < p->n(); i++) {
+                interleave[(i << 1)] = (p->x()[i] - p->getXmin()) / (p->getXmax() - p->getXmin());
+                interleave[(i << 1) + 1] = (p->y()[i] - p->getYmin()) / (p->getYmax() - p->getYmin());
             }
 
             if (revision[it->first] != 0) {
@@ -87,7 +87,7 @@ void OGLPlotter::init()
             }
             glGenBuffers(1, &it->second.pointBuffer);
             glBindBuffer(GL_ARRAY_BUFFER, it->second.pointBuffer);
-            glBufferData(GL_ARRAY_BUFFER, 2 * p->n * sizeof(float), interleave, GL_STATIC_DRAW);
+            glBufferData(GL_ARRAY_BUFFER, 2 * p->n() * sizeof(float), interleave, GL_STATIC_DRAW);
             glBindBuffer(GL_ARRAY_BUFFER, 0);
 
             it->second.pos = glGetAttribLocation(programsDatabase.getLineProgram(), "Position");
@@ -254,7 +254,7 @@ void OGLPlotter::draw()
         glUniformMatrix3fv(it->second.pointmvp, 1, GL_FALSE, mvp);
 
         glPointSize(p->getSymbolSize());
-        glDrawArrays(convert(p->getDataType()), 0, p->n);
+        glDrawArrays(convert(p->getDataType()), 0, p->n());
         glPointSize(1.0f);
         glDisableVertexAttribArray(it->second.pos);
     }

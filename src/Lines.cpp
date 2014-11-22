@@ -40,6 +40,7 @@ void Lines::calculateInterpolationDots()
     double dx = xmax - xmin;
     double dy = ymax - ymin;
 
+    //! @todo Actually would need aspect ratio of current box, which is geometry & aspect ratio of window
     double fx = (_x[_n-1] - _x[0]) / dx;
     double fy = (max(_n, _y) - min(_n, _y)) / dy;
     double f = std::min(fx, fy);
