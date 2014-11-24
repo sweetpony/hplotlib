@@ -91,7 +91,10 @@ int main()
     layout1.changeOrientation(hpl::HorizontalLayout::RightToLeft);
     plot2.setColorTable<hpl::ColorTable::RainbowBlack>(256);
 
-    //canvas.saveToFile("testoutput");
+    hpl::PostscriptPrinter ps;
+    canvas.connectToPlotter(&ps);
+    ps.saveToFile("testoutput");
+
     plotter.wait();
 
     return 0;

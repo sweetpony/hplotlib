@@ -2,171 +2,168 @@
 
 namespace hpl
 {
-/*PostscriptPrinter::PostscriptPrinter(Orientation orientation) : PlotPrinter(orientation)
+PostscriptPrinter::PostscriptPrinter(Orientation orientation) : AbstractPlotter(), PlotPrinter(orientation)
 {
 }
 
 PostscriptPrinter::~PostscriptPrinter()
 {
+    out.close();
 }
 
-bool PostscriptPrinter::saveToFile(const std::string& fileName, const Registry<CoordinateSystem>& coordinateSystems)
+bool PostscriptPrinter::saveToFile(const std::string& fileName)
 {
-    std::ofstream o(fileName + ".ps");
-    if (! o.is_open()) {
+    this->fileName = fileName + ".ps";
+    out.open(this->fileName);
+    if (! out.is_open()) {
         return false;
     }
-
-    writeHeader(o);
-    setFont(o, 10);
-
-    for(auto i = coordinateSystems.cbegin(); i != coordinateSystems.cend(); i++) {
-        CoordinateSystem* const cosy = i->second;
-        auto& plots = cosy->getPlots();
-        for (auto j = plots.begin(); j != plots.end(); j++) {
-            Lines* l = dynamic_cast<Lines*>(j->second);
-            if (l != 0) {
-                float* x = l->getX();
-                float* y = l->getY();
-                setColor(o, l->getColor());
-
-                for (int k = 0; k < l->getN()-1; k++) {
-                    drawLine(o, x[k], y[k], x[k+1], y[k+1]);
-                }
-
-                delete[] x;
-                delete[] y;
-                continue;
-            }
-            Points* p = dynamic_cast<Points*>(j->second);
-            if (p != 0) {
-                float* x = p->getX();
-                float* y = p->getY();
-                setColor(o, p->getColor());
-
-                //! @todo set point size
-                for (int k = 0; k < p->getN(); k++) {
-                    drawPoint(o, x[k], y[k], 1);
-                }
-
-                delete[] x;
-                delete[] y;
-                continue;
-            }
-            Contour* c = dynamic_cast<Contour*>(j->second);
-            if (c != 0) {
-                double* pixelCorners = c->getPixelCorners();
-                const float* rgbData = c->getRGBData();
-                const unsigned int n = c->getPixelsPerDimension();
-
-                for (unsigned int i = 0; i < n; i++) {
-                    for (unsigned int j = 0; j < n; j++) {
-                        unsigned int k = (i*n+j)*3;
-                        setColor(o, Color(rgbData[k], rgbData[k+1], rgbData[k+2]));
-
-                        std::vector<double> x, y;
-                        for (unsigned l = 0; l < 4; l++) {
-                            unsigned int m = (i*n+j)*8+l*2;
-                            x.push_back(pixelCorners[m]);
-                            y.push_back(pixelCorners[m+1]);
-                        }
-
-                        fillShape(o, x, y);
-                    }
-                }
-
-                delete[] pixelCorners;
-            }
-        }
-
-        float* lines = cosy->getLines();
-        setColor(o, cosy->getColor());
-
-        for (int k = 0; k < cosy->getLinesCount()-3; k+=4) {
-            drawLine(o, lines[k], lines[k+1], lines[k+2], lines[k+3]);
-        }
-
-        CoordinateSystem::Label* labels = cosy->getLabels();
-
-        for (int k = 0; k < cosy->getLabelsCount(); k++) {
-            writeText(o, labels[k].x-0.5*labels[k].width, labels[k].y-0.5*labels[k].height, labels[k].label);
-        }
-
-        delete[] lines;
-        delete[] labels;
-    }
-    writeFooter(o);
-
-    o.close();
+    update();
     return true;
 }
 
-void PostscriptPrinter::writeHeader(std::ofstream& o) const
+void PostscriptPrinter::update()
 {
-    o << "%!PS-Adobe-3.0" << std::endl;
-    o << "%%BoundingBox 0 0 " << pixelX << " " << pixelY << std::endl;
+    writeHeader();
+    setFont(10);
+
+    for(auto i = plots->cbegin(); i != plots->cend(); i++) {
+        Lines* l = dynamic_cast<Lines*>(i->second);
+        if (l != 0) {
+            setColor(l->getColor());
+            setLineWidth(l->getThickness());
+            draw(l->n(), l->x(), l->y(), l->getDataType());
+            continue;
+        }
+        Points* p = dynamic_cast<Points*>(i->second);
+        if (p != 0) {
+            setColor(p->getColor());
+            setLineWidth(p->getSymbolSize());
+            draw(p->n(), p->x(), p->y(), p->getDataType());
+            continue;
+        }
+        Contour* c = dynamic_cast<Contour*>(i->second);
+        if (c != 0) {
+            //! @todo implement
+            /*double* pixelCorners = c->getPixelCorners();
+            const float* rgbData = c->getRGBData();
+            const unsigned int n = c->getPixelsPerDimension();
+
+            for (unsigned int i = 0; i < n; i++) {
+                for (unsigned int j = 0; j < n; j++) {
+                    unsigned int k = (i*n+j)*3;
+                    setColor(o, Color(rgbData[k], rgbData[k+1], rgbData[k+2]));
+
+                    std::vector<double> x, y;
+                    for (unsigned l = 0; l < 4; l++) {
+                        unsigned int m = (i*n+j)*8+l*2;
+                        x.push_back(pixelCorners[m]);
+                        y.push_back(pixelCorners[m+1]);
+                    }
+
+                    fillShape(o, x, y);
+                }
+            }
+
+            delete[] pixelCorners;*/
+        }
+        //! @todo implement
+        /*Text* t = dynamic_cast<Text*>(i->second);
+        if (t != 0) {
+        }*/
+    }
+    writeFooter();
 }
 
-void PostscriptPrinter::writeFooter(std::ofstream& o) const
+void PostscriptPrinter::writeHeader()
 {
-    o << "%%EOF" << std::endl;
+    out << "%!PS-Adobe-3.0" << std::endl;
+    out << "%%BoundingBox 0 0 " << pixelX << " " << pixelY << std::endl;
 }
 
-void PostscriptPrinter::setFont(std::ofstream& o, unsigned int size) const
+void PostscriptPrinter::writeFooter()
 {
-    o << "/Inconsolata findfont" << std::endl;
-    o << size << " scalefont" << std::endl;
-    o << "setfont" << std::endl;
+    out << "%%EOF" << std::endl;
 }
 
-void PostscriptPrinter::setColor(std::ofstream& o, const Color& color) const
+void PostscriptPrinter::setFont(unsigned int size)
 {
-    o << color.r << " " << color.g << " " << color.b << " setrgbcolor" << std::endl;
+    out << "/Inconsolata findfont" << std::endl;
+    out << size << " scalefont" << std::endl;
+    out << "setfont" << std::endl;
 }
 
-void PostscriptPrinter::setLineWidth(std::ofstream& o, unsigned int width) const
+void PostscriptPrinter::setColor(const Color& color)
 {
-    o << width << " setlinewidth" << std::endl;
+    out << color.r << " " << color.g << " " << color.b << " setrgbcolor" << std::endl;
 }
 
-void PostscriptPrinter::drawLine(std::ofstream& o, double x1, double y1, double x2, double y2) const
+void PostscriptPrinter::setLineWidth(unsigned int width)
+{
+    out << width << " setlinewidth" << std::endl;
+}
+
+void PostscriptPrinter::draw(int n, double const* x, double const* y, Drawable::Type type)
+{
+    switch (type) {
+        case Drawable::Type_Lines:
+            for (int i = 0; i < n-1; i+=2) {
+                drawLine(x[i], y[i], x[i+1], y[i+1]);
+            }
+            break;
+        case Drawable::Type_LineStrips:
+            for (int i = 0; i < n; ++i) {
+                drawLine(x[i], y[i], x[i+1], y[i+1]);
+            }
+            break;
+        case Drawable::Type_Points:
+            for (int i = 0; i < n; ++i) {
+                drawPoint(x[i], y[i]);
+            }
+            break;
+        case Drawable::Type_Texture:
+            break;
+    }
+}
+
+void PostscriptPrinter::drawLine(double x1, double y1, double x2, double y2)
 {
     Pixel p1 = transformCoordinates(x1, y1), p2 = transformCoordinates(x2, y2);
-    o << "newpath" << std::endl;
-    o << p1.first << " " << p1.second << " moveto" << std::endl;
-    o << p2.first << " " << p2.second << " lineto" << std::endl;
-    o << "stroke" << std::endl;
+    out << "newpath" << std::endl;
+    out << p1.first << " " << p1.second << " moveto" << std::endl;
+    out << p2.first << " " << p2.second << " lineto" << std::endl;
+    out << "stroke" << std::endl;
 }
 
-void PostscriptPrinter::drawPoint(std::ofstream& o, double x, double y, unsigned int size) const
+void PostscriptPrinter::drawPoint(double x, double y)
 {
     Pixel p = transformCoordinates(x, y);
-    o << "newpath" << std::endl;
-    o << p.first << " " << p.second << " moveto" << std::endl;
-    o << "gsave currentpoint lineto " << size << " setlinewidth 1 setlinecap stroke grestore" << std::endl;
+    out << "newpath" << std::endl;
+    out << p.first << " " << p.second << " moveto" << std::endl;
+    out << "gsave currentpoint lineto 1 setlinecap stroke grestore" << std::endl;
 }
 
-void PostscriptPrinter::fillShape(std::ofstream& o, std::vector<double> x, std::vector<double> y) const
+void PostscriptPrinter::fillShape(std::vector<double> x, std::vector<double> y)
 {
     if (x.size() == 0 || y.size() == 0) {
         return;
     }
 
-    o << "newpath" << std::endl;
+    out << "newpath" << std::endl;
     Pixel p = transformCoordinates(x[0], y[0]);
-    o << p.first << " " << p.second << " moveto" << std::endl;
+    out << p.first << " " << p.second << " moveto" << std::endl;
     for (unsigned int i = 1; i < x.size() && i < y.size(); i++) {
         p = transformCoordinates(x[i], y[i]);
-        o << p.first << " " << p.second << " lineto" << std::endl;
+        out << p.first << " " << p.second << " lineto" << std::endl;
     }
-    o << "closepath" << std::endl;
-    o << "gsave fill grestore" << std::endl;
+    out << "closepath" << std::endl;
+    out << "gsave fill grestore" << std::endl;
 }
 
-void PostscriptPrinter::writeText(std::ofstream& o, double x, double y, std::string text) const
+void PostscriptPrinter::writeText(double x, double y, std::string text)
 {
     Pixel p = transformCoordinates(x, y);
-    o << p.first << " " << p.second << " moveto" << std::endl;
-    o << "(" << text << ") show" << std::endl;
-}*/
+    out << p.first << " " << p.second << " moveto" << std::endl;
+    out << "(" << text << ") show" << std::endl;
+}
 }

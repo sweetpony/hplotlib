@@ -10,7 +10,7 @@ class Text : public Drawable
 {
 
 public:
-    Text(int n, char const* text, double x, double y, double width, double height) : Drawable(), n(n), text(text), x(x), y(y), width(width), height(height) {}
+    Text(int n, char const* text, double x, double y, double width, double height) : Drawable(Drawable::Type_Texture), n(n), text(text), x(x), y(y), width(width), height(height) {}
     virtual ~Text() {}
 
     virtual inline void setColor(const Color& c) {
