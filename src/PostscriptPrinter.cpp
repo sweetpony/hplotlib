@@ -32,14 +32,16 @@ void PostscriptPrinter::update()
         if (l != 0) {
             setColor(l->getColor());
             setLineWidth(l->getThickness());
-            draw(l->n(), l->x(), l->y(), l->getDataType());
+            draw(l->n(), l->x(), l->y(), l->getDataType(), l->getGeometry());
             continue;
         }
         Points* p = dynamic_cast<Points*>(i->second);
         if (p != 0) {
             setColor(p->getColor());
-            setLineWidth(p->getSymbolSize());
-            draw(p->n(), p->x(), p->y(), p->getDataType());
+            if (p->getSymbol() != Points::Dot) {
+                setLineWidth(p->getSymbolSize());
+            }
+            draw(p->n(), p->x(), p->y(), p->getDataType(), p->getGeometry());
             continue;
         }
         Contour* c = dynamic_cast<Contour*>(i->second);
@@ -103,22 +105,22 @@ void PostscriptPrinter::setLineWidth(unsigned int width)
     out << width << " setlinewidth" << std::endl;
 }
 
-void PostscriptPrinter::draw(int n, double const* x, double const* y, Drawable::Type type)
+void PostscriptPrinter::draw(int n, double const* x, double const* y, Drawable::Type type, const Geometry& geometry)
 {
     switch (type) {
         case Drawable::Type_Lines:
             for (int i = 0; i < n-1; i+=2) {
-                drawLine(x[i], y[i], x[i+1], y[i+1]);
+                drawLine(x[i], y[i], x[i+1], y[i+1], geometry);
             }
             break;
         case Drawable::Type_LineStrips:
             for (int i = 0; i < n; ++i) {
-                drawLine(x[i], y[i], x[i+1], y[i+1]);
+                drawLine(x[i], y[i], x[i+1], y[i+1], geometry);
             }
             break;
         case Drawable::Type_Points:
             for (int i = 0; i < n; ++i) {
-                drawPoint(x[i], y[i]);
+                drawPoint(x[i], y[i], geometry);
             }
             break;
         case Drawable::Type_Texture:
@@ -126,43 +128,43 @@ void PostscriptPrinter::draw(int n, double const* x, double const* y, Drawable::
     }
 }
 
-void PostscriptPrinter::drawLine(double x1, double y1, double x2, double y2)
+void PostscriptPrinter::drawLine(double x1, double y1, double x2, double y2, const Geometry& geometry)
 {
-    Pixel p1 = transformCoordinates(x1, y1), p2 = transformCoordinates(x2, y2);
+    Pixel p1 = transformCoordinates(x1, y1, geometry), p2 = transformCoordinates(x2, y2, geometry);
     out << "newpath" << std::endl;
     out << p1.first << " " << p1.second << " moveto" << std::endl;
     out << p2.first << " " << p2.second << " lineto" << std::endl;
     out << "stroke" << std::endl;
 }
 
-void PostscriptPrinter::drawPoint(double x, double y)
+void PostscriptPrinter::drawPoint(double x, double y, const Geometry& geometry)
 {
-    Pixel p = transformCoordinates(x, y);
+    Pixel p = transformCoordinates(x, y, geometry);
     out << "newpath" << std::endl;
     out << p.first << " " << p.second << " moveto" << std::endl;
     out << "gsave currentpoint lineto 1 setlinecap stroke grestore" << std::endl;
 }
 
-void PostscriptPrinter::fillShape(std::vector<double> x, std::vector<double> y)
+void PostscriptPrinter::fillShape(std::vector<double> x, std::vector<double> y, const Geometry& geometry)
 {
     if (x.size() == 0 || y.size() == 0) {
         return;
     }
 
     out << "newpath" << std::endl;
-    Pixel p = transformCoordinates(x[0], y[0]);
+    Pixel p = transformCoordinates(x[0], y[0], geometry);
     out << p.first << " " << p.second << " moveto" << std::endl;
     for (unsigned int i = 1; i < x.size() && i < y.size(); i++) {
-        p = transformCoordinates(x[i], y[i]);
+        p = transformCoordinates(x[i], y[i], geometry);
         out << p.first << " " << p.second << " lineto" << std::endl;
     }
     out << "closepath" << std::endl;
     out << "gsave fill grestore" << std::endl;
 }
 
-void PostscriptPrinter::writeText(double x, double y, std::string text)
+void PostscriptPrinter::writeText(double x, double y, std::string text, const Geometry& geometry)
 {
-    Pixel p = transformCoordinates(x, y);
+    Pixel p = transformCoordinates(x, y, geometry);
     out << p.first << " " << p.second << " moveto" << std::endl;
     out << "(" << text << ") show" << std::endl;
 }
