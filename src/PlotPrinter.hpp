@@ -28,10 +28,16 @@ public:
 
 protected:
     typedef std::pair<unsigned int, unsigned int> Pixel;
-    Pixel transformCoordinates(double x, double y, const Geometry& geometry) const;
+
+    void setCurrentGeometry(const Geometry& geometry, double xmin, double xmax, double ymin, double ymax);
+    Pixel transformCoordinates(double x, double y) const;
 
     unsigned int pixelX = 612, pixelY = 792;
     Orientation orientation = Landscape;
+
+private:
+    Geometry const* currentGeometry = nullptr;
+    double currentXMin = 0.0, currentXMax = 1.0, currentYMin = 0.0, currentYMax = 1.0;
 
 };
 }

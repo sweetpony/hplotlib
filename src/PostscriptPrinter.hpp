@@ -28,12 +28,12 @@ private:
     void setColor(const Color& color);
     void setLineWidth(unsigned int width);
 
-    void draw(int n, double const* x, double const* y, Drawable::Type type, const Geometry& geometry);
+    void draw(int n, double const* x, double const* y, Drawable::Type type);
 
-    void drawLine(double x1, double y1, double x2, double y2, const Geometry& geometry);
-    void drawPoint(double x, double y, const Geometry& geometry);
-    void fillShape(std::vector<double> x, std::vector<double> y, const Geometry& geometry);
-    void writeText(double x, double y, std::string text, const Geometry& geometry);
+    void drawLine(double x1, double y1, double x2, double y2);
+    void drawPoint(double x, double y);
+    void fillShape(std::vector<double> x, std::vector<double> y);
+    void writeText(double x, double y, std::string text);
 
     std::ofstream out;
     std::string fileName;
