@@ -36,7 +36,7 @@ protected:
     Orientation orientation = Landscape;
 
 private:
-    Geometry const* currentGeometry = nullptr;
+    Geometry currentGeometry;
     double currentXMin = 0.0, currentXMax = 1.0, currentYMin = 0.0, currentYMax = 1.0;
 
 };
