@@ -24,38 +24,6 @@ CoordinateSystem::~CoordinateSystem()
     //delete[] labels;
 }
 
-/*float* CoordinateSystem::getLines() const
-{
-    const unsigned int m = getLinesCount();
-    float* l = new float[m];
-
-    for (unsigned int i = 0; i < m-1; i+=2) {
-        l[i] = lines[i] * geometry.width + geometry.leftOffset;
-        l[i+1] = lines[i+1] * geometry.height + geometry.topOffset;
-    }
-
-    return l;
-}
-
-CoordinateSystem::Label* CoordinateSystem::getLabels() const
-{
-    const unsigned int m = getLabelsCount();
-    Label* l = new Label[m];
-
-    for (unsigned int i = 0; i < m; i++) {
-        l[i].x = labels[i].x * geometry.width + geometry.leftOffset;
-        l[i].y = labels[i].y * geometry.height + geometry.topOffset;
-        for (unsigned int j = 0; j < 16; j++) {
-            l[i].label[j] = labels[i].label[j];
-        }
-        l[i].len = labels[i].len;
-        l[i].width = labels[i].width * geometry.width;
-        l[i].height = labels[i].height * geometry.height;
-    }
-
-    return l;
-}*/
-
 void CoordinateSystem::setColor(const Color& c)
 {
     coordLinesColor = c;
@@ -104,30 +72,7 @@ void CoordinateSystem::updateLimits(double xmin, double xmax, double ymin, doubl
 	
 /*void CoordinateSystem::init(GLuint lineprogram, GLuint textprogram, GLuint mapprogram)
 {
-    while (!plotInit.empty()) {
-		Plot::ID id = plotInit.front();
-		plotInit.pop();
-		if (plots.has(id)) {
-            Plot* p = &plots.lookup(id);
-            if (dynamic_cast<Contour*>(p) == 0) {
-                p->init(lineprogram, textprogram);
-            } else {
-                p->init(mapprogram, textprogram);
-            }
-		}
-	}
-
-	this->lineprogram = lineprogram;
-	this->textprogram = textprogram;
-    this->mapprogram = mapprogram;
-	
-    glGenBuffers(1, &lineBuffer);
     glGenBuffers(1, &textBuffer);
-    
-    linepos = glGetAttribLocation(lineprogram, "Position");
-    linerect = glGetUniformLocation(lineprogram, "Rect");
-	linecolor = glGetUniformLocation(lineprogram, "Color");
-	linemvp = glGetUniformLocation(lineprogram, "MVP");
 
     textpos = glGetAttribLocation(textprogram, "Position");
     textuv = glGetAttribLocation(textprogram, "UV");
@@ -138,52 +83,25 @@ void CoordinateSystem::updateLimits(double xmin, double xmax, double ymin, doubl
 }
 
 void CoordinateSystem::update()
-{	
-    delete[] lines;
-    lines = new float[8 + 2*Ticks*4]{
-		XOffset, 1.0f,
-		XOffset, YOffset,
-		XOffset, YOffset,
-		1.0f, YOffset
-    };
-
+{
     delete[] labels;
     labels = new Label[2*Ticks];
     numChars = 0;
 	
 	float xspacing = (1.0 - XOffset) / (Ticks + 1.0f);
-	for (int i = 0; i < Ticks; ++i) {
-		float x = XOffset + (i+1) * xspacing;
-		lines[8 + 4*i] = x;
-		lines[8 + 4*i + 1] = YOffset - TickLength / 2.0f;
-		lines[8 + 4*i + 2] = x;
-		lines[8 + 4*i + 3] = YOffset + TickLength / 2.0f;
-		
+    for (int i = 0; i < Ticks; ++i) {
 		labels[i].len = sprintf(labels[i].label, "%.2f", (i+1) / (Ticks + 1.0f) * (xmax-xmin) + xmin);
 		numChars += labels[i].len;
 		labels[i].x = x;
 		labels[i].y = YOffset / 2.0;
 	}
 	
-	for (int i = Ticks; i < 2*Ticks; ++i) {
-		float y = YOffset + (1.0 - YOffset) * (i-Ticks+1) / (Ticks + 1.0f);
-		lines[8 + 4*i] = XOffset + TickLength / 2.0f;
-		lines[8 + 4*i + 1] = y;
-		lines[8 + 4*i + 2] = XOffset - TickLength / 2.0f;
-		lines[8 + 4*i + 3] = y;
-		
+    for (int i = Ticks; i < 2*Ticks; ++i) {
 		labels[i].len = sprintf(labels[i].label, "%.2f", (i-Ticks+1) / (Ticks + 1.0f) * (ymax-ymin) + ymin);
 		numChars += labels[i].len;
 		labels[i].x = XOffset / 2.0;
 		labels[i].y = y;
-	}
-	
-	numLines =  4 + 4*Ticks;
-
-    glBindBuffer(GL_ARRAY_BUFFER, lineBuffer);
-    glBufferData(GL_ARRAY_BUFFER, 2 * numLines * sizeof(float), lines, GL_STATIC_DRAW);
-    glBindBuffer(GL_ARRAY_BUFFER, 0);
-
+    }
 
     float* text = new float[numChars*4*4];
 	float maxTextWidth = std::min(XOffset-TickLength, 0.8f*xspacing);
@@ -242,10 +160,6 @@ void CoordinateSystem::update()
 
 void CoordinateSystem::destroy()
 {
-    for (auto i = plots.begin(); i != plots.end(); i++) {
-        i->second->destroy();
-    }
-	glDeleteBuffers(1, &lineBuffer);
     glDeleteBuffers(1, &textBuffer);
 }
 
@@ -254,30 +168,7 @@ void CoordinateSystem::draw(float const* mvp)
     if (updateLabels) {
 		updateLabels = false;
 		update();
-	}
-	
-	for (auto i = plots.begin(); i != plots.end(); i++) {
-        i->second->draw(mvp);
     }
-    
-    glUseProgram(lineprogram);
-    glBindBuffer(GL_ARRAY_BUFFER, lineBuffer);
-	glVertexAttribPointer(
-		linepos,
-		2,
-		GL_FLOAT,
-		GL_FALSE,
-		0,
-		(GLvoid const*) 0
-	);
-	glEnableVertexAttribArray(linepos);
-    glUniform4f(linerect, geometry.leftOffset, geometry.topOffset, geometry.width, geometry.height);
-    glUniform3f(linecolor, drawColor.r, drawColor.g, drawColor.b);
-	glUniformMatrix3fv(linemvp, 1, GL_FALSE, mvp);
-	
-	glDrawArrays(GL_LINES, 0, numLines);
-	glDisableVertexAttribArray(linepos);
-	
     glUseProgram(textprogram);    
     glBindBuffer(GL_ARRAY_BUFFER, textBuffer);
 	glVertexAttribPointer(

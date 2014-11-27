@@ -41,16 +41,6 @@ public:
 
     CoordinateSystem(Registry<Drawable>& dataContainer, std::map<Drawable::ID, unsigned int>& dataRevisions);
     ~CoordinateSystem();
-
-    /*float* getLines() const;
-    inline unsigned int getLinesCount() const {
-        return 8 + 2*Ticks*4;
-    }
-
-    Label* getLabels() const;
-    inline unsigned int getLabelsCount() const {
-        return 2*Ticks;
-    }*/
     
     void setColor(const Color& c);
     inline Color getColor() const {
