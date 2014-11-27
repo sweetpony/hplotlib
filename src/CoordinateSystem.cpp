@@ -409,7 +409,7 @@ void CoordinateSystem::setUpVerticalAxis(double* linesX, double* linesY, unsigne
     linesX[indexOffset] = xMean;
     linesY[indexOffset] = 1.0;
     linesX[indexOffset + 1] = xMean;
-    linesY[indexOffset + 1] = XOffset;
+    linesY[indexOffset + 1] = YOffset;
 
     float yspacing = (1.0 - YOffset) / (Ticks + 1.0f);
     for (int i = 0; i < Ticks; ++i) {
