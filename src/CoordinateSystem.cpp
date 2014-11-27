@@ -351,7 +351,7 @@ void CoordinateSystem::removePlot(Drawable::ID id)
 //! @todo logscale
 void CoordinateSystem::setUpCoordLines()
 {
-    const int n = (4 + 4*Ticks) * ((xFlags | Axis_PaintPrimary) + (xFlags | Axis_PaintSecondary) + (yFlags | Axis_PaintPrimary) + (yFlags | Axis_PaintSecondary));
+    const int n = (2 + 2 * Ticks) * ((xFlags | Axis_PaintPrimary) + (xFlags | Axis_PaintSecondary) + (yFlags | Axis_PaintPrimary) + (yFlags | Axis_PaintSecondary));
     delete[] linesX;
     delete[] linesY;
 
