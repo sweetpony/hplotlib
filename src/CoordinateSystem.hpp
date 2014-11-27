@@ -35,6 +35,10 @@ public:
 	static constexpr int Ticks = 8;
 	static constexpr float TickLength = 0.02f;
 
+    static constexpr int Axis_PaintPrimary = 1 << 0;
+    static constexpr int Axis_PaintSecondary = 1 << 1;
+    static constexpr int Axis_Logscale = 1 << 2;
+
     CoordinateSystem(Registry<Drawable>& dataContainer, std::map<Drawable::ID, unsigned int>& dataRevisions);
     ~CoordinateSystem();
 
@@ -68,12 +72,16 @@ public:
     
     inline ID id() const { return csId; }
     inline void setId(ID id) { csId = id; }
+
+    void setAxis(int xFlags, int yFlags);
 	
 private:
     Drawable::ID addNewPlot(Drawable* plot);
     void removePlot(Drawable::ID id);
 
     void setUpCoordLines();
+    void setUpHorizontalAxis(double* linesX, double* linesY, unsigned int indexOffset, double yMean) const;
+    void setUpVerticalAxis(double* linesX, double* linesY, unsigned int indexOffset, double xMean) const;
 
     Registry<Drawable>& data;
     std::map<Drawable::ID, unsigned int>& dataRevisions;
@@ -91,6 +99,8 @@ private:
     Lines* coordLines = nullptr;
     double* linesX = nullptr,* linesY = nullptr;
     Drawable::ID coordLinesID;
+
+    int xFlags = Axis_PaintPrimary, yFlags = Axis_PaintSecondary;
 
     /*
     GLuint textprogram;

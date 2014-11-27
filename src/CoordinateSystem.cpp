@@ -305,6 +305,15 @@ void CoordinateSystem::draw(float const* mvp)
     glDisableVertexAttribArray(textuv);
 }*/
 
+void CoordinateSystem::setAxis(int xFlags, int yFlags)
+{
+    this->xFlags = xFlags;
+    this->yFlags = yFlags;
+    //! @todo give logscale attribute to plots
+    setUpCoordLines();
+    changed.invoke(Drawable::ID());
+}
+
 Drawable::ID CoordinateSystem::addNewPlot(Drawable* plot)
 {
     Drawable::ID id = data.add(plot);
@@ -339,38 +348,76 @@ void CoordinateSystem::removePlot(Drawable::ID id)
     }
 }
 
+//! @todo logscale
 void CoordinateSystem::setUpCoordLines()
 {
-    constexpr int n = 4 + 4*Ticks;
+    const int n = (4 + 4*Ticks) * ((xFlags | Axis_PaintPrimary) + (xFlags | Axis_PaintSecondary) + (yFlags | Axis_PaintPrimary) + (yFlags | Axis_PaintSecondary));
     delete[] linesX;
     delete[] linesY;
-    linesX = new double[n] {XOffset, XOffset, XOffset, 1.0};
-    linesY = new double[n] {1.0, YOffset, YOffset, YOffset};
 
-    float xspacing = (1.0 - XOffset) / (Ticks + 1.0f);
-    for (int i = 0; i < Ticks; ++i) {
-        float x = XOffset + (i+1) * xspacing;
-        linesX[4 + 2*i] = x;
-        linesY[4 + 2*i] = YOffset - TickLength / 2.0f;
-        linesX[4 + 2*i + 1] = x;
-        linesY[4 + 2*i + 1] = YOffset + TickLength / 2.0f;
-    }
+    if (n != 0) {
+        linesX = new double[n];
+        linesY = new double[n];
+        unsigned int offset = 0;
 
-    for (int i = Ticks; i < 2*Ticks; ++i) {
-        float y = YOffset + (1.0 - YOffset) * (i-Ticks+1) / (Ticks + 1.0f);
-        linesX[4 + 2*i] = XOffset + TickLength / 2.0f;
-        linesY[4 + 2*i] = y;
-        linesX[4 + 2*i + 1] = XOffset - TickLength / 2.0f;
-        linesY[4 + 2*i + 1] = y;
+        //! @todo broke something in this rework, check what is wrong now
+        if (xFlags | Axis_PaintPrimary) {
+            setUpHorizontalAxis(linesX, linesY, offset, YOffset);
+            offset += 2 + 2 * Ticks;
+        }
+
+        if (yFlags | Axis_PaintPrimary) {
+            setUpVerticalAxis(linesX, linesY, offset, XOffset);
+            offset += 2 + 2 * Ticks;
+        }
+        //! @todo secondary axes
     }
 
     if (coordLines != nullptr) {
         removePlot(coordLinesID);
     }
 
-    coordLines = new Lines(n, linesX, linesY, true);
+    if (n != 0) {
+        coordLines = new Lines(n, linesX, linesY, true);
+        coordLinesID = addNewPlot(coordLines);
+        coordLines->setLimits(0.0, 0.0, 1.0, 1.0);
+    } else {
+        coordLines = 0;
+        coordLinesID = Drawable::ID();
+    }
+}
 
-    coordLinesID = addNewPlot(coordLines);
-    coordLines->setLimits(0.0, 0.0, 1.0, 1.0);
+void CoordinateSystem::setUpHorizontalAxis(double* linesX, double* linesY, unsigned int indexOffset, double yMean) const
+{
+    linesX[indexOffset] = 1.0;
+    linesY[indexOffset] = yMean;
+    linesX[indexOffset + 1] = XOffset;
+    linesY[indexOffset + 1] = yMean;
+
+    float xspacing = (1.0 - XOffset) / (Ticks + 1.0f);
+    for (int i = 0; i < Ticks; ++i) {
+        float x = XOffset + (i+1) * xspacing;
+        linesX[indexOffset + 2 + 2*i] = x;
+        linesY[indexOffset + 2 + 2*i] = yMean - TickLength / 2.0f;
+        linesX[indexOffset + 2 + 2*i + 1] = x;
+        linesY[indexOffset + 2 + 2*i + 1] = yMean + TickLength / 2.0f;
+    }
+}
+
+void CoordinateSystem::setUpVerticalAxis(double* linesX, double* linesY, unsigned int indexOffset, double xMean) const
+{
+    linesX[indexOffset] = xMean;
+    linesY[indexOffset] = 1.0;
+    linesX[indexOffset + 1] = xMean;
+    linesY[indexOffset + 1] = XOffset;
+
+    float yspacing = (1.0 - YOffset) / (Ticks + 1.0f);
+    for (int i = 0; i < Ticks; ++i) {
+        float y = YOffset + (i+1) * yspacing;
+        linesX[indexOffset + 2  + 2*i] = xMean + TickLength / 2.0f;
+        linesY[indexOffset + 2  + 2*i] = y;
+        linesX[indexOffset + 2  + 2*i + 1] = xMean - TickLength / 2.0f;
+        linesY[indexOffset + 2  + 2*i + 1] = y;
+    }
 }
 }
