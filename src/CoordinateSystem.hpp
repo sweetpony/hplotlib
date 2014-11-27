@@ -99,6 +99,7 @@ private:
     Lines* coordLines = nullptr;
     double* linesX = nullptr,* linesY = nullptr;
     Drawable::ID coordLinesID;
+    Color coordLinesColor = Color(0.0f ,0.0f, 0.0f);
 
     int xFlags = Axis_PaintPrimary, yFlags = Axis_PaintPrimary;
 

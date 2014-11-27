@@ -58,7 +58,10 @@ CoordinateSystem::Label* CoordinateSystem::getLabels() const
 
 void CoordinateSystem::setColor(const Color& c)
 {
-    coordLines->setColor(c);
+    coordLinesColor = c;
+    if (coordLines != nullptr) {
+        coordLines->setColor(c);
+    }
 }
 
 void CoordinateSystem::setGeometry(Geometry geom)
@@ -390,6 +393,7 @@ void CoordinateSystem::setUpCoordLines()
         coordLines = new Lines(n, linesX, linesY, true);
         coordLinesID = addNewPlot(coordLines);
         coordLines->setLimits(0.0, 0.0, 1.0, 1.0);
+        coordLines->setColor(coordLinesColor);
     } else {
         coordLines = nullptr;
         coordLinesID = Drawable::ID();
