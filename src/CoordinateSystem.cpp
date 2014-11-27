@@ -305,7 +305,7 @@ void CoordinateSystem::draw(float const* mvp)
     glDisableVertexAttribArray(textuv);
 }*/
 
-void CoordinateSystem::setAxis(int xFlags, int yFlags)
+void CoordinateSystem::setAxisProperties(int xFlags, int yFlags)
 {
     this->xFlags = xFlags;
     this->yFlags = yFlags;
@@ -351,7 +351,8 @@ void CoordinateSystem::removePlot(Drawable::ID id)
 //! @todo logscale
 void CoordinateSystem::setUpCoordLines()
 {
-    const int n = (2 + 2 * Ticks) * ((xFlags | Axis_PaintPrimary) + (xFlags | Axis_PaintSecondary) + (yFlags | Axis_PaintPrimary) + (yFlags | Axis_PaintSecondary));
+    const int n = (2 + 2 * Ticks) * (((xFlags & Axis_PaintPrimary) ? 1 : 0) + ((xFlags & Axis_PaintSecondary) ? 1 : 0)
+                                   + ((yFlags & Axis_PaintPrimary) ? 1 : 0) + ((yFlags & Axis_PaintSecondary) ? 1 : 0));
     delete[] linesX;
     delete[] linesY;
 
@@ -360,17 +361,25 @@ void CoordinateSystem::setUpCoordLines()
         linesY = new double[n];
         unsigned int offset = 0;
 
-        //! @todo broke something in this rework, check what is wrong now
-        if (xFlags | Axis_PaintPrimary) {
+        if (xFlags & Axis_PaintPrimary) {
             setUpHorizontalAxis(linesX, linesY, offset, YOffset);
             offset += 2 + 2 * Ticks;
         }
-
-        if (yFlags | Axis_PaintPrimary) {
+        if (xFlags & Axis_PaintSecondary) {
+            setUpHorizontalAxis(linesX, linesY, offset, 1.0);
+            offset += 2 + 2 * Ticks;
+        }
+        if (yFlags & Axis_PaintPrimary) {
             setUpVerticalAxis(linesX, linesY, offset, XOffset);
             offset += 2 + 2 * Ticks;
         }
-        //! @todo secondary axes
+        if (yFlags & Axis_PaintSecondary) {
+            setUpVerticalAxis(linesX, linesY, offset, 1.0);
+            offset += 2 + 2 * Ticks;
+        }
+    } else {
+        linesX = nullptr;
+        linesY = nullptr;
     }
 
     if (coordLines != nullptr) {
@@ -382,7 +391,7 @@ void CoordinateSystem::setUpCoordLines()
         coordLinesID = addNewPlot(coordLines);
         coordLines->setLimits(0.0, 0.0, 1.0, 1.0);
     } else {
-        coordLines = 0;
+        coordLines = nullptr;
         coordLinesID = Drawable::ID();
     }
 }

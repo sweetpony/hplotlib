@@ -55,11 +55,14 @@ int main()
 
     hpl::CoordinateSystem& cs1 = canvas.addCoordinateSystem<hpl::CoordinateSystem>();
     cs1.setColor(hpl::Color(0.6f, 0.6f, 0.6f));
+    cs1.setAxisProperties(hpl::CoordinateSystem::Axis_PaintPrimary | hpl::CoordinateSystem::Axis_PaintSecondary,
+                          hpl::CoordinateSystem::Axis_PaintPrimary | hpl::CoordinateSystem::Axis_PaintSecondary);
     hpl::Lines& plot1 = cs1.addPlot<hpl::Lines>(NUM_POINTS, x, y);
     plot1.setColor(hpl::Color(1.0f, 0.0f, 0.0f));
     plot1.setThickness(5.0);
 
     hpl::CoordinateSystem& cs2 = canvas.addCoordinateSystem<hpl::CoordinateSystem>();
+    cs2.setAxisProperties(0, 0);
     hpl::Contour& plot2 = cs2.addPlot<hpl::Contour>(NUM_POINTS, x, x, m);
 
     hpl::CoordinateSystem& cs3 = canvas.addCoordinateSystem<hpl::CoordinateSystem>();

@@ -73,7 +73,7 @@ public:
     inline ID id() const { return csId; }
     inline void setId(ID id) { csId = id; }
 
-    void setAxis(int xFlags, int yFlags);
+    void setAxisProperties(int xFlags, int yFlags);
 	
 private:
     Drawable::ID addNewPlot(Drawable* plot);
@@ -100,7 +100,7 @@ private:
     double* linesX = nullptr,* linesY = nullptr;
     Drawable::ID coordLinesID;
 
-    int xFlags = Axis_PaintPrimary, yFlags = Axis_PaintSecondary;
+    int xFlags = Axis_PaintPrimary, yFlags = Axis_PaintPrimary;
 
     /*
     GLuint textprogram;
