@@ -208,6 +208,14 @@ void CoordinateSystem::setAxisProperties(int xFlags, int yFlags)
     changed.invoke(Drawable::ID());
 }
 
+void CoordinateSystem::setTickMode(TickMode mode)
+{
+    this->tickMode = mode;
+    //! @todo do sth with data?
+    setUpCoordLines();
+    changed.invoke(Drawable::ID());
+}
+
 Drawable::ID CoordinateSystem::addNewPlot(Drawable* plot)
 {
     Drawable::ID id = data.add(plot);
@@ -242,7 +250,6 @@ void CoordinateSystem::removePlot(Drawable::ID id)
     }
 }
 
-//! @todo logscale
 void CoordinateSystem::setUpCoordLines()
 {
     const int n = (2 + 2 * Ticks) * (((xFlags & Axis_PaintPrimary) ? 1 : 0) + ((xFlags & Axis_PaintSecondary) ? 1 : 0)
@@ -256,19 +263,19 @@ void CoordinateSystem::setUpCoordLines()
         unsigned int offset = 0;
 
         if (xFlags & Axis_PaintPrimary) {
-            setUpHorizontalAxis(linesX, linesY, offset, YOffset);
+            setUpHorizontalAxis(linesX, linesY, offset, YOffset, xFlags & Axis_Logscale);
             offset += 2 + 2 * Ticks;
         }
         if (xFlags & Axis_PaintSecondary) {
-            setUpHorizontalAxis(linesX, linesY, offset, 1.0);
+            setUpHorizontalAxis(linesX, linesY, offset, 1.0, xFlags & Axis_Logscale);
             offset += 2 + 2 * Ticks;
         }
         if (yFlags & Axis_PaintPrimary) {
-            setUpVerticalAxis(linesX, linesY, offset, XOffset);
+            setUpVerticalAxis(linesX, linesY, offset, XOffset, yFlags & Axis_Logscale);
             offset += 2 + 2 * Ticks;
         }
         if (yFlags & Axis_PaintSecondary) {
-            setUpVerticalAxis(linesX, linesY, offset, 1.0);
+            setUpVerticalAxis(linesX, linesY, offset, 1.0, yFlags & Axis_Logscale);
             offset += 2 + 2 * Ticks;
         }
     } else {
@@ -291,37 +298,47 @@ void CoordinateSystem::setUpCoordLines()
     }
 }
 
-void CoordinateSystem::setUpHorizontalAxis(double* linesX, double* linesY, unsigned int indexOffset, double yMean) const
+//! @todo tickmode
+void CoordinateSystem::setUpHorizontalAxis(double* linesX, double* linesY, unsigned int indexOffset, double yMean, bool log) const
 {
     linesX[indexOffset] = 1.0;
     linesY[indexOffset] = yMean;
     linesX[indexOffset + 1] = XOffset;
     linesY[indexOffset + 1] = yMean;
 
-    float xspacing = (1.0 - XOffset) / (Ticks + 1.0f);
-    for (int i = 0; i < Ticks; ++i) {
-        float x = XOffset + (i+1) * xspacing;
-        linesX[indexOffset + 2 + 2*i] = x;
-        linesY[indexOffset + 2 + 2*i] = yMean - TickLength / 2.0f;
-        linesX[indexOffset + 2 + 2*i + 1] = x;
-        linesY[indexOffset + 2 + 2*i + 1] = yMean + TickLength / 2.0f;
+    if (log) {
+        //! @todo implement
+    } else {
+        float xspacing = (1.0 - XOffset) / (Ticks + 1.0f);
+        for (int i = 0; i < Ticks; ++i) {
+            setUpTick(linesX, linesY, indexOffset+2+2*i, XOffset+(i+1)*xspacing, yMean);
+        }
     }
 }
 
-void CoordinateSystem::setUpVerticalAxis(double* linesX, double* linesY, unsigned int indexOffset, double xMean) const
+//! @todo tickmode
+void CoordinateSystem::setUpVerticalAxis(double* linesX, double* linesY, unsigned int indexOffset, double xMean, bool log) const
 {
     linesX[indexOffset] = xMean;
     linesY[indexOffset] = 1.0;
     linesX[indexOffset + 1] = xMean;
     linesY[indexOffset + 1] = YOffset;
 
-    float yspacing = (1.0 - YOffset) / (Ticks + 1.0f);
-    for (int i = 0; i < Ticks; ++i) {
-        float y = YOffset + (i+1) * yspacing;
-        linesX[indexOffset + 2  + 2*i] = xMean + TickLength / 2.0f;
-        linesY[indexOffset + 2  + 2*i] = y;
-        linesX[indexOffset + 2  + 2*i + 1] = xMean - TickLength / 2.0f;
-        linesY[indexOffset + 2  + 2*i + 1] = y;
+    if (log) {
+        //! @todo implement
+    } else {
+        float yspacing = (1.0 - YOffset) / (Ticks + 1.0f);
+        for (int i = 0; i < Ticks; ++i) {
+            setUpTick(linesY, linesX, indexOffset+2+2*i, YOffset+(i+1)*yspacing, xMean);
+        }
     }
+}
+
+void CoordinateSystem::setUpTick(double* primary, double* secondary, unsigned int indexOffset, double primaryValue, double secondaryMeanValue) const
+{
+    primary[indexOffset] = primaryValue;
+    primary[indexOffset+1] = primaryValue;
+    secondary[indexOffset] = secondaryMeanValue-0.5*TickLength;
+    secondary[indexOffset+1] = secondaryMeanValue+0.5*TickLength;
 }
 }

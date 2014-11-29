@@ -39,6 +39,12 @@ public:
     static constexpr int Axis_PaintSecondary = 1 << 1;
     static constexpr int Axis_Logscale = 1 << 2;
 
+    enum TickMode {
+        FixedAmount,
+        Smart,
+        Fixed
+    };
+
     CoordinateSystem(Registry<Drawable>& dataContainer, std::map<Drawable::ID, unsigned int>& dataRevisions);
     ~CoordinateSystem();
     
@@ -64,14 +70,16 @@ public:
     inline void setId(ID id) { csId = id; }
 
     void setAxisProperties(int xFlags, int yFlags);
+    void setTickMode(TickMode mode);
 	
 private:
     Drawable::ID addNewPlot(Drawable* plot);
     void removePlot(Drawable::ID id);
 
     void setUpCoordLines();
-    void setUpHorizontalAxis(double* linesX, double* linesY, unsigned int indexOffset, double yMean) const;
-    void setUpVerticalAxis(double* linesX, double* linesY, unsigned int indexOffset, double xMean) const;
+    void setUpHorizontalAxis(double* linesX, double* linesY, unsigned int indexOffset, double yMean, bool log) const;
+    void setUpVerticalAxis(double* linesX, double* linesY, unsigned int indexOffset, double xMean, bool log) const;
+    void setUpTick(double* primary, double* secondary, unsigned int indexOffset, double primaryValue, double secondaryMeanValue) const;
 
     Registry<Drawable>& data;
     std::map<Drawable::ID, unsigned int>& dataRevisions;
@@ -92,6 +100,7 @@ private:
     Color coordLinesColor = Color(0.0f ,0.0f, 0.0f);
 
     int xFlags = Axis_PaintPrimary, yFlags = Axis_PaintPrimary;
+    TickMode tickMode = FixedAmount;
 
     /*
     GLuint textprogram;
