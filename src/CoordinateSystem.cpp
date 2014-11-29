@@ -377,22 +377,22 @@ std::vector<double> CoordinateSystem::getDataPointsForTicks(double min, double m
 
     while (todo) {
         ret = getDataPointsInside(min, max, div);
-        if (ret.size() < countMin) {
+        if (ret.size() > countMax) {
             index ++;
             if (index >= size) {
                 index = 0;
                 exponent ++;
             }
             div = steps[index] * pow(10.0, exponent);
-            up = true;
-        } else if (ret.size() > countMax) {
+            down = true;
+        } else if (ret.size() < countMin) {
             index --;
             if (index < 0) {
                 index = size - 1;
                 exponent --;
             }
             div = steps[index] * pow(10.0, exponent);
-            down = true;
+            up = true;
             if (down && up) {
                 todo = false;
             }
