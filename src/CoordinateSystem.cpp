@@ -57,9 +57,7 @@ void CoordinateSystem::updateLimits(double xmin, double xmax, double ymin, doubl
     this->ymin = std::min(this->ymin, ymin);
     this->ymax = std::min(this->ymax, ymax);
 
-    if (coordLines != nullptr) {
-        coordLines->setLimits(this->xmin, this->ymin, this->xmax, this->ymax);
-    }
+    setUpCoordLines();
 
     for (auto it = myPlots.begin(); it != myPlots.end(); ++it) {
         data.lookup(*it).setLimits(this->xmin, this->ymin, this->xmax, this->ymax);
