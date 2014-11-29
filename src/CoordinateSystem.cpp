@@ -298,7 +298,6 @@ void CoordinateSystem::setUpCoordLines()
     }
 }
 
-//! @todo tickmode
 void CoordinateSystem::setUpHorizontalAxis(double* linesX, double* linesY, unsigned int indexOffset, double yMean, bool log) const
 {
     linesX[indexOffset] = 1.0;
@@ -306,17 +305,26 @@ void CoordinateSystem::setUpHorizontalAxis(double* linesX, double* linesY, unsig
     linesX[indexOffset + 1] = XOffset;
     linesY[indexOffset + 1] = yMean;
 
-    if (log) {
-        //! @todo implement
-    } else {
-        float xspacing = (1.0 - XOffset) / (Ticks + 1.0f);
-        for (int i = 0; i < Ticks; ++i) {
+    if (tickMode == FixedAmount) {
+        if (log) {
+            //! @todo implement
+        } else {
+            float xspacing = (1.0 - XOffset) / (Ticks + 1.0f);
+            for (int i = 0; i < Ticks; ++i) {
+                setUpTick(linesX, linesY, indexOffset+2+2*i, XOffset+(i+1)*xspacing, yMean);
+            }
+        }
+    } else if (tickMode == Smart) {
+        std::vector<double> tickPoints = getDataPointsForTicks(xmin, xmax, log);
+        float xspacing = (1.0 - XOffset) / (tickPoints.size() + 1.0f);
+        for (unsigned int i = 0; i < tickPoints.size(); ++i) {
             setUpTick(linesX, linesY, indexOffset+2+2*i, XOffset+(i+1)*xspacing, yMean);
         }
+    } else {
+        //! @todo implement
     }
 }
 
-//! @todo tickmode
 void CoordinateSystem::setUpVerticalAxis(double* linesX, double* linesY, unsigned int indexOffset, double xMean, bool log) const
 {
     linesX[indexOffset] = xMean;
@@ -324,13 +332,23 @@ void CoordinateSystem::setUpVerticalAxis(double* linesX, double* linesY, unsigne
     linesX[indexOffset + 1] = xMean;
     linesY[indexOffset + 1] = YOffset;
 
-    if (log) {
-        //! @todo implement
-    } else {
-        float yspacing = (1.0 - YOffset) / (Ticks + 1.0f);
-        for (int i = 0; i < Ticks; ++i) {
+    if (tickMode == FixedAmount) {
+        if (log) {
+            //! @todo implement
+        } else {
+            float yspacing = (1.0 - YOffset) / (Ticks + 1.0f);
+            for (int i = 0; i < Ticks; ++i) {
+                setUpTick(linesY, linesX, indexOffset+2+2*i, YOffset+(i+1)*yspacing, xMean);
+            }
+        }
+    } else if (tickMode == Smart) {
+        std::vector<double> tickPoints = getDataPointsForTicks(ymin, ymax, log);
+        float yspacing = (1.0 - YOffset) / (tickPoints.size() + 1.0f);
+        for (unsigned int i = 0; i < tickPoints.size(); ++i) {
             setUpTick(linesY, linesX, indexOffset+2+2*i, YOffset+(i+1)*yspacing, xMean);
         }
+    } else {
+        //! @todo implement
     }
 }
 
@@ -340,5 +358,65 @@ void CoordinateSystem::setUpTick(double* primary, double* secondary, unsigned in
     primary[indexOffset+1] = primaryValue;
     secondary[indexOffset] = secondaryMeanValue-0.5*TickLength;
     secondary[indexOffset+1] = secondaryMeanValue+0.5*TickLength;
+}
+
+std::vector<double> CoordinateSystem::getDataPointsForTicks(double min, double max, bool log) const
+{
+    std::vector<double> ret;
+    double div = 10.0, exponent = 1;
+    bool todo = true, up = false, down = false;
+    unsigned int countMin = 2, countMax = 8;
+    int index = 0, size;
+    double* steps;
+
+    if (log) {
+        size = 1;
+        steps = new double[1] {1.0};
+    } else {
+        size = 3;
+        steps = new double[3] {1.0, 2.0, 5.0};
+    }
+
+    while (todo) {
+        ret = getDataPointsInside(min, max, div);
+        if (ret.size() < countMin) {
+            index ++;
+            if (index >= size) {
+                index = 0;
+                exponent ++;
+            }
+            div = steps[index] * pow(10.0, exponent);
+            up = true;
+        } else if (ret.size() > countMax) {
+            index --;
+            if (index < 0) {
+                index = size - 1;
+                exponent --;
+            }
+            div = steps[index] * pow(10.0, exponent);
+            down = true;
+            if (down && up) {
+                todo = false;
+            }
+        } else {
+            todo = false;
+        }
+    }
+
+    delete[] steps;
+    return ret;
+}
+
+std::vector<double> CoordinateSystem::getDataPointsInside(double min, double max, double divisor) const
+{
+    std::vector<double> ret;
+
+    double val = ceil(min / divisor) * divisor;
+    while (val <= max) {
+        ret.push_back(val);
+        val += divisor;
+    }
+
+    return ret;
 }
 }

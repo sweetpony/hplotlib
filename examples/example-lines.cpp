@@ -70,6 +70,8 @@ int main()
     plot3.setColor(hpl::Color(0.0f, 0.0f, 1.0f));
     hpl::Lines& plot4 = cs3.addPlot<hpl::Lines>(NUM_POINTS, x, y);
     plot4.setColor(hpl::Color(0.0f, 0.0f, 0.0f));
+    //! @todo set this directly before adding plot data, currently crashes with bad_alloc then
+    cs3.setTickMode(hpl::CoordinateSystem::Smart);
 
     canvas.addCoordinateSystemToLayout(cs1.id(), layout1.id());
     canvas.addLayoutToLayout(layout2.id(), layout1.id());

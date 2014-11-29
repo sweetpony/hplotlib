@@ -9,6 +9,8 @@
 
 #include <queue>
 #include <map>
+#include <vector>
+#include <cmath>
 
 #include "Drawable.hpp"
 #include "Statistics.hpp"
@@ -80,6 +82,8 @@ private:
     void setUpHorizontalAxis(double* linesX, double* linesY, unsigned int indexOffset, double yMean, bool log) const;
     void setUpVerticalAxis(double* linesX, double* linesY, unsigned int indexOffset, double xMean, bool log) const;
     void setUpTick(double* primary, double* secondary, unsigned int indexOffset, double primaryValue, double secondaryMeanValue) const;
+    std::vector<double> getDataPointsForTicks(double min, double max, bool log) const;
+    std::vector<double> getDataPointsInside(double min, double max, double divisor) const;
 
     Registry<Drawable>& data;
     std::map<Drawable::ID, unsigned int>& dataRevisions;
