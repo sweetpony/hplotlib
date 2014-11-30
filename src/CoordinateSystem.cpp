@@ -318,6 +318,11 @@ void CoordinateSystem::setUpHorizontalAxis(double* linesX, double* linesY, unsig
         for (unsigned int i = 0; i < tickPoints.size(); ++i) {
             setUpTick(linesX, linesY, indexOffset+2+2*i, XOffset+(tickPoints[i]-xmin)*xspacing, yMean);
         }
+        //! @todo ugly hack better adjust array length apropriately, doesn't even work properly; instead fixing the hack better fix the problem XD
+        for (unsigned int i = indexOffset+2+2*tickPoints.size()-1; i < 2+2*Ticks; ++i) {
+            linesX[i] = 0.0;
+            linesY[i] = 0.0;
+        }
     } else {
         //! @todo implement
     }
@@ -344,6 +349,11 @@ void CoordinateSystem::setUpVerticalAxis(double* linesX, double* linesY, unsigne
         float yspacing = (1.0 - YOffset) / (ymax - ymin);
         for (unsigned int i = 0; i < tickPoints.size(); ++i) {
             setUpTick(linesY, linesX, indexOffset+2+2*i, YOffset+(tickPoints[i]-ymin)*yspacing, xMean);
+        }
+        //! @todo ugly hack better adjust array length apropriately, doesn't even work properly; instead fixing the hack better fix the problem XD
+        for (unsigned int i = indexOffset+2+2*tickPoints.size()-1; i < 2+2*Ticks; ++i) {
+            linesX[i] = 0.0;
+            linesY[i] = 0.0;
         }
     } else {
         //! @todo implement

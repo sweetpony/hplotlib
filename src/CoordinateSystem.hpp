@@ -11,6 +11,7 @@
 #include <map>
 #include <vector>
 #include <cmath>
+#include <iostream>
 
 #include "Drawable.hpp"
 #include "Statistics.hpp"
