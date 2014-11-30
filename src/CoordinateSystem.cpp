@@ -314,9 +314,9 @@ void CoordinateSystem::setUpHorizontalAxis(double* linesX, double* linesY, unsig
         }
     } else if (tickMode == Smart) {
         std::vector<double> tickPoints = getDataPointsForTicks(xmin, xmax, log);
-        float xspacing = (1.0 - XOffset) / (tickPoints.size() + 1.0f);
+        float xspacing = (1.0 - XOffset) / (xmax - xmin);
         for (unsigned int i = 0; i < tickPoints.size(); ++i) {
-            setUpTick(linesX, linesY, indexOffset+2+2*i, XOffset+(i+1)*xspacing, yMean);
+            setUpTick(linesX, linesY, indexOffset+2+2*i, XOffset+(tickPoints[i]-xmin)*xspacing, yMean);
         }
     } else {
         //! @todo implement
@@ -341,9 +341,9 @@ void CoordinateSystem::setUpVerticalAxis(double* linesX, double* linesY, unsigne
         }
     } else if (tickMode == Smart) {
         std::vector<double> tickPoints = getDataPointsForTicks(ymin, ymax, log);
-        float yspacing = (1.0 - YOffset) / (tickPoints.size() + 1.0f);
+        float yspacing = (1.0 - YOffset) / (ymax - ymin);
         for (unsigned int i = 0; i < tickPoints.size(); ++i) {
-            setUpTick(linesY, linesX, indexOffset+2+2*i, YOffset+(i+1)*yspacing, xMean);
+            setUpTick(linesY, linesX, indexOffset+2+2*i, YOffset+(tickPoints[i]-ymin)*yspacing, xMean);
         }
     } else {
         //! @todo implement
@@ -363,7 +363,7 @@ std::vector<double> CoordinateSystem::getDataPointsForTicks(double min, double m
     std::vector<double> ret;
     double div = 10.0, exponent = 1;
     bool todo = true, up = false, down = false;
-    unsigned int countMin = 2, countMax = 8;
+    unsigned int countMin = 3, countMax = 8;
     int index = 0, size;
     double* steps;
 
