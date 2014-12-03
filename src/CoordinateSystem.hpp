@@ -63,8 +63,6 @@ public:
     template<typename T>
     T& addPlot(int n, double const* x, double const* y, double const* z);
 
-    /*virtual void update();*/
-
     void updateLimits(double xmin, double xmax, double ymin, double ymax);
 
     Delegate<Drawable::ID> changed;
@@ -80,11 +78,13 @@ private:
     void removePlot(Drawable::ID id);
 
     void setUpCoordLines();
-    void setUpHorizontalAxis(double* linesX, double* linesY, unsigned int indexOffset, double yMean, bool log) const;
-    void setUpVerticalAxis(double* linesX, double* linesY, unsigned int indexOffset, double xMean, bool log) const;
-    void setUpTick(double* primary, double* secondary, unsigned int indexOffset, double primaryValue, double secondaryMeanValue) const;
-    std::vector<double> getDataPointsForTicks(double min, double max, bool log) const;
+    std::vector<double> getDataTicks(double min, double max, bool log) const;
+    std::vector<double> getSimpleDataPointsForTicks(double min, double max, bool log) const;
+    std::vector<double> getSmartDataPointsForTicks(double min, double max, bool log) const;
     std::vector<double> getDataPointsInside(double min, double max, double divisor) const;
+    void setUpHorizontalAxis(double* linesX, double* linesY, unsigned int indexOffset, double yMean, const std::vector<double>& dataTicks) const;
+    void setUpVerticalAxis(double* linesX, double* linesY, unsigned int indexOffset, double xMean, const std::vector<double>& dataTicks) const;
+    void setUpTick(double* primary, double* secondary, unsigned int indexOffset, double primaryValue, double secondaryMeanValue) const;
 
     Registry<Drawable>& data;
     std::map<Drawable::ID, unsigned int>& dataRevisions;

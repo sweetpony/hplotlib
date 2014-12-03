@@ -250,31 +250,43 @@ void CoordinateSystem::removePlot(Drawable::ID id)
 
 void CoordinateSystem::setUpCoordLines()
 {
-    const int n = (2 + 2 * Ticks) * (((xFlags & Axis_PaintPrimary) ? 1 : 0) + ((xFlags & Axis_PaintSecondary) ? 1 : 0)
-                                   + ((yFlags & Axis_PaintPrimary) ? 1 : 0) + ((yFlags & Axis_PaintSecondary) ? 1 : 0));
+    int n = ((xFlags & Axis_PaintPrimary) ? 1 : 0) + ((xFlags & Axis_PaintSecondary) ? 1 : 0);
+    int m = ((yFlags & Axis_PaintPrimary) ? 1 : 0) + ((yFlags & Axis_PaintSecondary) ? 1 : 0);
+    int l = 0;
     delete[] linesX;
     delete[] linesY;
 
-    if (n != 0) {
-        linesX = new double[n];
-        linesY = new double[n];
+    if (n+m != 0) {
+        std::vector<double> xDataTicks, yDataTicks;
+
+        if (xFlags & (Axis_PaintPrimary | Axis_PaintSecondary)) {
+            xDataTicks = getDataTicks(xmin, xmax, xFlags & Axis_Logscale);
+            l += (2+2*xDataTicks.size()) * n;
+        }
+        if (yFlags & (Axis_PaintPrimary | Axis_PaintSecondary)) {
+            yDataTicks = getDataTicks(ymin, ymax, yFlags & Axis_Logscale);
+            l += (2+2*yDataTicks.size()) * m;
+        }
+
+        linesX = new double[l];
+        linesY = new double[l];
         unsigned int offset = 0;
 
         if (xFlags & Axis_PaintPrimary) {
-            setUpHorizontalAxis(linesX, linesY, offset, YOffset, xFlags & Axis_Logscale);
-            offset += 2 + 2 * Ticks;
+            setUpHorizontalAxis(linesX, linesY, offset, YOffset, xDataTicks);
+            offset += 2 + 2 * xDataTicks.size();
         }
         if (xFlags & Axis_PaintSecondary) {
-            setUpHorizontalAxis(linesX, linesY, offset, 1.0, xFlags & Axis_Logscale);
-            offset += 2 + 2 * Ticks;
+            setUpHorizontalAxis(linesX, linesY, offset, 1.0, xDataTicks);
+            offset += 2 + 2 * xDataTicks.size();
         }
         if (yFlags & Axis_PaintPrimary) {
-            setUpVerticalAxis(linesX, linesY, offset, XOffset, yFlags & Axis_Logscale);
-            offset += 2 + 2 * Ticks;
+            setUpVerticalAxis(linesX, linesY, offset, XOffset, yDataTicks);
+            offset += 2 + 2 * yDataTicks.size();
         }
         if (yFlags & Axis_PaintSecondary) {
-            setUpVerticalAxis(linesX, linesY, offset, 1.0, yFlags & Axis_Logscale);
-            offset += 2 + 2 * Ticks;
+            setUpVerticalAxis(linesX, linesY, offset, 1.0, yDataTicks);
+            offset += 2 + 2 * yDataTicks.size();
         }
     } else {
         linesX = nullptr;
@@ -285,8 +297,8 @@ void CoordinateSystem::setUpCoordLines()
         removePlot(coordLinesID);
     }
 
-    if (n != 0) {
-        coordLines = new Lines(n, linesX, linesY, true);
+    if (l != 0) {
+        coordLines = new Lines(l, linesX, linesY, true);
         coordLinesID = addNewPlot(coordLines);
         coordLines->setLimits(0.0, 0.0, 1.0, 1.0);
         coordLines->setColor(coordLinesColor);
@@ -296,79 +308,44 @@ void CoordinateSystem::setUpCoordLines()
     }
 }
 
-void CoordinateSystem::setUpHorizontalAxis(double* linesX, double* linesY, unsigned int indexOffset, double yMean, bool log) const
+std::vector<double> CoordinateSystem::getDataTicks(double min, double max, bool log) const
 {
-    linesX[indexOffset] = 1.0;
-    linesY[indexOffset] = yMean;
-    linesX[indexOffset + 1] = XOffset;
-    linesY[indexOffset + 1] = yMean;
+    std::vector<double> ret;
 
-    if (tickMode == FixedAmount) {
-        if (log) {
-            //! @todo implement
-        } else {
-            float xspacing = (1.0 - XOffset) / (Ticks + 1.0f);
-            for (int i = 0; i < Ticks; ++i) {
-                setUpTick(linesX, linesY, indexOffset+2+2*i, XOffset+(i+1)*xspacing, yMean);
-            }
-        }
-    } else if (tickMode == Smart) {
-        std::vector<double> tickPoints = getDataPointsForTicks(xmin, xmax, log);
-        float xspacing = (1.0 - XOffset) / (xmax - xmin);
-        for (unsigned int i = 0; i < tickPoints.size(); ++i) {
-            setUpTick(linesX, linesY, indexOffset+2+2*i, XOffset+(tickPoints[i]-xmin)*xspacing, yMean);
-        }
-        //! @todo ugly hack better adjust array length apropriately, doesn't even work properly; instead fixing the hack better fix the problem XD
-        for (unsigned int i = indexOffset+2+2*tickPoints.size()-1; i < 2+2*Ticks; ++i) {
-            linesX[i] = 0.0;
-            linesY[i] = 0.0;
+    switch(tickMode) {
+    case FixedAmount:
+        ret = getSimpleDataPointsForTicks(min, max, log);
+        break;
+    case Smart:
+        ret = getSmartDataPointsForTicks(min, max, log);
+        break;
+    case Fixed:
+        //! @todo implement
+        break;
+    }
+
+    return ret;
+}
+
+std::vector<double> CoordinateSystem::getSimpleDataPointsForTicks(double min, double max, bool log) const
+{
+    std::vector<double> ret;
+
+    if (log) {
+        float spacing = (log10(max) - log10(min)) / (Ticks + 1);
+        for (int i = 0; i < Ticks; ++i) {
+            ret.push_back(pow(10.0, (i+1) * spacing));
         }
     } else {
-        //! @todo implement
+        float spacing = (max - min) / (Ticks + 1);
+        for (int i = 0; i < Ticks; ++i) {
+            ret.push_back((i+1) * spacing);
+        }
     }
+    return ret;
 }
 
-void CoordinateSystem::setUpVerticalAxis(double* linesX, double* linesY, unsigned int indexOffset, double xMean, bool log) const
-{
-    linesX[indexOffset] = xMean;
-    linesY[indexOffset] = 1.0;
-    linesX[indexOffset + 1] = xMean;
-    linesY[indexOffset + 1] = YOffset;
-
-    if (tickMode == FixedAmount) {
-        if (log) {
-            //! @todo implement
-        } else {
-            float yspacing = (1.0 - YOffset) / (Ticks + 1.0f);
-            for (int i = 0; i < Ticks; ++i) {
-                setUpTick(linesY, linesX, indexOffset+2+2*i, YOffset+(i+1)*yspacing, xMean);
-            }
-        }
-    } else if (tickMode == Smart) {
-        std::vector<double> tickPoints = getDataPointsForTicks(ymin, ymax, log);
-        float yspacing = (1.0 - YOffset) / (ymax - ymin);
-        for (unsigned int i = 0; i < tickPoints.size(); ++i) {
-            setUpTick(linesY, linesX, indexOffset+2+2*i, YOffset+(tickPoints[i]-ymin)*yspacing, xMean);
-        }
-        //! @todo ugly hack better adjust array length apropriately, doesn't even work properly; instead fixing the hack better fix the problem XD
-        for (unsigned int i = indexOffset+2+2*tickPoints.size()-1; i < 2+2*Ticks; ++i) {
-            linesX[i] = 0.0;
-            linesY[i] = 0.0;
-        }
-    } else {
-        //! @todo implement
-    }
-}
-
-void CoordinateSystem::setUpTick(double* primary, double* secondary, unsigned int indexOffset, double primaryValue, double secondaryMeanValue) const
-{
-    primary[indexOffset] = primaryValue;
-    primary[indexOffset+1] = primaryValue;
-    secondary[indexOffset] = secondaryMeanValue-0.5*TickLength;
-    secondary[indexOffset+1] = secondaryMeanValue+0.5*TickLength;
-}
-
-std::vector<double> CoordinateSystem::getDataPointsForTicks(double min, double max, bool log) const
+std::vector<double> CoordinateSystem::getSmartDataPointsForTicks(double min, double max, bool log) const
 {
     std::vector<double> ret;
     double div = 10.0, exponent = 1;
@@ -426,5 +403,39 @@ std::vector<double> CoordinateSystem::getDataPointsInside(double min, double max
     }
 
     return ret;
+}
+
+void CoordinateSystem::setUpHorizontalAxis(double* linesX, double* linesY, unsigned int indexOffset, double yMean, const std::vector<double>& dataTicks) const
+{
+    linesX[indexOffset] = 1.0;
+    linesY[indexOffset] = yMean;
+    linesX[indexOffset + 1] = XOffset;
+    linesY[indexOffset + 1] = yMean;
+
+    float xspacing = (1.0 - XOffset) / (xmax - xmin);
+    for (unsigned int i = 0; i < dataTicks.size(); ++i) {
+        setUpTick(linesX, linesY, indexOffset+2+2*i, XOffset+(dataTicks[i]-xmin)*xspacing, yMean);
+    }
+}
+
+void CoordinateSystem::setUpVerticalAxis(double* linesX, double* linesY, unsigned int indexOffset, double xMean, const std::vector<double>& dataTicks) const
+{
+    linesX[indexOffset] = xMean;
+    linesY[indexOffset] = 1.0;
+    linesX[indexOffset + 1] = xMean;
+    linesY[indexOffset + 1] = YOffset;
+
+    float yspacing = (1.0 - YOffset) / (ymax - ymin);
+    for (unsigned int i = 0; i < dataTicks.size(); ++i) {
+        setUpTick(linesY, linesX, indexOffset+2+2*i, YOffset+(dataTicks[i]-ymin)*yspacing, xMean);
+    }
+}
+
+void CoordinateSystem::setUpTick(double* primary, double* secondary, unsigned int indexOffset, double primaryValue, double secondaryMeanValue) const
+{
+    primary[indexOffset] = primaryValue;
+    primary[indexOffset+1] = primaryValue;
+    secondary[indexOffset] = secondaryMeanValue-0.5*TickLength;
+    secondary[indexOffset+1] = secondaryMeanValue+0.5*TickLength;
 }
 }
