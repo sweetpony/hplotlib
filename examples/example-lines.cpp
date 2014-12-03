@@ -66,12 +66,11 @@ int main()
     hpl::Contour& plot2 = cs2.addPlot<hpl::Contour>(NUM_POINTS, x, x, m);
 
     hpl::CoordinateSystem& cs3 = canvas.addCoordinateSystem<hpl::CoordinateSystem>();
+    cs3.setTickMode(hpl::CoordinateSystem::Smart);
     hpl::Points& plot3 = cs3.addPlot<hpl::Points>(NUM_POINTS, x, z);
     plot3.setColor(hpl::Color(0.0f, 0.0f, 1.0f));
     hpl::Lines& plot4 = cs3.addPlot<hpl::Lines>(NUM_POINTS, x, y);
     plot4.setColor(hpl::Color(0.0f, 0.0f, 0.0f));
-    //! @todo set this directly before adding plot data, currently crashes with bad_alloc then
-    cs3.setTickMode(hpl::CoordinateSystem::Smart);
 
     canvas.addCoordinateSystemToLayout(cs1.id(), layout1.id());
     canvas.addLayoutToLayout(layout2.id(), layout1.id());
