@@ -256,7 +256,7 @@ void CoordinateSystem::setUpCoordLines()
     delete[] linesX;
     delete[] linesY;
 
-    if (n+m != 0) {
+    if (n+m != 0 && limitsValid()) {
         std::vector<double> xDataTicks, yDataTicks;
 
         if (xFlags & (Axis_PaintPrimary | Axis_PaintSecondary)) {
@@ -334,12 +334,12 @@ std::vector<double> CoordinateSystem::getSimpleDataPointsForTicks(double min, do
     if (log) {
         float spacing = (log10(max) - log10(min)) / (Ticks + 1);
         for (int i = 0; i < Ticks; ++i) {
-            ret.push_back(pow(10.0, (i+1) * spacing));
+            ret.push_back(min + pow(10.0, (i+1) * spacing));
         }
     } else {
         float spacing = (max - min) / (Ticks + 1);
         for (int i = 0; i < Ticks; ++i) {
-            ret.push_back((i+1) * spacing);
+            ret.push_back(min + (i+1) * spacing);
         }
     }
     return ret;

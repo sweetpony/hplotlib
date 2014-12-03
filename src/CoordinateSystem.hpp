@@ -11,7 +11,6 @@
 #include <map>
 #include <vector>
 #include <cmath>
-#include <iostream>
 
 #include "Drawable.hpp"
 #include "Statistics.hpp"
@@ -76,6 +75,11 @@ public:
 private:
     Drawable::ID addNewPlot(Drawable* plot);
     void removePlot(Drawable::ID id);
+
+    inline bool limitsValid() {
+        return xmin != std::numeric_limits<double>::min() && xmax != std::numeric_limits<double>::max()
+            && ymin != std::numeric_limits<double>::min() && ymax != std::numeric_limits<double>::max();
+    }
 
     void setUpCoordLines();
     std::vector<double> getDataTicks(double min, double max, bool log) const;
