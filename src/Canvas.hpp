@@ -34,9 +34,8 @@ public:
 		layout->changed.template bind<Canvas, &Canvas::recalculateLayout>(this);
 		return *layout;
 	}
-	
-	template<typename T>
-    T& addCoordinateSystem();
+
+    CoordinateSystem& addCoordinateSystem();
 
     inline void connectToPlotter(AbstractPlotter* plotter) {
         plotter->setPlots(&rawData, &dataRevisions);
@@ -78,19 +77,6 @@ private:
 
     std::vector<AbstractPlotter*> connectedPlotters;
 };
-
-template<typename T>
-T& Canvas::addCoordinateSystem()
-{
-    T* cs = new T(rawData, dataRevisions);
-    cs->changed.template bind<Canvas, &Canvas::processUpdate>(this);
-
-    csystems.add(cs);
-
-    processUpdate();
-
-    return *cs;
-}
 }
 
 #endif

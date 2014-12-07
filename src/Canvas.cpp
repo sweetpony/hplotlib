@@ -18,6 +18,18 @@ Canvas::~Canvas()
 {
 }
 
+CoordinateSystem& Canvas::addCoordinateSystem()
+{
+    CoordinateSystem* cs = new CoordinateSystem(rawData, dataRevisions);
+    cs->changed.template bind<Canvas, &Canvas::processUpdate>(this);
+
+    csystems.add(cs);
+
+    processUpdate();
+
+    return *cs;
+}
+
 Canvas::Slot* Canvas::findSlot(Slot const& slot)
 {
 	for (auto it = racks.begin(); it != racks.end(); ++it) {
