@@ -36,10 +36,13 @@ public:
 	static constexpr float YOffset = 0.08f;
 	static constexpr int Ticks = 8;
 	static constexpr float TickLength = 0.02f;
+    static constexpr int MinorTicks = 4;
+    static constexpr float MinorTickLength = 0.01f;
 
     static constexpr int Axis_PaintPrimary = 1 << 0;
     static constexpr int Axis_PaintSecondary = 1 << 1;
     static constexpr int Axis_Logscale = 1 << 2;
+    static constexpr int Axis_PaintMinorTicks = 1 << 3;
 
     enum TickMode {
         FixedAmount,
@@ -86,9 +89,12 @@ private:
     std::vector<double> getSimpleDataPointsForTicks(double min, double max, bool log) const;
     std::vector<double> getSmartDataPointsForTicks(double min, double max, bool log) const;
     std::vector<double> getDataPointsInside(double min, double max, double divisor) const;
+    std::vector<double> getMinorDataTicks(double min, double max, bool log, double deltaTick, const std::vector<double>& ticks) const;
     void setUpHorizontalAxis(double* linesX, double* linesY, unsigned int indexOffset, double yMean, const std::vector<double>& dataTicks) const;
+    void setUpHorizontalAxisMinor(double* linesX, double* linesY, unsigned int indexOffset, double yMean, const std::vector<double>& dataTicks) const;
     void setUpVerticalAxis(double* linesX, double* linesY, unsigned int indexOffset, double xMean, const std::vector<double>& dataTicks) const;
-    void setUpTick(double* primary, double* secondary, unsigned int indexOffset, double primaryValue, double secondaryMeanValue) const;
+    void setUpVerticalAxisMinor(double* linesX, double* linesY, unsigned int indexOffset, double xMean, const std::vector<double>& dataTicks) const;
+    void setUpTick(double* primary, double* secondary, unsigned int indexOffset, double primaryValue, double secondaryMeanValue, double length) const;
 
     Registry<Drawable>& data;
     std::map<Drawable::ID, unsigned int>& dataRevisions;

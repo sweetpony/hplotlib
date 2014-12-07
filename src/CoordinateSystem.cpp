@@ -257,15 +257,32 @@ void CoordinateSystem::setUpCoordLines()
     delete[] linesY;
 
     if (n+m != 0 && limitsValid()) {
-        std::vector<double> xDataTicks, yDataTicks;
+        std::vector<double> xDataTicks, yDataTicks, xMinorDataTicks, yMinorDataTicks;
 
         if (xFlags & (Axis_PaintPrimary | Axis_PaintSecondary)) {
             xDataTicks = getDataTicks(xmin, xmax, xFlags & Axis_Logscale);
-            l += (2+2*xDataTicks.size()) * n;
+            l += (2 + 2 * xDataTicks.size()) * n;
+
+            //! @todo here and below make this work also for ticks.size() == 1
+            if (xFlags & Axis_PaintMinorTicks && xDataTicks.size() > 1) {
+                double delta = (xFlags & Axis_Logscale ? log10(xDataTicks[1]) - log10(xDataTicks[0]) : xDataTicks[1] - xDataTicks[0]);
+                xMinorDataTicks = getMinorDataTicks(xmin, xmax, xFlags & Axis_Logscale, delta, xDataTicks);
+
+                l += 2 * xMinorDataTicks.size() * n;
+            }
         }
+
         if (yFlags & (Axis_PaintPrimary | Axis_PaintSecondary)) {
             yDataTicks = getDataTicks(ymin, ymax, yFlags & Axis_Logscale);
             l += (2+2*yDataTicks.size()) * m;
+
+            //! @todo here and below make this work also for ticks.size() == 1
+            if (yFlags & Axis_PaintMinorTicks && yDataTicks.size() > 1) {
+                double delta = (yFlags & Axis_Logscale ? log10(yDataTicks[1]) - log10(yDataTicks[0]) : yDataTicks[1] - yDataTicks[0]);
+                yMinorDataTicks = getMinorDataTicks(ymin, ymax, yFlags & Axis_Logscale, delta, yDataTicks);
+
+                l += 2 * yMinorDataTicks.size() * m;
+            }
         }
 
         linesX = new double[l];
@@ -275,18 +292,38 @@ void CoordinateSystem::setUpCoordLines()
         if (xFlags & Axis_PaintPrimary) {
             setUpHorizontalAxis(linesX, linesY, offset, YOffset, xDataTicks);
             offset += 2 + 2 * xDataTicks.size();
+
+            if (xFlags & Axis_PaintMinorTicks) {
+                setUpHorizontalAxisMinor(linesX, linesY, offset, YOffset, xMinorDataTicks);
+                offset += 2 * xMinorDataTicks.size();
+            }
         }
         if (xFlags & Axis_PaintSecondary) {
             setUpHorizontalAxis(linesX, linesY, offset, 1.0, xDataTicks);
             offset += 2 + 2 * xDataTicks.size();
+
+            if (xFlags & Axis_PaintMinorTicks) {
+                setUpHorizontalAxisMinor(linesX, linesY, offset, 1.0, xMinorDataTicks);
+                offset += 2 * xMinorDataTicks.size();
+            }
         }
         if (yFlags & Axis_PaintPrimary) {
             setUpVerticalAxis(linesX, linesY, offset, XOffset, yDataTicks);
             offset += 2 + 2 * yDataTicks.size();
+
+            if (yFlags & Axis_PaintMinorTicks) {
+                setUpVerticalAxisMinor(linesX, linesY, offset, XOffset, yMinorDataTicks);
+                offset += 2 * yMinorDataTicks.size();
+            }
         }
         if (yFlags & Axis_PaintSecondary) {
             setUpVerticalAxis(linesX, linesY, offset, 1.0, yDataTicks);
             offset += 2 + 2 * yDataTicks.size();
+
+            if (yFlags & Axis_PaintMinorTicks) {
+                setUpVerticalAxisMinor(linesX, linesY, offset, 1.0, yMinorDataTicks);
+                offset += 2 * yMinorDataTicks.size();
+            }
         }
     } else {
         linesX = nullptr;
@@ -405,6 +442,31 @@ std::vector<double> CoordinateSystem::getDataPointsInside(double min, double max
     return ret;
 }
 
+std::vector<double> CoordinateSystem::getMinorDataTicks(double min, double max, bool log, double deltaTick, const std::vector<double>& ticks) const
+{
+    std::vector<double> ret;
+
+    if (ticks.size() > 0) {
+        double delta = deltaTick / (MinorTicks + 1);
+        if (log) {
+            //Assume deltaTick is already in logspace
+            min = log10(min);
+            max = log10(max);
+        }
+        double val = ticks[0] - static_cast<unsigned int>((ticks[0] - min) / delta) * delta;
+        while (val <= max) {
+            if (log) {
+                ret.push_back(pow(10.0, val));
+            } else {
+                ret.push_back(val);
+            }
+            val += delta;
+        }
+    }
+
+    return ret;
+}
+
 void CoordinateSystem::setUpHorizontalAxis(double* linesX, double* linesY, unsigned int indexOffset, double yMean, const std::vector<double>& dataTicks) const
 {
     linesX[indexOffset] = 1.0;
@@ -414,7 +476,15 @@ void CoordinateSystem::setUpHorizontalAxis(double* linesX, double* linesY, unsig
 
     float xspacing = (1.0 - XOffset) / (xmax - xmin);
     for (unsigned int i = 0; i < dataTicks.size(); ++i) {
-        setUpTick(linesX, linesY, indexOffset+2+2*i, XOffset+(dataTicks[i]-xmin)*xspacing, yMean);
+        setUpTick(linesX, linesY, indexOffset+2+2*i, XOffset+(dataTicks[i]-xmin)*xspacing, yMean, TickLength);
+    }
+}
+
+void CoordinateSystem::setUpHorizontalAxisMinor(double* linesX, double* linesY, unsigned int indexOffset, double yMean, const std::vector<double>& dataTicks) const
+{
+    float xspacing = (1.0 - XOffset) / (xmax - xmin);
+    for (unsigned int i = 0; i < dataTicks.size(); ++i) {
+        setUpTick(linesX, linesY, indexOffset+2*i, XOffset+(dataTicks[i]-xmin)*xspacing, yMean, MinorTickLength);
     }
 }
 
@@ -427,15 +497,23 @@ void CoordinateSystem::setUpVerticalAxis(double* linesX, double* linesY, unsigne
 
     float yspacing = (1.0 - YOffset) / (ymax - ymin);
     for (unsigned int i = 0; i < dataTicks.size(); ++i) {
-        setUpTick(linesY, linesX, indexOffset+2+2*i, YOffset+(dataTicks[i]-ymin)*yspacing, xMean);
+        setUpTick(linesY, linesX, indexOffset+2+2*i, YOffset+(dataTicks[i]-ymin)*yspacing, xMean, TickLength);
     }
 }
 
-void CoordinateSystem::setUpTick(double* primary, double* secondary, unsigned int indexOffset, double primaryValue, double secondaryMeanValue) const
+void CoordinateSystem::setUpVerticalAxisMinor(double* linesX, double* linesY, unsigned int indexOffset, double xMean, const std::vector<double>& dataTicks) const
+{
+    float yspacing = (1.0 - YOffset) / (ymax - ymin);
+    for (unsigned int i = 0; i < dataTicks.size(); ++i) {
+        setUpTick(linesY, linesX, indexOffset+2*i, YOffset+(dataTicks[i]-ymin)*yspacing, xMean, MinorTickLength);
+    }
+}
+
+void CoordinateSystem::setUpTick(double* primary, double* secondary, unsigned int indexOffset, double primaryValue, double secondaryMeanValue, double length) const
 {
     primary[indexOffset] = primaryValue;
     primary[indexOffset+1] = primaryValue;
-    secondary[indexOffset] = secondaryMeanValue-0.5*TickLength;
-    secondary[indexOffset+1] = secondaryMeanValue+0.5*TickLength;
+    secondary[indexOffset] = secondaryMeanValue-0.5*length;
+    secondary[indexOffset+1] = secondaryMeanValue+0.5*length;
 }
 }

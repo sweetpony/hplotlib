@@ -8,6 +8,8 @@
 namespace hpl
 {
 struct Header {
+    Header() : lineHeight(0.0), base(0.0), count(0u), width(0u), height(0u) {}
+
 	float lineHeight;
 	float base;
 	unsigned count;	
@@ -37,7 +39,7 @@ public:
 
 private:  
     GLuint _glyphs;
-    Header _header = {0};
+    Header _header;
     Char _chars[128];
 };
 }

@@ -55,8 +55,8 @@ int main()
 
     hpl::CoordinateSystem& cs1 = canvas.addCoordinateSystem<hpl::CoordinateSystem>();
     cs1.setColor(hpl::Color(0.6f, 0.6f, 0.6f));
-    cs1.setAxisProperties(hpl::CoordinateSystem::Axis_PaintPrimary | hpl::CoordinateSystem::Axis_PaintSecondary,
-                          hpl::CoordinateSystem::Axis_PaintPrimary | hpl::CoordinateSystem::Axis_PaintSecondary);
+    cs1.setAxisProperties(hpl::CoordinateSystem::Axis_PaintPrimary | hpl::CoordinateSystem::Axis_PaintSecondary | hpl::CoordinateSystem::Axis_PaintMinorTicks,
+                          hpl::CoordinateSystem::Axis_PaintPrimary | hpl::CoordinateSystem::Axis_PaintSecondary | hpl::CoordinateSystem::Axis_PaintMinorTicks);
     hpl::Lines& plot1 = cs1.addPlot<hpl::Lines>(NUM_POINTS, x, y);
     plot1.setColor(hpl::Color(1.0f, 0.0f, 0.0f));
     plot1.setThickness(5.0);
