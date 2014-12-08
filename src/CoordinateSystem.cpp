@@ -12,7 +12,7 @@
 namespace hpl
 {
 CoordinateSystem::CoordinateSystem(Registry<Drawable>& dataContainer, std::map<Drawable::ID, unsigned int>& dataRevisions)
-    : data(dataContainer), dataRevisions(dataRevisions)
+    : data(dataContainer), dataRevisions(dataRevisions), xAxis(dataContainer, dataRevisions), yAxis(dataContainer, dataRevisions)
 {
     setUpCoordLines();
 }

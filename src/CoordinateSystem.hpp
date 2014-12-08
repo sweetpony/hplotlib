@@ -17,6 +17,7 @@
 #include "Contour.hpp"
 #include "Registry.hpp"
 #include "Lines.hpp"
+#include "CoordinateAxis.hpp"
 
 #include "GL/glld.h"
 
@@ -73,6 +74,10 @@ public:
     inline void setId(ID id) { csId = id; }
 
     void setAxisProperties(int xFlags, int yFlags);
+    inline void setAxisProperties(int flags) {
+        setAxisProperties(flags, flags);
+    }
+
     void setTickMode(TickMode mode);
 	
 private:
@@ -116,6 +121,9 @@ private:
 
     int xFlags = Axis_PaintPrimary, yFlags = Axis_PaintPrimary;
     TickMode tickMode = FixedAmount;
+
+    CoordinateAxis<Horizontal> xAxis;
+    CoordinateAxis<Vertical> yAxis;
 
     /*
     GLuint textprogram;
