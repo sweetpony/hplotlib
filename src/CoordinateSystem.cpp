@@ -30,6 +30,9 @@ void CoordinateSystem::setColor(const Color& c)
     if (coordLines != nullptr) {
         coordLines->setColor(c);
     }
+
+    xAxis.setColor(c);
+    yAxis.setColor(c);
 }
 
 void CoordinateSystem::setGeometry(Geometry geom)
@@ -52,6 +55,9 @@ void CoordinateSystem::setGeometry(Geometry geom)
 
 void CoordinateSystem::updateLimits(double xmin, double xmax, double ymin, double ymax)
 {
+    xAxis.setLimits(xmin, xmax);
+    yAxis.setLimits(ymin, ymax);
+
     this->xmin = std::min(this->xmin, xmin);
     this->xmax = std::min(this->xmax, xmax);
     this->ymin = std::min(this->ymin, ymin);

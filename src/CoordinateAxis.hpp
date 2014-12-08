@@ -32,7 +32,28 @@ public:
     CoordinateAxis(Registry<Drawable>& data, std::map<Drawable::ID, unsigned int>& dataRevisions);
     ~CoordinateAxis();
 
+    inline void setColor(const Color& c) {
+        coordLinesColor = c;
+        if (lines != nullptr) {
+            lines->setColor(c);
+        }
+    }
+    inline Color getColor() const {
+        return coordLinesColor;
+    }
+
+    void setLimits(double min, double max);
+    void setAxisProperties(int flags);
+    void setTickMode(TickMode mode);
+
 private:
+    inline bool limitsValid() {
+        return min != std::numeric_limits<double>::min() && max != std::numeric_limits<double>::max();
+    }
+
+    void setUpCoordLines();
+
+
     float offset = 0.1f;
     int nrTicks = 8;
     float tickLength = 0.02f;
@@ -64,6 +85,42 @@ private:
 template<AxisOrientation orientation>
 CoordinateAxis<orientation>::~CoordinateAxis()
 {
+    delete lines;
+    delete[] rawData;
+}
+
+template<AxisOrientation orientation>
+void CoordinateAxis<orientation>::setLimits(double min, double max)
+{
+    this->min = min;
+    this->max = max;
+
+    setUpCoordLines();
+
+    changed.invoke(Drawable::ID());
+}
+
+template<AxisOrientation orientation>
+void CoordinateAxis<orientation>::setAxisProperties(int flags) {
+    this->flags = flags;
+    //! @todo give logscale attribute to plots
+    setUpCoordLines();
+    changed.invoke(Drawable::ID());
+}
+
+template<AxisOrientation orientation>
+void CoordinateAxis<orientation>::setTickMode(TickMode mode)
+{
+    this->tickMode = mode;
+    //! @todo do sth with data?
+    setUpCoordLines();
+    changed.invoke(Drawable::ID());
+}
+
+template<AxisOrientation orientation>
+void CoordinateAxis<orientation>::setUpCoordLines()
+{
+    //! @todo implement
 }
 }
 

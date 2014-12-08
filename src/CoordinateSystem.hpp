@@ -53,10 +53,18 @@ public:
 
     CoordinateSystem(Registry<Drawable>& dataContainer, std::map<Drawable::ID, unsigned int>& dataRevisions);
     ~CoordinateSystem();
-    
+
+    inline CoordinateAxis<Horizontal>& getXAxis() {
+        return xAxis;
+    }
+    inline CoordinateAxis<Vertical>& getYAxis() {
+        return yAxis;
+    }
+
+    //! @todo remove?
     void setColor(const Color& c);
     inline Color getColor() const {
-        return coordLines->getColor();
+        return xAxis.getColor();
     }
 
     void setGeometry(Geometry geom);
