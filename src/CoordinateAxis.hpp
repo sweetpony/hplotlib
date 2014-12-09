@@ -180,7 +180,7 @@ void CoordinateAxis<orientation>::setUpCoordLines()
         }
 
         rawDataX = new double[l];
-	rawDataY = new double[l];
+        rawDataY = new double[l];
         unsigned int o = 0;
 
         if (flags & PaintPrimary) {
@@ -202,8 +202,8 @@ void CoordinateAxis<orientation>::setUpCoordLines()
             }
         }
     } else {
-	 rawDataX = nullptr;
-	 rawDataY = nullptr;
+        rawDataX = nullptr;
+        rawDataY = nullptr;
     }
 
   if (lines != nullptr) {
@@ -211,10 +211,11 @@ void CoordinateAxis<orientation>::setUpCoordLines()
     }
 
     if (l != 0) {
-        lines = new Lines(l, rawDataX, rawDataY, true);
+        //! @todo reenable
+        /*lines = new Lines(l, rawDataX, rawDataY, true);
         linesID = addNewPlot(lines);
         lines->setLimits(0.0, 0.0, 1.0, 1.0);
-        lines->setColor(coordLinesColor);
+        lines->setColor(coordLinesColor);*/
     } else {
         lines = nullptr;
         linesID = Drawable::ID();
