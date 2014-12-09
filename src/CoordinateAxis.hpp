@@ -47,6 +47,9 @@ public:
     void setTickMode(TickMode mode);
 
 private:
+    Drawable::ID addNewPlot(Drawable* plot);
+    void removePlot(Drawable::ID id);
+    
     inline bool limitsValid() {
         return min != std::numeric_limits<double>::min() && max != std::numeric_limits<double>::max();
     }
@@ -56,13 +59,13 @@ private:
     void calculateDataTicks(bool log);
     void calculateSimpleDataPointsForTicks(bool log);
     void calculateSmartDataPointsForTicks(bool log);
-    void calculateDataPointsInside(double divisor)t;
+    void calculateDataPointsInside(double divisor);
     void calculateMinorDataTicks(bool log, double deltaTick);
     
     void setUpAxis(unsigned int indexOffset, double mean);
     void setUpMinorAxis(unsigned int indexOffset, double mean);
     
-    void setUpTick(double* primary, double* secondary, double primaryValue, double secondaryMeanValue, double length) const;
+    void setUpTick(unsigned int indexOffset, double primaryValue, double secondaryMeanValue, double length);
 
 
     float offset = 0.1f;
@@ -130,22 +133,47 @@ void CoordinateAxis<orientation>::setTickMode(TickMode mode)
 }
 
 template<AxisOrientation orientation>
+Drawable::ID CoordinateAxis<orientation>::addNewPlot(Drawable* plot)
+{
+    Drawable::ID id = data.add(plot);
+    
+    //! @todo implement
+    
+    return id;
+}
+
+template<AxisOrientation orientation>
+void CoordinateAxis<orientation>::removePlot(Drawable::ID id)
+{
+    if (data.has(id)) {
+        data.remove(id);
+    }
+
+    for (auto it = dataRevisions.begin(); it != dataRevisions.end(); it++) {
+        if (it->first == id) {
+            dataRevisions.erase(it);
+            break;
+        }
+    }
+}
+
+template<AxisOrientation orientation>
 void CoordinateAxis<orientation>::setUpCoordLines()
 {
-    int n = ((flags & Axis_PaintPrimary) ? 1 : 0) + ((flags & Axis_PaintSecondary) ? 1 : 0);
+    int n = ((flags & PaintPrimary) ? 1 : 0) + ((flags & PaintSecondary) ? 1 : 0);
     int l = 0;
     delete[] rawDataX;
     delete[] rawDataY;
 
     if (n != 0 && limitsValid()) {
-        if (flags & (Axis_PaintPrimary | Axis_PaintSecondary)) {
-            calculateDataTicks(min, max, flags & Axis_Logscale);
+        if (flags & (PaintPrimary | PaintSecondary)) {
+            calculateDataTicks(flags & Logscale);
             l += (2 + 2 * ticks.size()) * n;
 
             //! @todo here and below make this work also for ticks.size() == 1
-            if (flags & Axis_PaintMinorTicks && ticks.size() > 1) {
-                double delta = (flags & Axis_Logscale ? log10(ticks[1]) - log10(ticks[0]) : ticks[1] - ticks[0]);
-                calculateMinorDataTicks(min, max, flags & Axis_Logscale, delta);
+            if (flags & PaintMinorTicks && ticks.size() > 1) {
+                double delta = (flags & Logscale ? log10(ticks[1]) - log10(ticks[0]) : ticks[1] - ticks[0]);
+                calculateMinorDataTicks(flags & Logscale, delta);
 
                 l += 2 * minorTicks.size() * n;
             }
@@ -155,21 +183,21 @@ void CoordinateAxis<orientation>::setUpCoordLines()
 	rawDataY = new double[l];
         unsigned int o = 0;
 
-        if (flags & Axis_PaintPrimary) {
+        if (flags & PaintPrimary) {
             setUpAxis(o, offset);
             o += 2 + 2 * ticks.size();
 
-            if (flags & Axis_PaintMinorTicks) {
-                setUpAxisMinor(o, offset);
+            if (flags & PaintMinorTicks) {
+                setUpMinorAxis(o, offset);
                 o += 2 * minorTicks.size();
             }
         }
-        if (flags & Axis_PaintSecondary) {
+        if (flags & PaintSecondary) {
             setUpAxis(o, 1.0);
             o += 2 + 2 * ticks.size();
 
-            if (flags & Axis_PaintMinorTicks) {
-                setUpAxisMinor(o, 1.0);
+            if (flags & PaintMinorTicks) {
+                setUpMinorAxis(o, 1.0);
                 o += 2 * minorTicks.size();
             }
         }
@@ -184,19 +212,19 @@ void CoordinateAxis<orientation>::setUpCoordLines()
 
     if (l != 0) {
         lines = new Lines(l, rawDataX, rawDataY, true);
-        coordLinesID = addNewPlot(coordLines);
-        coordLines->setLimits(0.0, 0.0, 1.0, 1.0);
-        coordLines->setColor(coordLinesColor);
+        linesID = addNewPlot(lines);
+        lines->setLimits(0.0, 0.0, 1.0, 1.0);
+        lines->setColor(coordLinesColor);
     } else {
-        coordLines = nullptr;
-        coordLinesID = Drawable::ID();
+        lines = nullptr;
+        linesID = Drawable::ID();
     }
 }
 
 template<AxisOrientation orientation>
 void CoordinateAxis<orientation>::calculateDataTicks(bool log)
 {
-    ticks.clear()
+    ticks.clear();
     
     switch(tickMode) {
     case FixedAmount:
@@ -299,22 +327,40 @@ void CoordinateAxis<orientation>::calculateMinorDataTicks(bool log, double delta
         while (val <= max) {
             if (log) {
                 minorTicks.push_back(pow(10.0, val));
-            } else {double 
+            } else {
                 minorTicks.push_back(val);
             }
             val += delta;
         }
-    }
-    
+    }   
 }
 
 template<AxisOrientation orientation>
-void CoordinateAxis<orientation>::setUpTick(double* primary, double* secondary, double primaryValue, double secondaryMeanValue, double length) const
+void CoordinateAxis<orientation>::setUpMinorAxis(unsigned int indexOffset, double mean)
 {
-    primary[0] = primaryValue;
-    primary[1] = primaryValue;
-    secondary[0] = secondaryMeanValue-0.5*length;
-    secondary[1] = secondaryMeanValue+0.5*length;
+    float spacing = (1.0 - offset) / (max - min);
+    for (unsigned int i = 0, o = indexOffset+2*i; i < ticks.size(); ++i, o = indexOffset+2*i) {
+        setUpTick(o, offset+(ticks[i]-min)*spacing, mean, minorTickLength);
+    }
+}
+
+//! @todo why do these have to be in header? specialisation b4 instantiation
+template<>
+void CoordinateAxis<Horizontal>::setUpTick(unsigned int indexOffset, double primaryValue, double secondaryMeanValue, double length)
+{
+    rawDataX[indexOffset] = primaryValue;
+    rawDataX[indexOffset+1] = primaryValue;
+    rawDataY[indexOffset] = secondaryMeanValue-0.5*length;
+    rawDataY[indexOffset+1] = secondaryMeanValue+0.5*length;
+}
+
+template<>
+void CoordinateAxis<Vertical>::setUpTick(unsigned int indexOffset, double primaryValue, double secondaryMeanValue, double length)
+{
+    rawDataY[indexOffset] = primaryValue;
+    rawDataY[indexOffset+1] = primaryValue;
+    rawDataX[indexOffset] = secondaryMeanValue-0.5*length;
+    rawDataX[indexOffset+1] = secondaryMeanValue+0.5*length;
 }
 }
 
