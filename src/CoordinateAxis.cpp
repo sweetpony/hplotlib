@@ -42,4 +42,22 @@ void CoordinateAxis<Vertical>::setUpAxis(unsigned int indexOffset, double mean)
     }
 }
 
+template<>
+void CoordinateAxis<Horizontal>::setUpTick(unsigned int indexOffset, double primaryValue, double secondaryMeanValue, double length)
+{
+    rawDataX[indexOffset] = primaryValue;
+    rawDataX[indexOffset+1] = primaryValue;
+    rawDataY[indexOffset] = secondaryMeanValue-0.5*length;
+    rawDataY[indexOffset+1] = secondaryMeanValue+0.5*length;
+}
+
+template<>
+void CoordinateAxis<Vertical>::setUpTick(unsigned int indexOffset, double primaryValue, double secondaryMeanValue, double length)
+{
+    rawDataY[indexOffset] = primaryValue;
+    rawDataY[indexOffset+1] = primaryValue;
+    rawDataX[indexOffset] = secondaryMeanValue-0.5*length;
+    rawDataX[indexOffset+1] = secondaryMeanValue+0.5*length;
+}
+
 }

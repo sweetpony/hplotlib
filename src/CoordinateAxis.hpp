@@ -335,6 +335,11 @@ void CoordinateAxis<orientation>::calculateMinorDataTicks(bool log, double delta
     }   
 }
 
+template<>
+void CoordinateAxis<Horizontal>::setUpTick(unsigned int indexOffset, double primaryValue, double secondaryMeanValue, double length);
+template<>
+void CoordinateAxis<Vertical>::setUpTick(unsigned int indexOffset, double primaryValue, double secondaryMeanValue, double length);
+
 template<AxisOrientation orientation>
 void CoordinateAxis<orientation>::setUpMinorAxis(unsigned int indexOffset, double mean)
 {
@@ -342,25 +347,6 @@ void CoordinateAxis<orientation>::setUpMinorAxis(unsigned int indexOffset, doubl
     for (unsigned int i = 0, o = indexOffset+2*i; i < ticks.size(); ++i, o = indexOffset+2*i) {
         setUpTick(o, offset+(ticks[i]-min)*spacing, mean, minorTickLength);
     }
-}
-
-//! @todo why do these have to be in header? specialisation b4 instantiation
-template<>
-void CoordinateAxis<Horizontal>::setUpTick(unsigned int indexOffset, double primaryValue, double secondaryMeanValue, double length)
-{
-    rawDataX[indexOffset] = primaryValue;
-    rawDataX[indexOffset+1] = primaryValue;
-    rawDataY[indexOffset] = secondaryMeanValue-0.5*length;
-    rawDataY[indexOffset+1] = secondaryMeanValue+0.5*length;
-}
-
-template<>
-void CoordinateAxis<Vertical>::setUpTick(unsigned int indexOffset, double primaryValue, double secondaryMeanValue, double length)
-{
-    rawDataY[indexOffset] = primaryValue;
-    rawDataY[indexOffset+1] = primaryValue;
-    rawDataX[indexOffset] = secondaryMeanValue-0.5*length;
-    rawDataX[indexOffset+1] = secondaryMeanValue+0.5*length;
 }
 }
 
