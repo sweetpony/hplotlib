@@ -40,6 +40,8 @@ void CoordinateSystem::setGeometry(Geometry geom)
     geometry = geom;
 
     setUpCoordLines();
+    xAxis.setGeometry(geom);
+    yAxis.setGeometry(geom);
 
     geom.leftOffset += XOffset * geom.width;
     geom.topOffset += YOffset * geom.height;
@@ -55,8 +57,8 @@ void CoordinateSystem::setGeometry(Geometry geom)
 
 void CoordinateSystem::updateLimits(double xmin, double xmax, double ymin, double ymax)
 {
-    xAxis.setLimits(xmin, xmax);
-    yAxis.setLimits(ymin, ymax);
+    xAxis.setLimits(xmin, ymin, xmax, ymax);
+    yAxis.setLimits(xmin, ymin, xmax, ymax);
 
     this->xmin = std::min(this->xmin, xmin);
     this->xmax = std::min(this->xmax, xmax);

@@ -42,17 +42,27 @@ public:
         return coordLinesColor;
     }
 
-    void setLimits(double min, double max);
+    inline void setGeometry(Geometry geom) {
+        geometry = geom;
+        setUpCoordLines();
+        changed.invoke(Drawable::ID());
+    }
+
+    void setLimits(double xmin, double ymin, double xmax, double ymax);
     void setAxisProperties(int flags);
     void setTickMode(TickMode mode);
 
 private:
+    double min();
+    double max();
+
+    inline bool limitsValid() {
+        return xmin != std::numeric_limits<double>::min() && xmax != std::numeric_limits<double>::max()
+            && ymin != std::numeric_limits<double>::min() && ymax != std::numeric_limits<double>::max();
+    }
+
     Drawable::ID addNewPlot(Drawable* plot);
     void removePlot(Drawable::ID id);
-    
-    inline bool limitsValid() {
-        return min != std::numeric_limits<double>::min() && max != std::numeric_limits<double>::max();
-    }
 
     void setUpCoordLines();
     
@@ -74,8 +84,10 @@ private:
     int nrMinorTicks = 4;
     float minorTickLength = 0.01f;
 
-    double min = std::numeric_limits<double>::min();
-    double max = std::numeric_limits<double>::max();
+    double xmin = std::numeric_limits<double>::min();
+    double xmax = std::numeric_limits<double>::max();
+    double ymin = std::numeric_limits<double>::min();
+    double ymax = std::numeric_limits<double>::max();
 
     std::vector<double> ticks, minorTicks;
     double* rawDataX = nullptr,* rawDataY;
@@ -88,6 +100,7 @@ private:
 
     Registry<Drawable>& data;
     std::map<Drawable::ID, unsigned int>& dataRevisions;
+    Geometry geometry;
 
     Delegate<Drawable::ID> changed;
 
@@ -105,10 +118,12 @@ CoordinateAxis<orientation>::~CoordinateAxis()
 }
 
 template<AxisOrientation orientation>
-void CoordinateAxis<orientation>::setLimits(double min, double max)
+void CoordinateAxis<orientation>::setLimits(double xmin, double ymin, double xmax, double ymax)
 {
-    this->min = min;
-    this->max = max;
+    this->xmin = xmin;
+    this->ymin = ymin;
+    this->xmax = xmax;
+    this->ymax = ymax;
 
     setUpCoordLines();
 
@@ -132,13 +147,25 @@ void CoordinateAxis<orientation>::setTickMode(TickMode mode)
     changed.invoke(Drawable::ID());
 }
 
+template<>
+double CoordinateAxis<Horizontal>::min();
+template<>
+double CoordinateAxis<Vertical>::min();
+template<>
+double CoordinateAxis<Horizontal>::max();
+template<>
+double CoordinateAxis<Vertical>::max();
+
 template<AxisOrientation orientation>
 Drawable::ID CoordinateAxis<orientation>::addNewPlot(Drawable* plot)
 {
     Drawable::ID id = data.add(plot);
-    
-    //! @todo implement
-    
+    plot->setId(id);
+    dataRevisions[id] = 1;
+    plot->setGeometry(geometry);
+    plot->setLimits(xmin, ymin, xmax, ymax);
+    plot->changed.template bind<Delegate<Drawable::ID>, &Delegate<Drawable::ID>::invoke>(&changed);
+    changed.invoke(id);
     return id;
 }
 
@@ -244,14 +271,14 @@ template<AxisOrientation orientation>
 void CoordinateAxis<orientation>::calculateSimpleDataPointsForTicks(bool log)
 {
     if (log) {
-        float spacing = (log10(max) - log10(min)) / (nrTicks + 1);
+        float spacing = (log10(max()) - log10(min())) / (nrTicks + 1);
         for (int i = 0; i < nrTicks; ++i) {
-            ticks.push_back(min + pow(10.0, (i+1) * spacing));
+            ticks.push_back(min() + pow(10.0, (i+1) * spacing));
         }
     } else {
-        float spacing = (max - min) / (nrTicks + 1);
+        float spacing = (max() - min()) / (nrTicks + 1);
         for (int i = 0; i < nrTicks; ++i) {
-            ticks.push_back(min + (i+1) * spacing);
+            ticks.push_back(min() + (i+1) * spacing);
         }
     }
 }
@@ -305,8 +332,8 @@ void CoordinateAxis<orientation>::calculateSmartDataPointsForTicks(bool log)
 template<AxisOrientation orientation>
 void CoordinateAxis<orientation>::calculateDataPointsInside(double divisor)
 {
-    double val = ceil(min / divisor) * divisor;
-    while (val <= max) {
+    double val = ceil(min() / divisor) * divisor;
+    while (val <= max()) {
         ticks.push_back(val);
         val += divisor;
     }
@@ -317,8 +344,8 @@ void CoordinateAxis<orientation>::calculateMinorDataTicks(bool log, double delta
 {
     if (ticks.size() > 0) {
         double delta = deltaTick / (nrMinorTicks + 1);
-	double min = this->min;
-	double max = this->max;
+        double min = this->min();
+        double max = this->max();
         if (log) {
             //Assume deltaTick is already in logspace
             min = log10(min);
@@ -344,9 +371,9 @@ void CoordinateAxis<Vertical>::setUpTick(unsigned int indexOffset, double primar
 template<AxisOrientation orientation>
 void CoordinateAxis<orientation>::setUpMinorAxis(unsigned int indexOffset, double mean)
 {
-    float spacing = (1.0 - offset) / (max - min);
+    float spacing = (1.0 - offset) / (max() - min());
     for (unsigned int i = 0, o = indexOffset+2*i; i < ticks.size(); ++i, o = indexOffset+2*i) {
-        setUpTick(o, offset+(ticks[i]-min)*spacing, mean, minorTickLength);
+        setUpTick(o, offset+(ticks[i]-min())*spacing, mean, minorTickLength);
     }
 }
 }

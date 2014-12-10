@@ -15,6 +15,26 @@ CoordinateAxis<Vertical>::CoordinateAxis(Registry<Drawable>& data, std::map<Draw
 }
 
 template<>
+double CoordinateAxis<Horizontal>::min() {
+    return xmin;
+}
+
+template<>
+double CoordinateAxis<Vertical>::min() {
+    return ymin;
+}
+
+template<>
+double CoordinateAxis<Horizontal>::max() {
+    return xmax;
+}
+
+template<>
+double CoordinateAxis<Vertical>::max() {
+    return ymax;
+}
+
+template<>
 void CoordinateAxis<Horizontal>::setUpAxis(unsigned int indexOffset, double mean)
 {
     rawDataX[indexOffset] = 1.0;
@@ -22,9 +42,9 @@ void CoordinateAxis<Horizontal>::setUpAxis(unsigned int indexOffset, double mean
     rawDataX[indexOffset + 1] = offset;
     rawDataY[indexOffset + 1] = mean;
 
-    float spacing = (1.0 - offset) / (max - min);
+    float spacing = (1.0 - offset) / (max() - min());
     for (unsigned int i = 0, o = indexOffset+2+2*i; i < ticks.size(); ++i, o = indexOffset+2+2*i) {
-	setUpTick(o, offset+(ticks[i]-min)*spacing, mean, tickLength);
+    setUpTick(o, offset+(ticks[i]-min())*spacing, mean, tickLength);
     }
 }
 
@@ -36,9 +56,9 @@ void CoordinateAxis<Vertical>::setUpAxis(unsigned int indexOffset, double mean)
     rawDataX[indexOffset + 1] = mean;
     rawDataY[indexOffset + 1] = offset;
 
-    float spacing = (1.0 - offset) / (max - min);
+    float spacing = (1.0 - offset) / (max() - min());
     for (unsigned int i = 0, o = indexOffset+2+2*i; i < ticks.size(); ++i, o = indexOffset+2+2*i) {
-        setUpTick(o, offset+(ticks[i]-min)*spacing, mean, tickLength);
+        setUpTick(o, offset+(ticks[i]-min())*spacing, mean, tickLength);
     }
 }
 
