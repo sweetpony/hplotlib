@@ -8,27 +8,31 @@
 #include "Lines.hpp"
 
 namespace hpl {
-enum AxisOrientation {
-    Horizontal,
-    Vertical
-};
 
-template<AxisOrientation orientation>
-class CoordinateAxis
-{
+namespace AxisFlags {
+    constexpr int PaintNothing = 0;
+    constexpr int PaintPrimary = 1 << 0;
+    constexpr int PaintSecondary = 1 << 1;
+    constexpr int Logscale = 1 << 2;
+    constexpr int PaintMinorTicks = 1 << 3;
 
-public:
-    static constexpr int PaintPrimary = 1 << 0;
-    static constexpr int PaintSecondary = 1 << 1;
-    static constexpr int Logscale = 1 << 2;
-    static constexpr int PaintMinorTicks = 1 << 3;
+    enum AxisOrientation {
+        Horizontal,
+        Vertical
+    };
 
     enum TickMode {
         FixedAmount,
         Smart,
         Fixed
     };
+}
 
+template<AxisFlags::AxisOrientation orientation>
+class CoordinateAxis
+{
+
+public:
     CoordinateAxis(Registry<Drawable>& data, std::map<Drawable::ID, unsigned int>& dataRevisions);
     ~CoordinateAxis();
 
@@ -48,9 +52,13 @@ public:
         changed.invoke(Drawable::ID());
     }
 
+    inline float getOffset() {
+        return offset;
+    }
+
     void setLimits(double xmin, double ymin, double xmax, double ymax);
     void setAxisProperties(int flags);
-    void setTickMode(TickMode mode);
+    void setTickMode(AxisFlags::TickMode mode);
 
 private:
     double min();
@@ -95,8 +103,8 @@ private:
     Drawable::ID linesID;
     Color coordLinesColor = Color(0.0f ,0.0f, 0.0f);
 
-    int flags = PaintPrimary;
-    TickMode tickMode = FixedAmount;
+    int flags = AxisFlags::PaintPrimary;
+    AxisFlags::TickMode tickMode = AxisFlags::FixedAmount;
 
     Registry<Drawable>& data;
     std::map<Drawable::ID, unsigned int>& dataRevisions;
@@ -109,7 +117,7 @@ private:
 
 // Template initialisations
 
-template<AxisOrientation orientation>
+template<AxisFlags::AxisOrientation orientation>
 CoordinateAxis<orientation>::~CoordinateAxis()
 {
     delete lines;
@@ -117,7 +125,7 @@ CoordinateAxis<orientation>::~CoordinateAxis()
     delete[] rawDataY;
 }
 
-template<AxisOrientation orientation>
+template<AxisFlags::AxisOrientation orientation>
 void CoordinateAxis<orientation>::setLimits(double xmin, double ymin, double xmax, double ymax)
 {
     this->xmin = xmin;
@@ -130,7 +138,7 @@ void CoordinateAxis<orientation>::setLimits(double xmin, double ymin, double xma
     changed.invoke(Drawable::ID());
 }
 
-template<AxisOrientation orientation>
+template<AxisFlags::AxisOrientation orientation>
 void CoordinateAxis<orientation>::setAxisProperties(int flags) {
     this->flags = flags;
     //! @todo give logscale attribute to plots
@@ -138,8 +146,8 @@ void CoordinateAxis<orientation>::setAxisProperties(int flags) {
     changed.invoke(Drawable::ID());
 }
 
-template<AxisOrientation orientation>
-void CoordinateAxis<orientation>::setTickMode(TickMode mode)
+template<AxisFlags::AxisOrientation orientation>
+void CoordinateAxis<orientation>::setTickMode(AxisFlags::TickMode mode)
 {
     this->tickMode = mode;
     //! @todo do sth with data?
@@ -148,15 +156,15 @@ void CoordinateAxis<orientation>::setTickMode(TickMode mode)
 }
 
 template<>
-double CoordinateAxis<Horizontal>::min();
+double CoordinateAxis<AxisFlags::Horizontal>::min();
 template<>
-double CoordinateAxis<Vertical>::min();
+double CoordinateAxis<AxisFlags::Vertical>::min();
 template<>
-double CoordinateAxis<Horizontal>::max();
+double CoordinateAxis<AxisFlags::Horizontal>::max();
 template<>
-double CoordinateAxis<Vertical>::max();
+double CoordinateAxis<AxisFlags::Vertical>::max();
 
-template<AxisOrientation orientation>
+template<AxisFlags::AxisOrientation orientation>
 Drawable::ID CoordinateAxis<orientation>::addNewPlot(Drawable* plot)
 {
     Drawable::ID id = data.add(plot);
@@ -169,7 +177,7 @@ Drawable::ID CoordinateAxis<orientation>::addNewPlot(Drawable* plot)
     return id;
 }
 
-template<AxisOrientation orientation>
+template<AxisFlags::AxisOrientation orientation>
 void CoordinateAxis<orientation>::removePlot(Drawable::ID id)
 {
     if (data.has(id)) {
@@ -184,23 +192,23 @@ void CoordinateAxis<orientation>::removePlot(Drawable::ID id)
     }
 }
 
-template<AxisOrientation orientation>
+template<AxisFlags::AxisOrientation orientation>
 void CoordinateAxis<orientation>::setUpCoordLines()
 {
-    int n = ((flags & PaintPrimary) ? 1 : 0) + ((flags & PaintSecondary) ? 1 : 0);
+    int n = ((flags & AxisFlags::PaintPrimary) ? 1 : 0) + ((flags & AxisFlags::PaintSecondary) ? 1 : 0);
     int l = 0;
     delete[] rawDataX;
     delete[] rawDataY;
 
     if (n != 0 && limitsValid()) {
-        if (flags & (PaintPrimary | PaintSecondary)) {
-            calculateDataTicks(flags & Logscale);
+        if (flags & (AxisFlags::PaintPrimary | AxisFlags::PaintSecondary)) {
+            calculateDataTicks(flags & AxisFlags::Logscale);
             l += (2 + 2 * ticks.size()) * n;
 
             //! @todo here and below make this work also for ticks.size() == 1
-            if (flags & PaintMinorTicks && ticks.size() > 1) {
-                double delta = (flags & Logscale ? log10(ticks[1]) - log10(ticks[0]) : ticks[1] - ticks[0]);
-                calculateMinorDataTicks(flags & Logscale, delta);
+            if (flags & AxisFlags::PaintMinorTicks && ticks.size() > 1) {
+                double delta = (flags & AxisFlags::Logscale ? log10(ticks[1]) - log10(ticks[0]) : ticks[1] - ticks[0]);
+                calculateMinorDataTicks(flags & AxisFlags::Logscale, delta);
 
                 l += 2 * minorTicks.size() * n;
             }
@@ -210,20 +218,20 @@ void CoordinateAxis<orientation>::setUpCoordLines()
         rawDataY = new double[l];
         unsigned int o = 0;
 
-        if (flags & PaintPrimary) {
+        if (flags & AxisFlags::PaintPrimary) {
             setUpAxis(o, offset);
             o += 2 + 2 * ticks.size();
 
-            if (flags & PaintMinorTicks) {
+            if (flags & AxisFlags::PaintMinorTicks) {
                 setUpMinorAxis(o, offset);
                 o += 2 * minorTicks.size();
             }
         }
-        if (flags & PaintSecondary) {
+        if (flags & AxisFlags::PaintSecondary) {
             setUpAxis(o, 1.0);
             o += 2 + 2 * ticks.size();
 
-            if (flags & PaintMinorTicks) {
+            if (flags & AxisFlags::PaintMinorTicks) {
                 setUpMinorAxis(o, 1.0);
                 o += 2 * minorTicks.size();
             }
@@ -238,36 +246,35 @@ void CoordinateAxis<orientation>::setUpCoordLines()
     }
 
     if (l != 0) {
-        //! @todo reenable
-        /*lines = new Lines(l, rawDataX, rawDataY, true);
+        lines = new Lines(l, rawDataX, rawDataY, true);
         linesID = addNewPlot(lines);
         lines->setLimits(0.0, 0.0, 1.0, 1.0);
-        lines->setColor(coordLinesColor);*/
+        lines->setColor(coordLinesColor);
     } else {
         lines = nullptr;
         linesID = Drawable::ID();
     }
 }
 
-template<AxisOrientation orientation>
+template<AxisFlags::AxisOrientation orientation>
 void CoordinateAxis<orientation>::calculateDataTicks(bool log)
 {
     ticks.clear();
     
     switch(tickMode) {
-    case FixedAmount:
+    case AxisFlags::FixedAmount:
         calculateSimpleDataPointsForTicks(log);
         break;
-    case Smart:
+    case AxisFlags::Smart:
         calculateSmartDataPointsForTicks(log);
         break;
-    case Fixed:
+    case AxisFlags::Fixed:
         //! @todo implement
         break;
     }
 }
 
-template<AxisOrientation orientation>
+template<AxisFlags::AxisOrientation orientation>
 void CoordinateAxis<orientation>::calculateSimpleDataPointsForTicks(bool log)
 {
     if (log) {
@@ -283,7 +290,7 @@ void CoordinateAxis<orientation>::calculateSimpleDataPointsForTicks(bool log)
     }
 }
 
-template<AxisOrientation orientation>
+template<AxisFlags::AxisOrientation orientation>
 void CoordinateAxis<orientation>::calculateSmartDataPointsForTicks(bool log)
 {
     double div = 10.0, exponent = 1;
@@ -329,7 +336,7 @@ void CoordinateAxis<orientation>::calculateSmartDataPointsForTicks(bool log)
     delete[] steps;
 }
 
-template<AxisOrientation orientation>
+template<AxisFlags::AxisOrientation orientation>
 void CoordinateAxis<orientation>::calculateDataPointsInside(double divisor)
 {
     double val = ceil(min() / divisor) * divisor;
@@ -339,7 +346,7 @@ void CoordinateAxis<orientation>::calculateDataPointsInside(double divisor)
     }
 }
 
-template<AxisOrientation orientation>
+template<AxisFlags::AxisOrientation orientation>
 void CoordinateAxis<orientation>::calculateMinorDataTicks(bool log, double deltaTick)
 {
     if (ticks.size() > 0) {
@@ -364,11 +371,11 @@ void CoordinateAxis<orientation>::calculateMinorDataTicks(bool log, double delta
 }
 
 template<>
-void CoordinateAxis<Horizontal>::setUpTick(unsigned int indexOffset, double primaryValue, double secondaryMeanValue, double length);
+void CoordinateAxis<AxisFlags::Horizontal>::setUpTick(unsigned int indexOffset, double primaryValue, double secondaryMeanValue, double length);
 template<>
-void CoordinateAxis<Vertical>::setUpTick(unsigned int indexOffset, double primaryValue, double secondaryMeanValue, double length);
+void CoordinateAxis<AxisFlags::Vertical>::setUpTick(unsigned int indexOffset, double primaryValue, double secondaryMeanValue, double length);
 
-template<AxisOrientation orientation>
+template<AxisFlags::AxisOrientation orientation>
 void CoordinateAxis<orientation>::setUpMinorAxis(unsigned int indexOffset, double mean)
 {
     float spacing = (1.0 - offset) / (max() - min());

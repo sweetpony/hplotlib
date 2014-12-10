@@ -3,39 +3,41 @@
 namespace hpl {
 
 template<>
-CoordinateAxis<Horizontal>::CoordinateAxis(Registry<Drawable>& data, std::map<Drawable::ID, unsigned int>& dataRevisions) :
+CoordinateAxis<AxisFlags::Horizontal>::CoordinateAxis(Registry<Drawable>& data, std::map<Drawable::ID, unsigned int>& dataRevisions) :
     offset(0.12f), data(data), dataRevisions(dataRevisions)
 {
+    setUpCoordLines();
 }
 
 template<>
-CoordinateAxis<Vertical>::CoordinateAxis(Registry<Drawable>& data, std::map<Drawable::ID, unsigned int>& dataRevisions) :
+CoordinateAxis<AxisFlags::Vertical>::CoordinateAxis(Registry<Drawable>& data, std::map<Drawable::ID, unsigned int>& dataRevisions) :
     offset(0.08f), data(data), dataRevisions(dataRevisions)
 {
+    setUpCoordLines();
 }
 
 template<>
-double CoordinateAxis<Horizontal>::min() {
+double CoordinateAxis<AxisFlags::Horizontal>::min() {
     return xmin;
 }
 
 template<>
-double CoordinateAxis<Vertical>::min() {
+double CoordinateAxis<AxisFlags::Vertical>::min() {
     return ymin;
 }
 
 template<>
-double CoordinateAxis<Horizontal>::max() {
+double CoordinateAxis<AxisFlags::Horizontal>::max() {
     return xmax;
 }
 
 template<>
-double CoordinateAxis<Vertical>::max() {
+double CoordinateAxis<AxisFlags::Vertical>::max() {
     return ymax;
 }
 
 template<>
-void CoordinateAxis<Horizontal>::setUpAxis(unsigned int indexOffset, double mean)
+void CoordinateAxis<AxisFlags::Horizontal>::setUpAxis(unsigned int indexOffset, double mean)
 {
     rawDataX[indexOffset] = 1.0;
     rawDataY[indexOffset] = mean;
@@ -49,7 +51,7 @@ void CoordinateAxis<Horizontal>::setUpAxis(unsigned int indexOffset, double mean
 }
 
 template<>
-void CoordinateAxis<Vertical>::setUpAxis(unsigned int indexOffset, double mean)
+void CoordinateAxis<AxisFlags::Vertical>::setUpAxis(unsigned int indexOffset, double mean)
 {
     rawDataX[indexOffset] = mean;
     rawDataY[indexOffset] = 1.0;
@@ -63,7 +65,7 @@ void CoordinateAxis<Vertical>::setUpAxis(unsigned int indexOffset, double mean)
 }
 
 template<>
-void CoordinateAxis<Horizontal>::setUpTick(unsigned int indexOffset, double primaryValue, double secondaryMeanValue, double length)
+void CoordinateAxis<AxisFlags::Horizontal>::setUpTick(unsigned int indexOffset, double primaryValue, double secondaryMeanValue, double length)
 {
     rawDataX[indexOffset] = primaryValue;
     rawDataX[indexOffset+1] = primaryValue;
@@ -72,7 +74,7 @@ void CoordinateAxis<Horizontal>::setUpTick(unsigned int indexOffset, double prim
 }
 
 template<>
-void CoordinateAxis<Vertical>::setUpTick(unsigned int indexOffset, double primaryValue, double secondaryMeanValue, double length)
+void CoordinateAxis<AxisFlags::Vertical>::setUpTick(unsigned int indexOffset, double primaryValue, double secondaryMeanValue, double length)
 {
     rawDataY[indexOffset] = primaryValue;
     rawDataY[indexOffset+1] = primaryValue;
