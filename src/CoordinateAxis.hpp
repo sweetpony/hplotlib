@@ -7,8 +7,6 @@
 
 #include "Lines.hpp"
 
-#include <iostream>
-
 namespace hpl {
 
 namespace AxisFlags {
@@ -55,7 +53,7 @@ public:
     }
 
     inline float getOffset() {
-        return offset;
+        return offset();
     }
 
     void setLimits(double xmin, double ymin, double xmax, double ymax);
@@ -65,6 +63,8 @@ public:
 private:
     double min();
     double max();
+    float offset();
+    float otherOffset();
 
     inline bool limitsValid() {
         return xmin != std::numeric_limits<double>::min() && xmax != std::numeric_limits<double>::max()
@@ -88,7 +88,7 @@ private:
     void setUpTick(unsigned int indexOffset, double primaryValue, double secondaryMeanValue, double length);
 
 
-    float offset = 0.1f;
+    float xOffset = 0.12f, yOffset = 0.08f;
     int nrTicks = 8;
     float tickLength = 0.02f;
     int nrMinorTicks = 4;
@@ -118,6 +118,12 @@ private:
 
 
 // Template initialisations
+
+template<AxisFlags::AxisOrientation orientation>
+CoordinateAxis<orientation>::CoordinateAxis(Registry<Drawable>& data, std::map<Drawable::ID, unsigned int>& dataRevisions) : data(data), dataRevisions(dataRevisions)
+{
+    setUpCoordLines();
+}
 
 template<AxisFlags::AxisOrientation orientation>
 CoordinateAxis<orientation>::~CoordinateAxis()
@@ -164,6 +170,14 @@ template<>
 double CoordinateAxis<AxisFlags::Horizontal>::max();
 template<>
 double CoordinateAxis<AxisFlags::Vertical>::max();
+template<>
+float CoordinateAxis<AxisFlags::Horizontal>::offset();
+template<>
+float CoordinateAxis<AxisFlags::Vertical>::offset();
+template<>
+float CoordinateAxis<AxisFlags::Horizontal>::otherOffset();
+template<>
+float CoordinateAxis<AxisFlags::Vertical>::otherOffset();
 
 template<AxisFlags::AxisOrientation orientation>
 Drawable::ID CoordinateAxis<orientation>::addNewPlot(Drawable* plot)
@@ -219,11 +233,11 @@ void CoordinateAxis<orientation>::setUpCoordLines()
         unsigned int o = 0;
 
         if (flags & AxisFlags::PaintPrimary) {
-            setUpAxis(o, offset);
+            setUpAxis(o, otherOffset());
             o += 2 + 2 * ticks.size();
 
             if (flags & AxisFlags::PaintMinorTicks) {
-                setUpMinorAxis(o, offset);
+                setUpMinorAxis(o, otherOffset());
                 o += 2 * minorTicks.size();
             }
         }
@@ -380,9 +394,9 @@ void CoordinateAxis<AxisFlags::Vertical>::setUpTick(unsigned int indexOffset, do
 template<AxisFlags::AxisOrientation orientation>
 void CoordinateAxis<orientation>::setUpMinorAxis(unsigned int indexOffset, double mean)
 {
-    float spacing = (1.0 - offset) / (max() - min());
+    float spacing = (1.0 - offset()) / (max() - min());
     for (unsigned int i = 0, o = indexOffset+2*i; i < minorTicks.size(); o = indexOffset+2*(++i)) {
-        setUpTick(o, offset+(minorTicks[i]-min())*spacing, mean, minorTickLength);
+        setUpTick(o, offset()+(minorTicks[i]-min())*spacing, mean, minorTickLength);
     }
 }
 }

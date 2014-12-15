@@ -3,20 +3,6 @@
 namespace hpl {
 
 template<>
-CoordinateAxis<AxisFlags::Horizontal>::CoordinateAxis(Registry<Drawable>& data, std::map<Drawable::ID, unsigned int>& dataRevisions) :
-    offset(0.12f), data(data), dataRevisions(dataRevisions)
-{
-    setUpCoordLines();
-}
-
-template<>
-CoordinateAxis<AxisFlags::Vertical>::CoordinateAxis(Registry<Drawable>& data, std::map<Drawable::ID, unsigned int>& dataRevisions) :
-    offset(0.08f), data(data), dataRevisions(dataRevisions)
-{
-    setUpCoordLines();
-}
-
-template<>
 double CoordinateAxis<AxisFlags::Horizontal>::min() {
     return xmin;
 }
@@ -37,16 +23,36 @@ double CoordinateAxis<AxisFlags::Vertical>::max() {
 }
 
 template<>
+float CoordinateAxis<AxisFlags::Horizontal>::offset() {
+    return xOffset;
+}
+
+template<>
+float CoordinateAxis<AxisFlags::Vertical>::offset() {
+    return yOffset;
+}
+
+template<>
+float CoordinateAxis<AxisFlags::Horizontal>::otherOffset() {
+    return yOffset;
+}
+
+template<>
+float CoordinateAxis<AxisFlags::Vertical>::otherOffset() {
+    return xOffset;
+}
+
+template<>
 void CoordinateAxis<AxisFlags::Horizontal>::setUpAxis(unsigned int indexOffset, double mean)
 {
     rawDataX[indexOffset] = 1.0;
     rawDataY[indexOffset] = mean;
-    rawDataX[indexOffset + 1] = offset;
+    rawDataX[indexOffset + 1] = offset();
     rawDataY[indexOffset + 1] = mean;
 
-    float spacing = (1.0 - offset) / (max() - min());
+    float spacing = (1.0 - offset()) / (max() - min());
     for (unsigned int i = 0, o = indexOffset+2+2*i; i < ticks.size(); o = indexOffset+2+2*(++i)) {
-        setUpTick(o, offset+(ticks[i]-min())*spacing, mean, tickLength);
+        setUpTick(o, offset()+(ticks[i]-min())*spacing, mean, tickLength);
     }
 }
 
@@ -56,11 +62,11 @@ void CoordinateAxis<AxisFlags::Vertical>::setUpAxis(unsigned int indexOffset, do
     rawDataX[indexOffset] = mean;
     rawDataY[indexOffset] = 1.0;
     rawDataX[indexOffset + 1] = mean;
-    rawDataY[indexOffset + 1] = offset;
+    rawDataY[indexOffset + 1] = offset();
 
-    float spacing = (1.0 - offset) / (max() - min());
+    float spacing = (1.0 - offset()) / (max() - min());
     for (unsigned int i = 0, o = indexOffset+2+2*i; i < ticks.size(); o = indexOffset+2+2*(++i)) {
-        setUpTick(o, offset+(ticks[i]-min())*spacing, mean, tickLength);
+        setUpTick(o, offset()+(ticks[i]-min())*spacing, mean, tickLength);
     }
 }
 
