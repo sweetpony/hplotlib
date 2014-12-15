@@ -214,7 +214,6 @@ void CoordinateAxis<orientation>::setUpCoordLines()
                 l += 2 * minorTicks.size() * n;
             }
         }
-        std::cout << this << " l = " << l << " " << ticks.size() << " " << minorTicks.size() << std::endl;
         rawDataX = new double[l];
         rawDataY = new double[l];
         unsigned int o = 0;
@@ -247,13 +246,11 @@ void CoordinateAxis<orientation>::setUpCoordLines()
     }
 
     if (l != 0) {
-        std::cout << this << " Set to new " << lines << std::endl;
         lines = new Lines(l, rawDataX, rawDataY, true);
         linesID = addNewPlot(lines);
         lines->setLimits(0.0, 0.0, 1.0, 1.0);
         lines->setColor(coordLinesColor);
     } else {
-        std::cout << this << " Set to nullptr" << std::endl;
         lines = nullptr;
         linesID = Drawable::ID();
     }
@@ -384,8 +381,8 @@ template<AxisFlags::AxisOrientation orientation>
 void CoordinateAxis<orientation>::setUpMinorAxis(unsigned int indexOffset, double mean)
 {
     float spacing = (1.0 - offset) / (max() - min());
-    for (unsigned int i = 0, o = indexOffset+2*i; i < minorTicks.size(); ++i, o = indexOffset+2*i) {
-        setUpTick(o, offset+(ticks[i]-min())*spacing, mean, minorTickLength);
+    for (unsigned int i = 0, o = indexOffset+2*i; i < minorTicks.size(); o = indexOffset+2*(++i)) {
+        setUpTick(o, offset+(minorTicks[i]-min())*spacing, mean, minorTickLength);
     }
 }
 }

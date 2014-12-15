@@ -39,18 +39,15 @@ double CoordinateAxis<AxisFlags::Vertical>::max() {
 template<>
 void CoordinateAxis<AxisFlags::Horizontal>::setUpAxis(unsigned int indexOffset, double mean)
 {
-    std::cout << "Main" << std::endl;
-    std::cout << "Tick: " << indexOffset << " " << indexOffset+1 << std::endl;
     rawDataX[indexOffset] = 1.0;
     rawDataY[indexOffset] = mean;
     rawDataX[indexOffset + 1] = offset;
     rawDataY[indexOffset + 1] = mean;
 
     float spacing = (1.0 - offset) / (max() - min());
-    for (unsigned int i = 0, o = indexOffset+2+2*i; i < ticks.size(); ++i, o = indexOffset+2+2*i) {
+    for (unsigned int i = 0, o = indexOffset+2+2*i; i < ticks.size(); o = indexOffset+2+2*(++i)) {
         setUpTick(o, offset+(ticks[i]-min())*spacing, mean, tickLength);
     }
-    std::cout << "Main done" << std::endl;
 }
 
 template<>
@@ -62,7 +59,7 @@ void CoordinateAxis<AxisFlags::Vertical>::setUpAxis(unsigned int indexOffset, do
     rawDataY[indexOffset + 1] = offset;
 
     float spacing = (1.0 - offset) / (max() - min());
-    for (unsigned int i = 0, o = indexOffset+2+2*i; i < ticks.size(); ++i, o = indexOffset+2+2*i) {
+    for (unsigned int i = 0, o = indexOffset+2+2*i; i < ticks.size(); o = indexOffset+2+2*(++i)) {
         setUpTick(o, offset+(ticks[i]-min())*spacing, mean, tickLength);
     }
 }
