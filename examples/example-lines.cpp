@@ -100,7 +100,7 @@ int main()
     cs4.setAxisProperties(hpl::AxisFlags::PaintPrimary | hpl::AxisFlags::Logscale/* | hpl::AxisFlags::PaintMinorTicks*/);
     hpl::Lines& plot5 = cs4.addPlot<hpl::Lines>(NUM_POINTS, x, n);
     //! @todo should be done automatically
-    cs4.updateLimits(1.0/NUM_POINTS, 1.0, 1.0/(NUM_POINTS*NUM_POINTS), 1.0);
+    cs4.updateLimits(log10(x[1]), log10(x[NUM_POINTS-1]), log10(n[1]), log10(n[NUM_POINTS-1]));
     canvas.addCoordinateSystemToLayout(cs4.id(), layout1.id());
 
     hpl::PostscriptPrinter ps;

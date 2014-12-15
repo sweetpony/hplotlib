@@ -80,7 +80,7 @@ private:
     void setUpCoordLines();
     
     void calculateDataTicks(bool log);
-    void calculateSimpleDataPointsForTicks(bool log);
+    void calculateSimpleDataPointsForTicks();
     void calculateSmartDataPointsForTicks(bool log);
     void calculateDataPointsInside(double divisor);
     void calculateMinorDataTicks(bool log, double deltaTick);
@@ -278,7 +278,7 @@ void CoordinateAxis<orientation>::calculateDataTicks(bool log)
     
     switch(tickMode) {
     case AxisFlags::FixedAmount:
-        calculateSimpleDataPointsForTicks(log);
+        calculateSimpleDataPointsForTicks();
         break;
     case AxisFlags::Smart:
         calculateSmartDataPointsForTicks(log);
@@ -290,18 +290,11 @@ void CoordinateAxis<orientation>::calculateDataTicks(bool log)
 }
 
 template<AxisFlags::AxisOrientation orientation>
-void CoordinateAxis<orientation>::calculateSimpleDataPointsForTicks(bool log)
+void CoordinateAxis<orientation>::calculateSimpleDataPointsForTicks()
 {
-    if (log) {
-        float spacing = (log10(max()) - log10(min())) / (nrTicks + 1);
-        for (int i = 0; i < nrTicks; ++i) {
-            ticks.push_back(log10(min()) + (i+1) * spacing);
-        }
-    } else {
-        float spacing = (max() - min()) / (nrTicks + 1);
-        for (int i = 0; i < nrTicks; ++i) {
-            ticks.push_back(min() + (i+1) * spacing);
-        }
+    float spacing = (max() - min()) / (nrTicks + 1);
+    for (int i = 0; i < nrTicks; ++i) {
+        ticks.push_back(min() + (i+1) * spacing);
     }
 }
 
