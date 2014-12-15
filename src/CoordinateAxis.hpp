@@ -83,7 +83,7 @@ private:
     void calculateSimpleDataPointsForTicks();
     void calculateSmartDataPointsForTicks(bool log);
     void calculateDataPointsInside(double divisor);
-    void calculateMinorDataTicks(bool log, double deltaTick);
+    void calculateMinorDataTicks();
     
     void setUpAxis(unsigned int indexOffset, double mean);
     void setUpMinorAxis(unsigned int indexOffset, double mean);
@@ -91,6 +91,7 @@ private:
     void setUpTick(unsigned int indexOffset, double primaryValue, double secondaryMeanValue, double length);
 
 
+    //! @todo tickLength should not be fixed but set geometry dependent
     float xOffset = 0.12f, yOffset = 0.08f;
     int nrTicks = 8;
     float tickLength = 0.02f;
@@ -103,6 +104,7 @@ private:
     double ymax = std::numeric_limits<double>::max();
 
     std::vector<double> ticks, minorTicks;
+    double tickdelta;
     double* rawDataX = nullptr,* rawDataY = nullptr;
     Lines* lines = nullptr;
     Drawable::ID linesID;
@@ -221,11 +223,8 @@ void CoordinateAxis<orientation>::setUpCoordLines()
             calculateDataTicks(flags & AxisFlags::Logscale);
             l += (2 + 2 * ticks.size()) * n;
 
-            //! @todo here and below make this work also for ticks.size() == 1
             if (flags & AxisFlags::PaintMinorTicks && ticks.size() > 1) {
-                double delta = (flags & AxisFlags::Logscale ? log10(ticks[1]) - log10(ticks[0]) : ticks[1] - ticks[0]);
-                calculateMinorDataTicks(flags & AxisFlags::Logscale, delta);
-
+                calculateMinorDataTicks();
                 l += 2 * minorTicks.size() * n;
             }
         }
@@ -292,12 +291,13 @@ void CoordinateAxis<orientation>::calculateDataTicks(bool log)
 template<AxisFlags::AxisOrientation orientation>
 void CoordinateAxis<orientation>::calculateSimpleDataPointsForTicks()
 {
-    float spacing = (max() - min()) / (nrTicks + 1);
+    tickdelta = (max() - min()) / (nrTicks + 1);
     for (int i = 0; i < nrTicks; ++i) {
-        ticks.push_back(min() + (i+1) * spacing);
+        ticks.push_back(min() + (i+1) * tickdelta);
     }
 }
 
+//! @todo fix log, also seems not to work properly
 template<AxisFlags::AxisOrientation orientation>
 void CoordinateAxis<orientation>::calculateSmartDataPointsForTicks(bool log)
 {
@@ -316,6 +316,7 @@ void CoordinateAxis<orientation>::calculateSmartDataPointsForTicks(bool log)
     }
 
     while (todo) {
+        tickdelta = div;
         calculateDataPointsInside(div);
         if (ticks.size() > countMax) {
             index ++;
@@ -354,27 +355,17 @@ void CoordinateAxis<orientation>::calculateDataPointsInside(double divisor)
     }
 }
 
+//! @todo if ticks are smart and every ten then do a nice log axis here with a*10^n varrying a
 template<AxisFlags::AxisOrientation orientation>
-void CoordinateAxis<orientation>::calculateMinorDataTicks(bool log, double deltaTick)
+void CoordinateAxis<orientation>::calculateMinorDataTicks()
 {
     minorTicks.clear();
 
     if (ticks.size() > 0) {
-        double delta = deltaTick / (nrMinorTicks + 1);
-        double min = this->min();
-        double max = this->max();
-        if (log) {
-            //Assume deltaTick is already in logspace
-            min = log10(min);
-            max = log10(max);
-        }
-        double val = ticks[0] - static_cast<unsigned int>((ticks[0] - min) / delta) * delta;
-        while (val <= max) {
-            if (log) {
-                minorTicks.push_back(pow(10.0, val));
-            } else {
-                minorTicks.push_back(val);
-            }
+        double delta = tickdelta / (nrMinorTicks + 1);
+        double val = ticks[0] - static_cast<unsigned int>((ticks[0] - min()) / delta) * delta;
+        while (val <= max()) {
+            minorTicks.push_back(val);
             val += delta;
         }
     }
