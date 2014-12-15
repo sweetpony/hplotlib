@@ -97,8 +97,10 @@ int main()
     plot2.setColorTable<hpl::ColorTable::RainbowBlack>(256);
 
     hpl::CoordinateSystem& cs4 = canvas.addCoordinateSystem();
-    cs4.setAxisProperties(hpl::AxisFlags::PaintPrimary | hpl::AxisFlags::Logscale | hpl::AxisFlags::PaintMinorTicks);
+    cs4.setAxisProperties(hpl::AxisFlags::PaintPrimary | hpl::AxisFlags::Logscale/* | hpl::AxisFlags::PaintMinorTicks*/);
     hpl::Lines& plot5 = cs4.addPlot<hpl::Lines>(NUM_POINTS, x, n);
+    //! @todo should be done automatically
+    cs4.updateLimits(1.0/NUM_POINTS, 1.0, 1.0/(NUM_POINTS*NUM_POINTS), 1.0);
     canvas.addCoordinateSystemToLayout(cs4.id(), layout1.id());
 
     hpl::PostscriptPrinter ps;

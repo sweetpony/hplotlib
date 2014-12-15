@@ -29,4 +29,15 @@ double interpolate(double x, double x1, double y1, double x2, double y2)
     double alpha = (x - x1) / (x2 - x1);
     return y1 + (y2 - y1) * alpha;
 }
+
+double* log(int n, const double* x)
+{
+    double* y = new double[n];
+
+    for (int i = 0; i < n; i++) {
+        y[i] = log10(x[i]);
+    }
+
+    return y;
+}
 }

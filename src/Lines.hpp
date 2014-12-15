@@ -13,17 +13,19 @@
 namespace hpl
 {
 struct SimpleLines {
-    SimpleLines(int n, double const* x, double const* y, bool separate, bool ownsData) : _n(n), _x(x), _y(y), _separate(separate), _ownsData(ownsData) {}
+    SimpleLines(int n, double const* x, double const* y, bool separate, bool ownsX, bool ownsY) : _n(n), _x(x), _y(y), _separate(separate), _ownsX(ownsX), _ownsY(ownsY) {}
     virtual ~SimpleLines() {
-        if (_ownsData) {
+        if (_ownsX) {
             delete[] _x;
+        }
+        if (_ownsY) {
             delete[] _y;
         }
     }
 
     const int _n;
     const double* _x, * _y;
-    const bool _separate, _ownsData;
+    const bool _separate, _ownsX, _ownsY;
 };
 
 class Lines : public Drawable, private SimpleLines {
@@ -35,7 +37,7 @@ public:
     };
 
     Lines(int n, double const* x, double const* y, bool separate = false) :
-        Drawable((separate ? Type_Lines : Type_LineStrips)), SimpleLines(n, x, y, separate, false), lines(new SimpleLines(n, x, y, separate, false)) {}
+        Drawable((separate ? Type_Lines : Type_LineStrips)), SimpleLines(n, x, y, separate, false, false), lines(new SimpleLines(n, x, y, separate, false, false)) {}
     virtual ~Lines() {
         delete lines;
     }
@@ -71,6 +73,8 @@ public:
     }
 
 protected:
+    virtual void recalculateData();
+
     void calculateInterpolationDots();
 
     SimpleLines* lines;

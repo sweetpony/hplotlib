@@ -33,6 +33,9 @@ class CoordinateAxis
 {
 
 public:
+    Delegate<Drawable::ID> changed;
+    Delegate<bool> changedLogscale;
+
     CoordinateAxis(Registry<Drawable>& data, std::map<Drawable::ID, unsigned int>& dataRevisions);
     ~CoordinateAxis();
 
@@ -111,9 +114,6 @@ private:
     Registry<Drawable>& data;
     std::map<Drawable::ID, unsigned int>& dataRevisions;
     Geometry geometry;
-
-    Delegate<Drawable::ID> changed;
-
 };
 
 
@@ -147,8 +147,10 @@ void CoordinateAxis<orientation>::setLimits(double xmin, double ymin, double xma
 
 template<AxisFlags::AxisOrientation orientation>
 void CoordinateAxis<orientation>::setAxisProperties(int flags) {
+    if ((this->flags & AxisFlags::Logscale) != (flags & AxisFlags::Logscale)) {
+        changedLogscale.invoke(flags & AxisFlags::Logscale);
+    }
     this->flags = flags;
-    //! @todo give logscale attribute to plots
     setUpCoordLines();
     changed.invoke(Drawable::ID());
 }
@@ -157,7 +159,6 @@ template<AxisFlags::AxisOrientation orientation>
 void CoordinateAxis<orientation>::setTickMode(AxisFlags::TickMode mode)
 {
     this->tickMode = mode;
-    //! @todo do sth with data?
     setUpCoordLines();
     changed.invoke(Drawable::ID());
 }
@@ -294,7 +295,7 @@ void CoordinateAxis<orientation>::calculateSimpleDataPointsForTicks(bool log)
     if (log) {
         float spacing = (log10(max()) - log10(min())) / (nrTicks + 1);
         for (int i = 0; i < nrTicks; ++i) {
-            ticks.push_back(min() + pow(10.0, (i+1) * spacing));
+            ticks.push_back(log10(min()) + (i+1) * spacing);
         }
     } else {
         float spacing = (max() - min()) / (nrTicks + 1);

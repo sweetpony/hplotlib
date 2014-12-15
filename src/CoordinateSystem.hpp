@@ -73,11 +73,22 @@ private:
             && ymin != std::numeric_limits<double>::min() && ymax != std::numeric_limits<double>::max();
     }
 
+    inline void updateXlogOnPlots(bool log) {
+        xlog = log;
+        updateLogOnPlots();
+    }
+    inline void updateYlogOnPlots(bool log) {
+        ylog = log;
+        updateLogOnPlots();
+    }
+    void updateLogOnPlots();
+
     Registry<Drawable>& data;
     std::map<Drawable::ID, unsigned int>& dataRevisions;
     std::vector<Drawable::ID> myPlots;
     ID csId;
 	Geometry geometry;
+    bool xlog = false, ylog = false;
 
     bool needLimitUpdate = true;
 

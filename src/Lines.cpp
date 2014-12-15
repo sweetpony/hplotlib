@@ -11,29 +11,48 @@ void Lines::setThickness(double thick)
 void Lines::setStyle(Style s)
 {
     if (s != style) {
-        delete lines;
-
-        switch(s) {
-            case Solid:
-                lines = new SimpleLines(_n, _x, _y, _separate, false);
-                type = (lines->_separate ? Type_Lines : Type_LineStrips);
-                break;
-            case Dashed:
-                //! @todo perhaps want to improve this such that beginning and end are connected by visible lines no matter if n % 2 is 0 or 1
-                lines = new SimpleLines(_n, _x, _y, !_separate, false);
-                type = (lines->_separate ? Type_Lines : Type_LineStrips);
-                break;
-            case Dotted:
-                calculateInterpolationDots();
-                type = Type_Points;
-                break;
-        }
-
         style = s;
-        changed.invoke(plotId);
+        recalculateData();
     }
 }
 
+void Lines::recalculateData()
+{
+    delete lines;
+    const double* thisx = _x,* thisy = _y;
+
+    switch(style) {
+        case Solid:
+            if (xlog) {
+                thisx = log(_n, _x);
+            }
+            if (ylog) {
+                thisy = log(_n, _y);
+            }
+            lines = new SimpleLines(_n, thisx, thisy, _separate, xlog, ylog);
+            type = (lines->_separate ? Type_Lines : Type_LineStrips);
+            break;
+        case Dashed:
+            if (xlog) {
+                thisx = log(_n, _x);
+            }
+            if (ylog) {
+                thisy = log(_n, _y);
+            }
+            //! @todo perhaps want to improve this such that beginning and end are connected by visible lines no matter if n % 2 is 0 or 1
+            lines = new SimpleLines(_n, thisx, thisy, !_separate, xlog, ylog);
+            type = (lines->_separate ? Type_Lines : Type_LineStrips);
+            break;
+        case Dotted:
+            calculateInterpolationDots();
+            type = Type_Points;
+            break;
+    }
+
+    changed.invoke(plotId);
+}
+
+//! @todo consider xlog and ylog here
 void Lines::calculateInterpolationDots()
 {
     unsigned int n = 300;
@@ -72,6 +91,6 @@ void Lines::calculateInterpolationDots()
         }
     }
 
-    lines = new SimpleLines(n, x, y, true, true);
+    lines = new SimpleLines(n, x, y, true, true, true);
 }
 }

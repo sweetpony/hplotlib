@@ -27,6 +27,7 @@ public:
     Drawable(Type type) : type(type) {}
     virtual ~Drawable() {}
 
+    //! @todo recalculate???
     inline void setLimits(double xmin, double ymin, double xmax, double ymax) {
         this->xmin = xmin;
         this->ymin = ymin;
@@ -47,6 +48,12 @@ public:
     inline double getYmax() const {
         return ymax;
     }
+
+    virtual void setLog(bool xlog, bool ylog) {
+        this->xlog  = xlog;
+        this->ylog = ylog;
+        recalculateData();
+    }
     
 	inline void setGeometry(Geometry const& geom) {
 		geometry = geom;
@@ -66,7 +73,11 @@ public:
     inline void setId(ID id) { plotId = id; }
 
 protected:
+    //! @todo make pure virtual
+    virtual void recalculateData() {}//= 0;
+
     double xmin, ymin, xmax, ymax;
+    bool xlog = false, ylog = false;
     Geometry geometry;
     ID plotId;
     Type type;

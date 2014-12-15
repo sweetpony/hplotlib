@@ -14,6 +14,10 @@ namespace hpl
 CoordinateSystem::CoordinateSystem(Registry<Drawable>& dataContainer, std::map<Drawable::ID, unsigned int>& dataRevisions)
     : data(dataContainer), dataRevisions(dataRevisions), xAxis(dataContainer, dataRevisions), yAxis(dataContainer, dataRevisions)
 {
+    xAxis.changed.template bind<Delegate<Drawable::ID>, &Delegate<Drawable::ID>::invoke>(&changed);
+    xAxis.changedLogscale.template bind<CoordinateSystem, &CoordinateSystem::updateXlogOnPlots>(this);
+    yAxis.changed.template bind<Delegate<Drawable::ID>, &Delegate<Drawable::ID>::invoke>(&changed);
+    yAxis.changedLogscale.template bind<CoordinateSystem, &CoordinateSystem::updateYlogOnPlots>(this);
 }
 
 CoordinateSystem::~CoordinateSystem()
@@ -63,6 +67,7 @@ Drawable::ID CoordinateSystem::addNewPlot(Drawable* plot)
     myPlots.push_back(id);
     plot->setGeometry(geometry);
     plot->setLimits(xmin, ymin, xmax, ymax);
+    plot->setLog(xlog, ylog);
     plot->changed.template bind<Delegate<Drawable::ID>, &Delegate<Drawable::ID>::invoke>(&changed);
     changed.invoke(id);
     return id;
@@ -86,6 +91,13 @@ void CoordinateSystem::removePlot(Drawable::ID id)
             dataRevisions.erase(it);
             break;
         }
+    }
+}
+
+void CoordinateSystem::updateLogOnPlots()
+{
+    for (auto it = myPlots.begin(); it != myPlots.end(); ++it) {
+        data.lookup(*it).setLog(xlog, ylog);
     }
 }
 }
