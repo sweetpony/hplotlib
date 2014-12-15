@@ -96,10 +96,10 @@ int main()
     layout1.changeOrientation(hpl::HorizontalLayout::RightToLeft);
     plot2.setColorTable<hpl::ColorTable::RainbowBlack>(256);
 
-    hpl::CoordinateSystem cs4 = canvas.addCoordinateSystem();
+    hpl::CoordinateSystem& cs4 = canvas.addCoordinateSystem();
     cs4.setAxisProperties(hpl::AxisFlags::PaintPrimary | hpl::AxisFlags::Logscale | hpl::AxisFlags::PaintMinorTicks);
-    canvas.addCoordinateSystemToLayout(cs4.id(), layout1.id());
     hpl::Lines& plot5 = cs4.addPlot<hpl::Lines>(NUM_POINTS, x, n);
+    canvas.addCoordinateSystemToLayout(cs4.id(), layout1.id());
 
     hpl::PostscriptPrinter ps;
     canvas.connectToPlotter(&ps);
