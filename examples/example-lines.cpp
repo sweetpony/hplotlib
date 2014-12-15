@@ -53,7 +53,7 @@ int main()
     plotter.setBackgroundColor(hpl::Color(0.9f, 0.9f, 0.9f));
 
     hpl::HorizontalLayout& layout1 = canvas.addLayout<hpl::HorizontalLayout>();
-    //hpl::VerticalLayout& layout2 = canvas.addLayout<hpl::VerticalLayout>();
+    hpl::VerticalLayout& layout2 = canvas.addLayout<hpl::VerticalLayout>();
 
     hpl::CoordinateSystem& cs1 = canvas.addCoordinateSystem();
     cs1.setColor(hpl::Color(0.6f, 0.6f, 0.6f));
@@ -62,7 +62,7 @@ int main()
     plot1.setColor(hpl::Color(1.0f, 0.0f, 0.0f));
     plot1.setThickness(5.0);
 
-    /*hpl::CoordinateSystem& cs2 = canvas.addCoordinateSystem();
+    hpl::CoordinateSystem& cs2 = canvas.addCoordinateSystem();
     cs2.setAxisProperties(hpl::AxisFlags::PaintNothing);
     hpl::Contour& plot2 = cs2.addPlot<hpl::Contour>(NUM_POINTS, x, x, m);
 
@@ -71,10 +71,10 @@ int main()
     hpl::Points& plot3 = cs3.addPlot<hpl::Points>(NUM_POINTS, x, z);
     plot3.setColor(hpl::Color(0.0f, 0.0f, 1.0f));
     hpl::Lines& plot4 = cs3.addPlot<hpl::Lines>(NUM_POINTS, x, y);
-    plot4.setColor(hpl::Color(0.0f, 0.0f, 0.0f));*/
+    plot4.setColor(hpl::Color(0.0f, 0.0f, 0.0f));
 
     canvas.addCoordinateSystemToLayout(cs1.id(), layout1.id());
-    /*canvas.addLayoutToLayout(layout2.id(), layout1.id());
+    canvas.addLayoutToLayout(layout2.id(), layout1.id());
     canvas.addCoordinateSystemToLayout(cs2.id(), layout2.id());
     canvas.addCoordinateSystemToLayout(cs3.id(), layout2.id());
 
@@ -103,7 +103,7 @@ int main()
 
     hpl::PostscriptPrinter ps;
     canvas.connectToPlotter(&ps);
-    ps.saveToFile("testoutput");*/
+    ps.saveToFile("testoutput");
 
     plotter.wait();
 

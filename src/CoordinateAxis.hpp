@@ -100,7 +100,7 @@ private:
     double ymax = std::numeric_limits<double>::max();
 
     std::vector<double> ticks, minorTicks;
-    double* rawDataX = nullptr,* rawDataY;
+    double* rawDataX = nullptr,* rawDataY = nullptr;
     Lines* lines = nullptr;
     Drawable::ID linesID;
     Color coordLinesColor = Color(0.0f ,0.0f, 0.0f);
