@@ -35,8 +35,8 @@ public:
         Dotted
     };
 
-    Lines(int n, double const* x, double const* y, bool separate = false) :
-        Drawable((separate ? Type_Lines : Type_LineStrips)), SimpleLines(n, x, y, separate, false, false), lines(new SimpleLines(n, x, y, separate, false, false)) {}
+    Lines(int n, double const* x, double const* y, const Limits& limits, bool separate = false) :
+        Drawable((separate ? Type_Lines : Type_LineStrips), limits), SimpleLines(n, x, y, separate, false, false), lines(new SimpleLines(n, x, y, separate, false, false)) {}
     virtual ~Lines() {
         delete lines;
     }
@@ -71,12 +71,9 @@ public:
         return style;
     }
 
-protected:
     virtual void recalculateData();
-    inline virtual bool recalculateOnLimitChangeNeeded() {
-        return style == Dotted;
-    }
 
+protected:
     void calculateInterpolationDots(const double* thisx, const double* thisy);
 
     SimpleLines* lines;

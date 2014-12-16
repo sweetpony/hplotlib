@@ -49,8 +49,8 @@ void OGLPlotter::init()
 
             float* interleave = new float[2 * l->n()];
             for (int i = 0; i < l->n(); i++) {
-                interleave[(i << 1)] = (l->x()[i] - l->getXmin()) / (l->getXmax() - l->getXmin());
-                interleave[(i << 1) + 1] = (l->y()[i] - l->getYmin()) / (l->getYmax() - l->getYmin());
+                interleave[(i << 1)] = (l->x()[i] - l->xmin()) / (l->xmax() - l->xmin());
+                interleave[(i << 1) + 1] = (l->y()[i] - l->ymin()) / (l->ymax() - l->ymin());
             }
 
             if (revision[it->first] != 0) {
@@ -78,8 +78,8 @@ void OGLPlotter::init()
 
             float* interleave = new float[2 * p->n()];
             for (int i = 0; i < p->n(); i++) {
-                interleave[(i << 1)] = (p->x()[i] - p->getXmin()) / (p->getXmax() - p->getXmin());
-                interleave[(i << 1) + 1] = (p->y()[i] - p->getYmin()) / (p->getYmax() - p->getYmin());
+                interleave[(i << 1)] = (p->x()[i] - p->xmin()) / (p->xmax() - p->xmin());
+                interleave[(i << 1) + 1] = (p->y()[i] - p->ymin()) / (p->ymax() - p->ymin());
             }
 
             if (revision[it->first] != 0) {

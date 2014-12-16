@@ -49,8 +49,8 @@ void Lines::recalculateData()
 void Lines::calculateInterpolationDots(const double* thisx, const double* thisy)
 {
     unsigned int n = 300;
-    double dx = xmax - xmin;
-    double dy = ymax - ymin;
+    double dx = limits.xmax() - limits.xmin();
+    double dy = limits.ymax() - limits.ymin();
 
     //! @todo Actually would need aspect ratio of current box, which is geometry & aspect ratio of window
     double fx = (thisx[_n-1] - thisx[0]) / dx;
@@ -67,12 +67,12 @@ void Lines::calculateInterpolationDots(const double* thisx, const double* thisy)
     double* y = new double[n];
 
     unsigned int j = 0;
-    while (thisx[j+1] < xmin) {
+    while (thisx[j+1] < limits.xmin()) {
         ++j;
     }
 
     for (unsigned int i = 0; i < n; i++) {
-        x[i] = (i == 0 ? xmin : x[i-1]) + dx;
+        x[i] = (i == 0 ? limits.xmin() : x[i-1]) + dx;
 
         while (x[i] > thisx[j+1]) {
             j++;

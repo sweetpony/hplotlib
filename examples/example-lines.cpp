@@ -67,6 +67,8 @@ int main()
     hpl::Contour& plot2 = cs2.addPlot<hpl::Contour>(NUM_POINTS, x, x, m);
 
     hpl::CoordinateSystem& cs3 = canvas.addCoordinateSystem();
+    //! @todo logscale check failing
+    cs3.setAxisProperties(hpl::AxisFlags::PaintPrimary | hpl::AxisFlags::Logscale | hpl::AxisFlags::PaintMinorTicks);
     cs3.setTickMode(hpl::AxisFlags::Smart);
     hpl::Points& plot3 = cs3.addPlot<hpl::Points>(NUM_POINTS, x, z);
     plot3.setColor(hpl::Color(0.0f, 0.0f, 1.0f));
@@ -96,11 +98,14 @@ int main()
     layout1.changeOrientation(hpl::HorizontalLayout::RightToLeft);
     plot2.setColorTable<hpl::ColorTable::RainbowBlack>(256);
 
+    cs3.setAxisProperties(hpl::AxisFlags::PaintPrimary | hpl::AxisFlags::PaintMinorTicks);
+
     hpl::CoordinateSystem& cs4 = canvas.addCoordinateSystem();
+    cs4.setTickMode(hpl::AxisFlags::Smart);
     cs4.setAxisProperties(hpl::AxisFlags::PaintPrimary | hpl::AxisFlags::Logscale | hpl::AxisFlags::PaintMinorTicks);
     hpl::Lines& plot5 = cs4.addPlot<hpl::Lines>(NUM_POINTS, x, n);
     //! @todo should be done automatically
-    cs4.updateLimits(log10(x[1]), log10(x[NUM_POINTS-1]), log10(n[1]), log10(n[NUM_POINTS-1]));
+    cs4.setLimits(log10(x[1]), log10(x[NUM_POINTS-1]), log10(n[1]), log10(n[NUM_POINTS-1]));
     canvas.addCoordinateSystemToLayout(cs4.id(), layout1.id());
 
     hpl::PostscriptPrinter ps;

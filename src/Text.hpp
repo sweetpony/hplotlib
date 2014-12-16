@@ -11,7 +11,8 @@ class Text : public Drawable
 {
 
 public:
-    Text(int n, char const* text, double x, double y, double width, double height) : Drawable(Drawable::Type_Texture), n(n), text(text), x(x), y(y), width(width), height(height) {}
+    Text(int n, char const* text, double x, double y, double width, double height, const Limits& limits) :
+        Drawable(Drawable::Type_Texture, limits), n(n), text(text), x(x), y(y), width(width), height(height) {}
     virtual ~Text() {}
 
     virtual inline void setColor(const Color& c) {
@@ -38,16 +39,13 @@ public:
         return angle;
     }
 
+    inline virtual void recalculateData() {}
+
     const int n;
     const char* text;
     const double x, y, width, height;
 
 protected:
-    inline virtual void recalculateData() {}
-    inline virtual bool recalculateOnLimitChangeNeeded() {
-        return false;
-    }
-
     Color color = Color(0.0f, 0.0f, 0.0f);
     Font font;
     float angle;

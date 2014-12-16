@@ -28,7 +28,7 @@ void PostscriptPrinter::update()
     setFont(10);
 
     for(auto i = plots->cbegin(); i != plots->cend(); i++) {
-        setCurrentGeometry(i->second->getGeometry(), i->second->getXmin(), i->second->getXmax(), i->second->getYmin(), i->second->getYmax());
+        setCurrentGeometry(i->second->getGeometry(), i->second->xmin(), i->second->xmax(), i->second->ymin(), i->second->ymax());
         Lines* l = dynamic_cast<Lines*>(i->second);
         if (l != 0) {
             setColor(l->getColor());

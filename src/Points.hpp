@@ -59,7 +59,8 @@ public:
         FilledHorizontalBar
     };
 
-    Points(int n, double const* x, double const* y) : Drawable(Type_Points), SimplePoints(n, x, y, false, false), points(new SimplePoints(n, x, y, false, false)){}
+    Points(int n, double const* x, double const* y, const Limits& limits) :
+        Drawable(Type_Points, limits), SimplePoints(n, x, y, false, false), points(new SimplePoints(n, x, y, false, false)){}
     virtual ~Points() {
         delete points;
     }
@@ -101,12 +102,9 @@ public:
         return symbol >= FilledDiamond;
     }
 
-protected:
     virtual void recalculateData();
-    inline virtual bool recalculateOnLimitChangeNeeded() {
-        return limitsInCalc;
-    }
 
+protected:
     std::vector<std::pair<double, double> > getSymbolVertices() const;
     void setTypeForSymbol();
 

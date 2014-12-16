@@ -7,6 +7,7 @@
 
 #include "Lines.hpp"
 #include "AxisFlags.hpp"
+#include "Limits.hpp"
 
 namespace hpl {
 
@@ -15,10 +16,7 @@ class CoordinateAxis
 {
 
 public:
-    Delegate<Drawable::ID> changed;
-    Delegate<bool> changedLogscale;
-
-    CoordinateAxis(Registry<Drawable>& data, std::map<Drawable::ID, unsigned int>& dataRevisions);
+    CoordinateAxis(Registry<Drawable>& data, std::map<Drawable::ID, unsigned int>& dataRevisions, Limits& limits);
     ~CoordinateAxis();
 
     inline void setColor(const Color& c) {
@@ -41,23 +39,20 @@ public:
         return offset();
     }
 
-    void setLimits(double xmin, double ymin, double xmax, double ymax);
+    void setLimits(double xmin, double xmax, double ymin, double ymax);
     void setAxisProperties(int flags);
     void setTickMode(AxisFlags::TickMode mode);
+
+    void recalculate();
+
+    Delegate<Drawable::ID> changed;
+    Delegate<bool> changedLogscale;
 
 private:
     double min();
     double max();
     float offset();
     float otherOffset();
-
-    inline bool limitsValid() {
-        return xmin != std::numeric_limits<double>::min() && xmax != std::numeric_limits<double>::max()
-            && ymin != std::numeric_limits<double>::min() && ymax != std::numeric_limits<double>::max();
-    }
-
-    Drawable::ID addNewPlot(Drawable* plot);
-    void removePlot(Drawable::ID id);
 
     void setUpCoordLines();
     
@@ -80,10 +75,7 @@ private:
     int nrMinorTicks = 4;
     float minorTickLength = 0.01f;
 
-    double xmin = std::numeric_limits<double>::min();
-    double xmax = std::numeric_limits<double>::max();
-    double ymin = std::numeric_limits<double>::min();
-    double ymax = std::numeric_limits<double>::max();
+    Limits& limits, axisLimits;
 
     std::vector<double> ticks, minorTicks;
     double tickdelta;

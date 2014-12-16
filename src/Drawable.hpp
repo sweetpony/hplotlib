@@ -7,6 +7,7 @@
 #include "Geometry.hpp"
 #include "Registry.hpp"
 #include "Statistics.hpp"
+#include "Limits.hpp"
 
 #include "GL/glld.h"
 
@@ -25,36 +26,24 @@ public:
         Type_Texture
     };
 
-    Drawable(Type type) : type(type) {}
+    Drawable(Type type, const Limits& limits) : limits(limits), type(type) {}
     virtual ~Drawable() {}
 
-    inline void setLimits(double xmin, double ymin, double xmax, double ymax) {
-        this->xmin = xmin;
-        this->ymin = ymin;
-        this->xmax = xmax;
-        this->ymax = ymax;
-        if (recalculateOnLimitChangeNeeded()) {
-            recalculateData();
-        } else {
-            changed.invoke(plotId);
-        }
+    inline double xmin() const {
+        return limits.xmin();
     }
-
-    inline double getXmin() const {
-        return xmin;
+    inline double ymin() const {
+        return limits.ymin();
     }
-    inline double getYmin() const {
-        return ymin;
+    inline double xmax() const {
+        return limits.xmax();
     }
-    inline double getXmax() const {
-        return xmax;
-    }
-    inline double getYmax() const {
-        return ymax;
+    inline double ymax() const {
+        return limits.ymax();
     }
 
     virtual void setLog(bool xlog, bool ylog) {
-        this->xlog  = xlog;
+        this->xlog = xlog;
         this->ylog = ylog;
         recalculateData();
     }
@@ -76,11 +65,10 @@ public:
     inline ID id() const { return plotId; }
     inline void setId(ID id) { plotId = id; }
 
-protected:
     virtual void recalculateData() = 0;
-    virtual bool recalculateOnLimitChangeNeeded() = 0;
 
-    double xmin, ymin, xmax, ymax;
+protected:
+    const Limits& limits;
     bool xlog = false, ylog = false;
     Geometry geometry;
     ID plotId;

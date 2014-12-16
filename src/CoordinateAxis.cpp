@@ -4,22 +4,22 @@ namespace hpl {
 
 template<>
 double CoordinateAxis<AxisFlags::Horizontal>::min() {
-    return xmin;
+    return limits.xmin();
 }
 
 template<>
 double CoordinateAxis<AxisFlags::Vertical>::min() {
-    return ymin;
+    return limits.ymin();
 }
 
 template<>
 double CoordinateAxis<AxisFlags::Horizontal>::max() {
-    return xmax;
+    return limits.xmax();
 }
 
 template<>
 double CoordinateAxis<AxisFlags::Vertical>::max() {
-    return ymax;
+    return limits.ymax();
 }
 
 template<>

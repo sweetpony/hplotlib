@@ -3,7 +3,8 @@
 namespace hpl {
 
 template<AxisFlags::AxisOrientation orientation>
-CoordinateAxis<orientation>::CoordinateAxis(Registry<Drawable>& data, std::map<Drawable::ID, unsigned int>& dataRevisions) : data(data), dataRevisions(dataRevisions)
+CoordinateAxis<orientation>::CoordinateAxis(Registry<Drawable>& data, std::map<Drawable::ID, unsigned int>& dataRevisions, Limits& limits) :
+    limits(limits), axisLimits(0.0, 1.0, 0.0, 1.0), data(data), dataRevisions(dataRevisions)
 {
     setUpCoordLines();
 }
@@ -16,16 +17,9 @@ CoordinateAxis<orientation>::~CoordinateAxis()
 }
 
 template<AxisFlags::AxisOrientation orientation>
-void CoordinateAxis<orientation>::setLimits(double xmin, double ymin, double xmax, double ymax)
+void CoordinateAxis<orientation>::setLimits(double xmin, double xmax, double ymin, double ymax)
 {
-    this->xmin = xmin;
-    this->ymin = ymin;
-    this->xmax = xmax;
-    this->ymax = ymax;
-
-    setUpCoordLines();
-
-    changed.invoke(Drawable::ID());
+    limits.setLimits(xmin, xmax, ymin, ymax);
 }
 
 template<AxisFlags::AxisOrientation orientation>
@@ -48,6 +42,13 @@ void CoordinateAxis<orientation>::setTickMode(AxisFlags::TickMode mode)
     changed.invoke(Drawable::ID());
 }
 
+template<AxisFlags::AxisOrientation orientation>
+void CoordinateAxis<orientation>::recalculate()
+{
+    setUpCoordLines();
+    changed.invoke(Drawable::ID());
+}
+
 template<>
 double CoordinateAxis<AxisFlags::Horizontal>::min();
 template<>
@@ -66,34 +67,6 @@ template<>
 float CoordinateAxis<AxisFlags::Vertical>::otherOffset();
 
 template<AxisFlags::AxisOrientation orientation>
-Drawable::ID CoordinateAxis<orientation>::addNewPlot(Drawable* plot)
-{
-    Drawable::ID id = data.add(plot);
-    plot->setId(id);
-    dataRevisions[id] = 1;
-    plot->setGeometry(geometry);
-    plot->setLimits(xmin, ymin, xmax, ymax);
-    plot->changed.template bind<Delegate<Drawable::ID>, &Delegate<Drawable::ID>::invoke>(&changed);
-    changed.invoke(id);
-    return id;
-}
-
-template<AxisFlags::AxisOrientation orientation>
-void CoordinateAxis<orientation>::removePlot(Drawable::ID id)
-{
-    if (data.has(id)) {
-        data.remove(id);
-    }
-
-    for (auto it = dataRevisions.begin(); it != dataRevisions.end(); it++) {
-        if (it->first == id) {
-            dataRevisions.erase(it);
-            break;
-        }
-    }
-}
-
-template<AxisFlags::AxisOrientation orientation>
 void CoordinateAxis<orientation>::setUpCoordLines()
 {
     int n = ((flags & AxisFlags::PaintPrimary) ? 1 : 0) + ((flags & AxisFlags::PaintSecondary) ? 1 : 0);
@@ -101,7 +74,7 @@ void CoordinateAxis<orientation>::setUpCoordLines()
     delete[] rawDataX;
     delete[] rawDataY;
 
-    if (n != 0 && limitsValid()) {
+    if (n != 0 && limits.valid()) {
         if (flags & (AxisFlags::PaintPrimary | AxisFlags::PaintSecondary)) {
             calculateDataTicks(flags & AxisFlags::Logscale);
             l += (2 + 2 * ticks.size()) * n;
@@ -139,13 +112,25 @@ void CoordinateAxis<orientation>::setUpCoordLines()
     }
 
     if (lines != nullptr) {
-        removePlot(linesID);
+        if (data.has(linesID)) {
+            data.remove(linesID);
+        }
+        for (auto it = dataRevisions.begin(); it != dataRevisions.end(); it++) {
+            if (it->first == linesID) {
+                dataRevisions.erase(it);
+                break;
+            }
+        }
     }
 
     if (l != 0) {
-        lines = new Lines(l, rawDataX, rawDataY, true);
-        linesID = addNewPlot(lines);
-        lines->setLimits(0.0, 0.0, 1.0, 1.0);
+        lines = new Lines(l, rawDataX, rawDataY, axisLimits, true);
+        linesID = data.add(lines);
+        lines->setId(linesID);
+        dataRevisions[linesID] = 1;
+        lines->setGeometry(geometry);
+        lines->changed.template bind<Delegate<Drawable::ID>, &Delegate<Drawable::ID>::invoke>(&changed);
+        changed.invoke(linesID);
         lines->setColor(coordLinesColor);
     } else {
         lines = nullptr;

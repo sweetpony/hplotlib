@@ -19,7 +19,8 @@ namespace hpl
 		friend class Win32Window;
 		friend class X11Window;
 	public:
-		void wait() {
+        void wait() {
+            needsRepaint = true;
 			pthread_join(windowThread, nullptr);			
 		}
 

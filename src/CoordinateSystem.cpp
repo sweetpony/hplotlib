@@ -12,12 +12,15 @@
 namespace hpl
 {
 CoordinateSystem::CoordinateSystem(Registry<Drawable>& dataContainer, std::map<Drawable::ID, unsigned int>& dataRevisions)
-    : data(dataContainer), dataRevisions(dataRevisions), xAxis(dataContainer, dataRevisions), yAxis(dataContainer, dataRevisions)
+    : data(dataContainer), dataRevisions(dataRevisions), xAxis(dataContainer, dataRevisions, limits), yAxis(dataContainer, dataRevisions, limits)
 {
     xAxis.changed.template bind<Delegate<Drawable::ID>, &Delegate<Drawable::ID>::invoke>(&changed);
     xAxis.changedLogscale.template bind<CoordinateSystem, &CoordinateSystem::updateXlogOnPlots>(this);
     yAxis.changed.template bind<Delegate<Drawable::ID>, &Delegate<Drawable::ID>::invoke>(&changed);
     yAxis.changedLogscale.template bind<CoordinateSystem, &CoordinateSystem::updateYlogOnPlots>(this);
+
+    limits.changed.template bind<CoordinateAxis<AxisFlags::Horizontal>, &CoordinateAxis<AxisFlags::Horizontal>::recalculate>(&xAxis);
+    limits.changed.template bind<CoordinateAxis<AxisFlags::Vertical>, &CoordinateAxis<AxisFlags::Vertical>::recalculate>(&yAxis);
 }
 
 CoordinateSystem::~CoordinateSystem()
@@ -41,19 +44,9 @@ void CoordinateSystem::setGeometry(Geometry geom)
     }
 }
 
-void CoordinateSystem::updateLimits(double xmin, double xmax, double ymin, double ymax)
+void CoordinateSystem::setLimits(double xmin, double xmax, double ymin, double ymax)
 {
-    this->xmin = std::min(this->xmin, xmin);
-    this->xmax = std::min(this->xmax, xmax);
-    this->ymin = std::min(this->ymin, ymin);
-    this->ymax = std::min(this->ymax, ymax);
-
-    xAxis.setLimits(xmin, ymin, xmax, ymax);
-    yAxis.setLimits(xmin, ymin, xmax, ymax);
-
-    for (auto it = myPlots.begin(); it != myPlots.end(); ++it) {
-        data.lookup(*it).setLimits(this->xmin, this->ymin, this->xmax, this->ymax);
-    }
+    limits.setLimits(xmin, xmax, ymin, ymax);
 
     needLimitUpdate = false;
     changed.invoke(Drawable::ID());
@@ -66,9 +59,9 @@ Drawable::ID CoordinateSystem::addNewPlot(Drawable* plot)
     dataRevisions[id] = 1;
     myPlots.push_back(id);
     plot->setGeometry(geometry);
-    plot->setLimits(xmin, ymin, xmax, ymax);
     plot->setLog(xlog, ylog);
     plot->changed.template bind<Delegate<Drawable::ID>, &Delegate<Drawable::ID>::invoke>(&changed);
+    limits.changed.template bind<Drawable, &Drawable::recalculateData>(plot);
     changed.invoke(id);
     return id;
 }
@@ -76,6 +69,7 @@ Drawable::ID CoordinateSystem::addNewPlot(Drawable* plot)
 void CoordinateSystem::removePlot(Drawable::ID id)
 {
     if (data.has(id)) {
+        limits.changed.unbind(&data.lookup(id));
         data.remove(id);
     }
 

@@ -39,7 +39,7 @@ void Points::recalculateData()
 
         //! @todo Actually would need aspect ratio of current box, which is geometry & aspect ratio of window
         double facx = 0.005;
-        double facy = facx * (ymax - ymin) / (xmax - xmin);
+        double facy = facx * (limits.ymax() - limits.ymin()) / (limits.xmax() - limits.xmin());
 
         for (int i = 0, k = 0; i < _n; ++i) {
             for (unsigned int j = 0; j < vert.size(); ++j, ++k) {

@@ -18,6 +18,7 @@
 #include "Registry.hpp"
 #include "Lines.hpp"
 #include "CoordinateAxis.hpp"
+#include "Limits.hpp"
 
 #include "GL/glld.h"
 
@@ -57,7 +58,7 @@ public:
     template<typename T>
     T& addPlot(int n, double const* x, double const* y, double const* z);
 
-    void updateLimits(double xmin, double xmax, double ymin, double ymax);
+    void setLimits(double xmin, double xmax, double ymin, double ymax);
 
     Delegate<Drawable::ID> changed;
     
@@ -67,11 +68,6 @@ public:
 private:
     Drawable::ID addNewPlot(Drawable* plot);
     void removePlot(Drawable::ID id);
-
-    inline bool limitsValid() {
-        return xmin != std::numeric_limits<double>::min() && xmax != std::numeric_limits<double>::max()
-            && ymin != std::numeric_limits<double>::min() && ymax != std::numeric_limits<double>::max();
-    }
 
     void updateXlogOnPlots(bool log);
     void updateYlogOnPlots(bool log);
@@ -86,10 +82,7 @@ private:
 
     bool needLimitUpdate = true;
 
-	double xmin = std::numeric_limits<double>::min();
-	double xmax = std::numeric_limits<double>::max();
-	double ymin = std::numeric_limits<double>::min();
-    double ymax = std::numeric_limits<double>::max();
+    Limits limits;
 
     CoordinateAxis<AxisFlags::Horizontal> xAxis;
     CoordinateAxis<AxisFlags::Vertical> yAxis;
@@ -99,10 +92,10 @@ template<typename T>
 T& CoordinateSystem::addPlot(int n, double const* x, double const* y)
 {
     if (needLimitUpdate) {
-        updateLimits(hpl::min(n, x), hpl::max(n, x), hpl::min(n, y), hpl::max(n, y));
+        setLimits(hpl::min(n, x), hpl::max(n, x), hpl::min(n, y), hpl::max(n, y));
     }
 
-    T* plot = new T(n, x, y);
+    T* plot = new T(n, x, y, limits);
     addNewPlot(plot);
     return *plot;
 }
@@ -111,10 +104,10 @@ template<typename T>
 T& CoordinateSystem::addPlot(int n, double const* x, double const* y, double const* z)
 {
     if (needLimitUpdate) {
-        updateLimits(hpl::min(n, x), hpl::max(n, x), hpl::min(n, y), hpl::max(n, y));
+        setLimits(hpl::min(n, x), hpl::max(n, x), hpl::min(n, y), hpl::max(n, y));
     }
 
-    T* plot = new T(n, x, y, z);
+    T* plot = new T(n, x, y, z, limits);
     addNewPlot(plot);
     return *plot;
 }
