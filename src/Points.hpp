@@ -9,17 +9,19 @@
 namespace hpl
 {
 struct SimplePoints {
-    SimplePoints(int n, double const* x, double const* y, bool ownsData) : _n(n), _x(x), _y(y), _ownsData(ownsData) {}
+    SimplePoints(int n, double const* x, double const* y, bool ownsX, bool ownsY) : _n(n), _x(x), _y(y), _ownsX(ownsX), _ownsY(ownsY) {}
     virtual ~SimplePoints() {
-        if (_ownsData) {
+        if (_ownsX) {
             delete[] _x;
+        }
+        if (_ownsY) {
             delete[] _y;
         }
     }
 
     const int _n;
     const double* _x, * _y;
-    const bool _ownsData;
+    const bool _ownsX, _ownsY;
 };
 
 class Points : public Drawable, private SimplePoints
@@ -57,7 +59,7 @@ public:
         FilledHorizontalBar
     };
 
-    Points(int n, double const* x, double const* y) : Drawable(Type_Points), SimplePoints(n, x, y, false), points(new SimplePoints(n, x, y, false)){}
+    Points(int n, double const* x, double const* y) : Drawable(Type_Points), SimplePoints(n, x, y, false, false), points(new SimplePoints(n, x, y, false, false)){}
     virtual ~Points() {
         delete points;
     }
@@ -94,12 +96,17 @@ public:
     inline Symbol getSymbol() const {
         return symbol;
     }
-    //! @todo how to handle filling of symbols
+    //! @todo how to handle filling of symbols?
     inline bool isFilledSymbol() const {
         return symbol >= FilledDiamond;
     }
 
 protected:
+    virtual void recalculateData();
+    inline virtual bool recalculateOnLimitChangeNeeded() {
+        return limitsInCalc;
+    }
+
     std::vector<std::pair<double, double> > getSymbolVertices() const;
     void setTypeForSymbol();
 
@@ -107,6 +114,7 @@ protected:
     Color color = Color(0.0f, 0.0f, 0.0f);
     double size = 1.0;
     Symbol symbol = Dot;
+    bool limitsInCalc = false;
 
     const unsigned int maxSymbolVertices = 64;
 

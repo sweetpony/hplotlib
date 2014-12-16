@@ -6,6 +6,7 @@
 
 namespace hpl
 {
+//! @todo need to redsign slightly to make use of xlog and ylog
 class Text : public Drawable
 {
 
@@ -42,6 +43,11 @@ public:
     const double x, y, width, height;
 
 protected:
+    inline virtual void recalculateData() {}
+    inline virtual bool recalculateOnLimitChangeNeeded() {
+        return false;
+    }
+
     Color color = Color(0.0f, 0.0f, 0.0f);
     Font font;
     float angle;

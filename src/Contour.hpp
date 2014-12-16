@@ -7,6 +7,7 @@
 
 namespace hpl
 {
+//! @todo need to redsign slightly to make use of xlog and ylog
 class Contour : public Drawable
 {
 
@@ -24,7 +25,11 @@ public:
         this->ymax = ymax;
         this->zmin = zmin;
         this->zmax = zmax;
-        changed.invoke(plotId);
+        if (recalculateOnLimitChangeNeeded()) {
+            recalculateData();
+        } else {
+            changed.invoke(plotId);
+        }
     }
     inline double getZmin() const {
         return zmin;
@@ -46,6 +51,11 @@ public:
     const double* x, * y, * z;
 
 protected:
+    inline virtual void recalculateData() {}
+    inline virtual bool recalculateOnLimitChangeNeeded() {
+        return false;
+    }
+
     double zmin, zmax;
     ColorTable colorTable = ColorTable::getPredefinedTable<ColorTable::RainbowBlack>(256);
 };

@@ -6,6 +6,7 @@
 #include "IDBase.hpp"
 #include "Geometry.hpp"
 #include "Registry.hpp"
+#include "Statistics.hpp"
 
 #include "GL/glld.h"
 
@@ -27,13 +28,16 @@ public:
     Drawable(Type type) : type(type) {}
     virtual ~Drawable() {}
 
-    //! @todo recalculate???
     inline void setLimits(double xmin, double ymin, double xmax, double ymax) {
         this->xmin = xmin;
         this->ymin = ymin;
         this->xmax = xmax;
         this->ymax = ymax;
-        changed.invoke(plotId);
+        if (recalculateOnLimitChangeNeeded()) {
+            recalculateData();
+        } else {
+            changed.invoke(plotId);
+        }
     }
 
     inline double getXmin() const {
@@ -73,8 +77,8 @@ public:
     inline void setId(ID id) { plotId = id; }
 
 protected:
-    //! @todo make pure virtual
-    virtual void recalculateData() {}//= 0;
+    virtual void recalculateData() = 0;
+    virtual bool recalculateOnLimitChangeNeeded() = 0;
 
     double xmin, ymin, xmax, ymax;
     bool xlog = false, ylog = false;

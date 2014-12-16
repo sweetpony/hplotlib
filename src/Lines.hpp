@@ -8,7 +8,6 @@
 #define HPLOTLIB_LINES_HPP
 
 #include "Drawable.hpp"
-#include "Statistics.hpp"
 
 namespace hpl
 {
@@ -74,8 +73,11 @@ public:
 
 protected:
     virtual void recalculateData();
+    inline virtual bool recalculateOnLimitChangeNeeded() {
+        return style == Dotted;
+    }
 
-    void calculateInterpolationDots();
+    void calculateInterpolationDots(const double* thisx, const double* thisy);
 
     SimpleLines* lines;
     Color color = Color(0.0f, 0.0f, 0.0f);

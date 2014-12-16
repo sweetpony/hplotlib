@@ -12,33 +12,54 @@ void Points::setSymbol(Symbol s)
 {
     if (s != symbol) {
         symbol = s;
-        delete points;
-
-        std::vector<std::pair<double, double> > vert = getSymbolVertices();
-        if (vert.size() == 1 && vert[0].first == 0.0 && vert[1].second == 0.0) {
-            points = new SimplePoints(_n, _x, _y, false);
-        } else {
-            int n = _n * vert.size();
-            double* x = new double[n];
-            double* y = new double[n];
-
-            //! @todo Actually would need aspect ratio of current box, which is geometry & aspect ratio of window
-            double facx = 0.005;
-            double facy = facx * (ymax - ymin) / (xmax - xmin);
-
-            for (int i = 0, k = 0; i < _n; ++i) {
-                for (unsigned int j = 0; j < vert.size(); ++j, ++k) {
-                    x[k] = _x[i] + facx * vert[j].first;
-                    y[k] = _y[i] + facy * vert[j].second;
-                }
-            }
-
-            points = new SimplePoints(n, x, y, true);
-        }
-        setTypeForSymbol();
-
-        changed.invoke(plotId);
+        recalculateData();
     }
+}
+
+void Points::recalculateData()
+{
+    delete points;
+    const double* thisx = _x,* thisy = _y;
+    if (xlog) {
+        thisx = log(_n, _x);
+    }
+    if (ylog) {
+        thisy = log(_n, _y);
+    }
+
+    std::vector<std::pair<double, double> > vert = getSymbolVertices();
+    if (vert.size() == 1 && vert[0].first == 0.0 && vert[1].second == 0.0) {
+        limitsInCalc = false;
+        points = new SimplePoints(_n, thisx, thisy, xlog, ylog);
+    } else {
+        limitsInCalc = true;
+        int n = _n * vert.size();
+        double* x = new double[n];
+        double* y = new double[n];
+
+        //! @todo Actually would need aspect ratio of current box, which is geometry & aspect ratio of window
+        double facx = 0.005;
+        double facy = facx * (ymax - ymin) / (xmax - xmin);
+
+        for (int i = 0, k = 0; i < _n; ++i) {
+            for (unsigned int j = 0; j < vert.size(); ++j, ++k) {
+                x[k] = thisx[i] + facx * vert[j].first;
+                y[k] = thisy[i] + facy * vert[j].second;
+            }
+        }
+
+        points = new SimplePoints(n, x, y, true, true);
+
+        if (xlog) {
+            delete[] thisx;
+        }
+        if (ylog) {
+            delete[] thisy;
+        }
+    }
+    setTypeForSymbol();
+
+    changed.invoke(plotId);
 }
 
 std::vector<std::pair<double, double> > Points::getSymbolVertices() const
