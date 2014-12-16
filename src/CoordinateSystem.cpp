@@ -94,6 +94,18 @@ void CoordinateSystem::removePlot(Drawable::ID id)
     }
 }
 
+void CoordinateSystem::updateXlogOnPlots(bool log)
+{
+    xlog = log;
+    updateLogOnPlots();
+}
+
+void CoordinateSystem::updateYlogOnPlots(bool log)
+{
+    ylog = log;
+    updateLogOnPlots();
+}
+
 void CoordinateSystem::updateLogOnPlots()
 {
     for (auto it = myPlots.begin(); it != myPlots.end(); ++it) {

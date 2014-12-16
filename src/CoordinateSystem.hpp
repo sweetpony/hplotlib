@@ -73,14 +73,8 @@ private:
             && ymin != std::numeric_limits<double>::min() && ymax != std::numeric_limits<double>::max();
     }
 
-    inline void updateXlogOnPlots(bool log) {
-        xlog = log;
-        updateLogOnPlots();
-    }
-    inline void updateYlogOnPlots(bool log) {
-        ylog = log;
-        updateLogOnPlots();
-    }
+    void updateXlogOnPlots(bool log);
+    void updateYlogOnPlots(bool log);
     void updateLogOnPlots();
 
     Registry<Drawable>& data;

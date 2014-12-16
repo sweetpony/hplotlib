@@ -23,6 +23,27 @@ double max(int size, double const* x)
 	}
 	return xmax;
 }
+double minPos(int size, double const* x)
+{
+    double xmin = INFINITY;
+    for (int i = 0; i < size; ++i) {
+        if (x[i] < xmin && x[i] > 0.0) {
+            xmin = x[i];
+        }
+    }
+    return xmin;
+}
+
+double maxPos(int size, double const* x)
+{
+    double xmax = 0.0;
+    for (int i = 0; i < size; ++i) {
+        if (x[i] > xmax && x[i] > 0.0) {
+            xmax = x[i];
+        }
+    }
+    return xmax;
+}
 
 double interpolate(double x, double x1, double y1, double x2, double y2)
 {
