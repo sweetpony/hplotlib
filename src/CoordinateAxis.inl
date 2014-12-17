@@ -25,8 +25,8 @@ void CoordinateAxis<orientation>::setLimits(double xmin, double xmax, double ymi
 template<AxisFlags::AxisOrientation orientation>
 void CoordinateAxis<orientation>::setAxisProperties(int flags) {
     if ((this->flags & AxisFlags::Logscale) != (flags & AxisFlags::Logscale)) {
-        changedLogscale.invoke(flags & AxisFlags::Logscale);
         this->flags = flags;
+        changedLogscale.invoke(flags & AxisFlags::Logscale);
     } else {
         this->flags = flags;
         setUpCoordLines(); // Only here since logscale change invokes limit update and coord line update from there

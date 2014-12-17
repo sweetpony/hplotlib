@@ -49,9 +49,8 @@ void CoordinateSystem::setGeometry(Geometry geom)
 
 void CoordinateSystem::setLimits(double xmin, double xmax, double ymin, double ymax)
 {
-    originalLimits.setLimits(xmin, xmax, ymin, ymax);
-
     needLimitUpdate = false;
+    originalLimits.setLimits(xmin, xmax, ymin, ymax);
     changed.invoke(Drawable::ID());
 }
 

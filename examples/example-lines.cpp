@@ -67,7 +67,7 @@ int main()
     hpl::Contour& plot2 = cs2.addPlot<hpl::Contour>(NUM_POINTS, x, x, m);
 
     hpl::CoordinateSystem& cs3 = canvas.addCoordinateSystem();
-    //! @todo logscale check failing
+    //! @todo logscale here producing error
     cs3.setAxisProperties(hpl::AxisFlags::PaintPrimary /*| hpl::AxisFlags::Logscale*/ | hpl::AxisFlags::PaintMinorTicks);
     cs3.setTickMode(hpl::AxisFlags::Smart);
     hpl::Points& plot3 = cs3.addPlot<hpl::Points>(NUM_POINTS, x, z);
