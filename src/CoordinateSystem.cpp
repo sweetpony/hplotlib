@@ -113,30 +113,26 @@ void CoordinateSystem::updateLogOnPlots()
 
 void CoordinateSystem::setLimitsFromOriginal()
 {
-    if (xlog) {
+    if (xlog && !needLimitUpdate) {
         double mi = originalLimits.xmin(), ma = originalLimits.xmax();
-        if (! needLimitUpdate) {
-            if (mi == 0.0) {
-                mi = originalPosLimits.xmin();
-            }
-            if (ma == 0.0) {
-                ma = originalPosLimits.xmax();
-            }
+        if (mi == 0.0) {
+            mi = originalPosLimits.xmin();
+        }
+        if (ma == 0.0) {
+            ma = originalPosLimits.xmax();
         }
         limits.setXLimits(log10(mi), log10(ma));
     } else {
         limits.setXLimits(originalLimits);
     }
 
-    if (ylog) {
+    if (ylog && !needLimitUpdate) {
         double mi = originalLimits.ymin(), ma = originalLimits.ymax();
-        if (! needLimitUpdate) {
-            if (mi == 0.0) {
-                mi = originalPosLimits.ymin();
-            }
-            if (ma == 0.0) {
-                ma = originalPosLimits.ymax();
-            }
+        if (mi == 0.0) {
+            mi = originalPosLimits.ymin();
+        }
+        if (ma == 0.0) {
+            ma = originalPosLimits.ymax();
         }
         limits.setYLimits(log10(mi), log10(ma));
     } else {

@@ -102,7 +102,7 @@ int main()
 
     hpl::CoordinateSystem& cs4 = canvas.addCoordinateSystem();
     cs4.setTickMode(hpl::AxisFlags::Smart);
-    cs4.setAxisProperties(hpl::AxisFlags::PaintPrimary /*| hpl::AxisFlags::Logscale*/ | hpl::AxisFlags::PaintMinorTicks);
+    cs4.setAxisProperties(hpl::AxisFlags::PaintPrimary | hpl::AxisFlags::Logscale | hpl::AxisFlags::PaintMinorTicks);
     hpl::Lines& plot5 = cs4.addPlot<hpl::Lines>(NUM_POINTS, x, n);
     canvas.addCoordinateSystemToLayout(cs4.id(), layout1.id());
 
