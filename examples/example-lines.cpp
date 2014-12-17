@@ -68,7 +68,7 @@ int main()
 
     hpl::CoordinateSystem& cs3 = canvas.addCoordinateSystem();
     //! @todo logscale check failing
-    cs3.setAxisProperties(hpl::AxisFlags::PaintPrimary | hpl::AxisFlags::Logscale | hpl::AxisFlags::PaintMinorTicks);
+    cs3.setAxisProperties(hpl::AxisFlags::PaintPrimary /*| hpl::AxisFlags::Logscale*/ | hpl::AxisFlags::PaintMinorTicks);
     cs3.setTickMode(hpl::AxisFlags::Smart);
     hpl::Points& plot3 = cs3.addPlot<hpl::Points>(NUM_POINTS, x, z);
     plot3.setColor(hpl::Color(0.0f, 0.0f, 1.0f));
@@ -102,7 +102,7 @@ int main()
 
     hpl::CoordinateSystem& cs4 = canvas.addCoordinateSystem();
     cs4.setTickMode(hpl::AxisFlags::Smart);
-    cs4.setAxisProperties(hpl::AxisFlags::PaintPrimary | hpl::AxisFlags::Logscale | hpl::AxisFlags::PaintMinorTicks);
+    cs4.setAxisProperties(hpl::AxisFlags::PaintPrimary /*| hpl::AxisFlags::Logscale*/ | hpl::AxisFlags::PaintMinorTicks);
     hpl::Lines& plot5 = cs4.addPlot<hpl::Lines>(NUM_POINTS, x, n);
     canvas.addCoordinateSystemToLayout(cs4.id(), layout1.id());
 
