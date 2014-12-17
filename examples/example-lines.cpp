@@ -67,8 +67,7 @@ int main()
     hpl::Contour& plot2 = cs2.addPlot<hpl::Contour>(NUM_POINTS, x, x, m);
 
     hpl::CoordinateSystem& cs3 = canvas.addCoordinateSystem();
-    //! @todo logscale here producing error
-    cs3.setAxisProperties(hpl::AxisFlags::PaintPrimary /*| hpl::AxisFlags::Logscale*/ | hpl::AxisFlags::PaintMinorTicks);
+    cs3.setAxisProperties(hpl::AxisFlags::PaintPrimary | hpl::AxisFlags::Logscale | hpl::AxisFlags::PaintMinorTicks);
     cs3.setTickMode(hpl::AxisFlags::Smart);
     hpl::Points& plot3 = cs3.addPlot<hpl::Points>(NUM_POINTS, x, z);
     plot3.setColor(hpl::Color(0.0f, 0.0f, 1.0f));
@@ -89,6 +88,9 @@ int main()
     hpl::sleep(1e6);
 
     layout2.changeOrientation(hpl::VerticalLayout::BottomToTop);
+
+    //! @todo Interpolation (Dotted) with log and negative values not working
+    cs3.getYAxis().setAxisProperties(hpl::AxisFlags::PaintPrimary | hpl::AxisFlags::PaintMinorTicks);
     plot1.setStyle(hpl::Lines::Dashed);
     plot4.setStyle(hpl::Lines::Dotted);
     plot4.setThickness(3.0);
@@ -97,8 +99,6 @@ int main()
 
     layout1.changeOrientation(hpl::HorizontalLayout::RightToLeft);
     plot2.setColorTable<hpl::ColorTable::RainbowBlack>(256);
-
-    cs3.setAxisProperties(hpl::AxisFlags::PaintPrimary | hpl::AxisFlags::PaintMinorTicks);
 
     hpl::CoordinateSystem& cs4 = canvas.addCoordinateSystem();
     cs4.setTickMode(hpl::AxisFlags::Smart);
