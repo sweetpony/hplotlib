@@ -12,7 +12,8 @@
 namespace hpl
 {
 CoordinateSystem::CoordinateSystem(Registry<Drawable>& dataContainer, std::map<Drawable::ID, unsigned int>& dataRevisions)
-    : data(dataContainer), dataRevisions(dataRevisions), xAxis(dataContainer, dataRevisions, limits), yAxis(dataContainer, dataRevisions, limits)
+    : data(dataContainer), dataRevisions(dataRevisions),
+      xAxis(dataContainer, dataRevisions, originalLimits, limits), yAxis(dataContainer, dataRevisions, originalLimits, limits)
 {
     xAxis.changed.template bind<Delegate<Drawable::ID>, &Delegate<Drawable::ID>::invoke>(&changed);
     xAxis.changedLogscale.template bind<CoordinateSystem, &CoordinateSystem::updateXlogOnPlots>(this);
@@ -21,6 +22,8 @@ CoordinateSystem::CoordinateSystem(Registry<Drawable>& dataContainer, std::map<D
 
     limits.changed.template bind<CoordinateAxis<AxisFlags::Horizontal>, &CoordinateAxis<AxisFlags::Horizontal>::recalculate>(&xAxis);
     limits.changed.template bind<CoordinateAxis<AxisFlags::Vertical>, &CoordinateAxis<AxisFlags::Vertical>::recalculate>(&yAxis);
+
+    originalLimits.changed.template bind<CoordinateSystem, &CoordinateSystem::setLimitsFromOriginal>(this);
 }
 
 CoordinateSystem::~CoordinateSystem()
@@ -46,7 +49,7 @@ void CoordinateSystem::setGeometry(Geometry geom)
 
 void CoordinateSystem::setLimits(double xmin, double xmax, double ymin, double ymax)
 {
-    limits.setLimits(xmin, xmax, ymin, ymax);
+    originalLimits.setLimits(xmin, xmax, ymin, ymax);
 
     needLimitUpdate = false;
     changed.invoke(Drawable::ID());
@@ -102,8 +105,42 @@ void CoordinateSystem::updateYlogOnPlots(bool log)
 
 void CoordinateSystem::updateLogOnPlots()
 {
+    setLimitsFromOriginal();
     for (auto it = myPlots.begin(); it != myPlots.end(); ++it) {
         data.lookup(*it).setLog(xlog, ylog);
+    }
+}
+
+void CoordinateSystem::setLimitsFromOriginal()
+{
+    if (xlog) {
+        double mi = originalLimits.xmin(), ma = originalLimits.xmax();
+        if (! needLimitUpdate) {
+            if (mi == 0.0) {
+                mi = originalPosLimits.xmin();
+            }
+            if (ma == 0.0) {
+                ma = originalPosLimits.xmax();
+            }
+        }
+        limits.setXLimits(log10(mi), log10(ma));
+    } else {
+        limits.setXLimits(originalLimits);
+    }
+
+    if (ylog) {
+        double mi = originalLimits.ymin(), ma = originalLimits.ymax();
+        if (! needLimitUpdate) {
+            if (mi == 0.0) {
+                mi = originalPosLimits.ymin();
+            }
+            if (ma == 0.0) {
+                ma = originalPosLimits.ymax();
+            }
+        }
+        limits.setYLimits(log10(mi), log10(ma));
+    } else {
+        limits.setYLimits(originalLimits);
     }
 }
 }

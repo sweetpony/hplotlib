@@ -73,6 +73,8 @@ private:
     void updateYlogOnPlots(bool log);
     void updateLogOnPlots();
 
+    void setLimitsFromOriginal();
+
     Registry<Drawable>& data;
     std::map<Drawable::ID, unsigned int>& dataRevisions;
     std::vector<Drawable::ID> myPlots;
@@ -82,7 +84,7 @@ private:
 
     bool needLimitUpdate = true;
 
-    Limits limits;
+    Limits originalLimits, originalPosLimits, limits;
 
     CoordinateAxis<AxisFlags::Horizontal> xAxis;
     CoordinateAxis<AxisFlags::Vertical> yAxis;
@@ -92,6 +94,7 @@ template<typename T>
 T& CoordinateSystem::addPlot(int n, double const* x, double const* y)
 {
     if (needLimitUpdate) {
+        originalPosLimits.setLimits(minPos(n, x), maxPos(n, x), minPos(n, y), maxPos(n, y));
         setLimits(hpl::min(n, x), hpl::max(n, x), hpl::min(n, y), hpl::max(n, y));
     }
 
@@ -104,6 +107,7 @@ template<typename T>
 T& CoordinateSystem::addPlot(int n, double const* x, double const* y, double const* z)
 {
     if (needLimitUpdate) {
+        originalPosLimits.setLimits(minPos(n, x), maxPos(n, x), minPos(n, y), maxPos(n, y));
         setLimits(hpl::min(n, x), hpl::max(n, x), hpl::min(n, y), hpl::max(n, y));
     }
 

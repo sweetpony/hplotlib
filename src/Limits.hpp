@@ -19,14 +19,31 @@ public:
         this->_ymax = ymax;
         changed.invoke();
     }
+    inline void setLimits(const Limits& limits) {
+        this->_xmin = limits.xmin();
+        this->_xmax = limits.xmax();
+        this->_ymin = limits.ymin();
+        this->_ymax = limits.ymax();
+        changed.invoke();
+    }
     inline void setXLimits(double xmin, double xmax) {
         this->_xmin = xmin;
         this->_xmax = xmax;
         changed.invoke();
     }
+    inline void setXLimits(const Limits& limits) {
+        this->_xmin = limits.xmin();
+        this->_xmax = limits.xmax();
+        changed.invoke();
+    }
     inline void setYLimits(double ymin, double ymax) {
         this->_ymin = ymin;
         this->_ymax = ymax;
+        changed.invoke();
+    }
+    inline void setYLimits(const Limits& limits) {
+        this->_ymin = limits.ymin();
+        this->_ymax = limits.ymax();
         changed.invoke();
     }
 

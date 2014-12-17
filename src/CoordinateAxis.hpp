@@ -16,7 +16,7 @@ class CoordinateAxis
 {
 
 public:
-    CoordinateAxis(Registry<Drawable>& data, std::map<Drawable::ID, unsigned int>& dataRevisions, Limits& limits);
+    CoordinateAxis(Registry<Drawable>& data, std::map<Drawable::ID, unsigned int>& dataRevisions, Limits& originalLimits, Limits& limits);
     ~CoordinateAxis();
 
     inline void setColor(const Color& c) {
@@ -75,7 +75,7 @@ private:
     int nrMinorTicks = 4;
     float minorTickLength = 0.01f;
 
-    Limits& limits, axisLimits;
+    Limits& originalLimits, & limits, axisLimits;
 
     std::vector<double> ticks, minorTicks;
     double tickdelta;

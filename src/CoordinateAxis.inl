@@ -3,8 +3,8 @@
 namespace hpl {
 
 template<AxisFlags::AxisOrientation orientation>
-CoordinateAxis<orientation>::CoordinateAxis(Registry<Drawable>& data, std::map<Drawable::ID, unsigned int>& dataRevisions, Limits& limits) :
-    limits(limits), axisLimits(0.0, 1.0, 0.0, 1.0), data(data), dataRevisions(dataRevisions)
+CoordinateAxis<orientation>::CoordinateAxis(Registry<Drawable>& data, std::map<Drawable::ID, unsigned int>& dataRevisions, Limits& originalLimits, Limits& limits) :
+    originalLimits(originalLimits), limits(limits), axisLimits(0.0, 1.0, 0.0, 1.0), data(data), dataRevisions(dataRevisions)
 {
     setUpCoordLines();
 }
@@ -19,7 +19,7 @@ CoordinateAxis<orientation>::~CoordinateAxis()
 template<AxisFlags::AxisOrientation orientation>
 void CoordinateAxis<orientation>::setLimits(double xmin, double xmax, double ymin, double ymax)
 {
-    limits.setLimits(xmin, xmax, ymin, ymax);
+    originalLimits.setLimits(xmin, xmax, ymin, ymax);
 }
 
 template<AxisFlags::AxisOrientation orientation>
