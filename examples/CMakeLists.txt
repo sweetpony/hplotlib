@@ -4,3 +4,6 @@ include_directories (
 
 add_executable (example-lines example-lines.cpp)
 target_link_libraries (example-lines hplotlib)
+
+add_executable (SimplePlot SimplePlot.cpp)
+target_link_libraries (SimplePlot hplotlib)

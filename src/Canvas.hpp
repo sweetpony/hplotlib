@@ -12,8 +12,10 @@
 #include <queue>
 
 #include "AbstractPlotter.hpp"
+#include "OGLPlotter.hpp"
 #include "Geometry.hpp"
 #include "Layout.hpp"
+#include "GridLayout.hpp"
 #include "PostscriptPrinter.hpp"
 #include "Registry.hpp"
 
@@ -41,7 +43,25 @@ public:
         plotter->setPlots(&rawData, &dataRevisions);
         connectedPlotters.push_back(plotter);
     }
-	
+
+    template<typename T>
+    static void plotAndWait(int n, double const* x, double const* y) {
+        Canvas canvas;
+        OGLPlotter plotter;
+        CoordinateSystem& cosy = canvas.setUpEasySystem(&plotter);
+        cosy.addPlot<T>(n, x, y);
+        plotter.wait();
+    }
+
+    template<typename T>
+    static void plotAndWait(int n, double const* x, double const* y, double const* z) {
+        Canvas canvas;
+        OGLPlotter plotter;
+        CoordinateSystem& cosy = canvas.setUpEasySystem(&plotter);
+        cosy.addPlot<T>(n, x, y, z);
+        plotter.wait();
+    }
+
 private:
 	struct Slot {
         Slot(Layout::ID l) : layout(l) {}
@@ -66,6 +86,8 @@ private:
 	void recalculateLayout(Layout::ID layout);
 
     void processUpdate(Drawable::ID id = Drawable::ID());
+
+    CoordinateSystem& setUpEasySystem(AbstractPlotter* plotter);
 
 	Registry<Layout> layouts;
     Registry<CoordinateSystem> csystems;
