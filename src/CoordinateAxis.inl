@@ -224,20 +224,61 @@ void CoordinateAxis<orientation>::calculateDataPointsInside(double divisor)
     }
 }
 
-//! @todo if ticks are smart and every ten then do a nice log axis here with a*10^n varrying a
 template<AxisFlags::AxisOrientation orientation>
 void CoordinateAxis<orientation>::calculateMinorDataTicks()
 {
     minorTicks.clear();
 
     if (ticks.size() > 0) {
-        double delta = tickdelta / (nrMinorTicks + 1);
-        double val = ticks[0] - static_cast<unsigned int>((ticks[0] - min()) / delta) * delta;
-        while (val <= max()) {
-            minorTicks.push_back(val);
-            val += delta;
+        if (canDoNiceLogMinorTicks()) {
+            //Before first tick
+            double thismin = (*ticks.begin()) - 1;
+            unsigned int mintick = ceil(pow(10.0, min()+fabs(thismin)));
+            for (unsigned int i = mintick; i < 10; ++i) {
+                minorTicks.push_back(thismin + log10(i));
+            }
+            //Between ticks
+            for (auto it = ticks.begin(); it != ticks.end(); it++) {
+                for (unsigned int i = 1; i < 10; ++i) {
+                    minorTicks.push_back(*it + log10(i));
+                }
+            }
+            //After last tick
+            unsigned int maxtick = ceil(pow(10.0, max()));
+            double thismax = *ticks.rbegin();
+            for (unsigned int i = 1; i < maxtick; ++i) {
+                minorTicks.push_back(thismax + log10(i));
+            }
+        } else {
+            double delta = tickdelta / (nrMinorTicks + 1);
+            double val = ticks[0] - static_cast<unsigned int>((ticks[0] - min()) / delta) * delta;
+            while (val <= max()) {
+                minorTicks.push_back(val);
+                val += delta;
+            }
         }
     }
+}
+
+template<AxisFlags::AxisOrientation orientation>
+bool CoordinateAxis<orientation>::canDoNiceLogMinorTicks() const
+{
+    return ((flags & AxisFlags::Logscale) && ((flags & AxisFlags::Smart) || ticksAreMagnitudes()));
+}
+
+template<AxisFlags::AxisOrientation orientation>
+bool CoordinateAxis<orientation>::ticksAreMagnitudes() const
+{
+    bool ret = true, start = true;
+    const double epsilon = 0.001;
+    double k;
+    for (auto it = ticks.begin(); it != ticks.end(); ++it) {
+        double l = log10(*it);
+        ret &= ((l - static_cast<int>(l)) < epsilon) && (start || ((l-k-1.0) < epsilon));
+        k = l;
+        start = false;
+    }
+    return ret;
 }
 
 template<>

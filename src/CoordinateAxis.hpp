@@ -60,7 +60,10 @@ private:
     void calculateSimpleDataPointsForTicks();
     void calculateSmartDataPointsForTicks(bool log);
     void calculateDataPointsInside(double divisor);
+
     void calculateMinorDataTicks();
+    bool canDoNiceLogMinorTicks() const;
+    bool ticksAreMagnitudes() const;
     
     void setUpAxis(unsigned int indexOffset, double mean);
     void setUpMinorAxis(unsigned int indexOffset, double mean);
