@@ -87,7 +87,7 @@ void Canvas::processUpdate(Drawable::ID id) {
 CoordinateSystem& Canvas::setUpEasySystem(AbstractPlotter* plotter)
 {
     connectToPlotter(plotter);
-    Layout& layout = addLayout<GridLayout>();
+    GridLayout& layout = addLayout<GridLayout>();
     CoordinateSystem& cosy = addCoordinateSystem();
     addCoordinateSystemToLayout(cosy.id(), layout.id());
     return cosy;
