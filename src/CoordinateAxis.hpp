@@ -42,6 +42,8 @@ public:
     void setLimits(double xmin, double xmax, double ymin, double ymax);
     void setAxisProperties(int flags);
     void setTickMode(AxisFlags::TickMode mode);
+    void setMajorTicks(const std::vector<double>& ticks);
+    void setMinorTicks(const std::vector<double>& minorTicks);
 
     void recalculate();
 
@@ -56,7 +58,7 @@ private:
 
     void setUpCoordLines();
     
-    void calculateDataTicks(bool log);
+    void calculateDataTicks();
     void calculateSimpleDataPointsForTicks();
     void calculateSmartDataPointsForTicks(bool log);
     void calculateDataPointsInside(double divisor);

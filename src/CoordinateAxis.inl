@@ -38,8 +38,24 @@ template<AxisFlags::AxisOrientation orientation>
 void CoordinateAxis<orientation>::setTickMode(AxisFlags::TickMode mode)
 {
     this->tickMode = mode;
-    setUpCoordLines();
-    changed.invoke(Drawable::ID());
+    recalculate();
+}
+
+template<AxisFlags::AxisOrientation orientation>
+void CoordinateAxis<orientation>::setMajorTicks(const std::vector<double>& ticks)
+{
+    this->ticks = ticks;
+    tickMode = AxisFlags::Fixed;
+    recalculate();
+}
+
+template<AxisFlags::AxisOrientation orientation>
+void CoordinateAxis<orientation>::setMinorTicks(const std::vector<double>& minorTicks)
+{
+    this->minorTicks = minorTicks;
+    flags = flags | AxisFlags::PaintMinorTicks;
+    tickMode = AxisFlags::Fixed;
+    recalculate();
 }
 
 template<AxisFlags::AxisOrientation orientation>
@@ -76,7 +92,7 @@ void CoordinateAxis<orientation>::setUpCoordLines()
 
     if (n != 0 && limits.valid()) {
         if (flags & (AxisFlags::PaintPrimary | AxisFlags::PaintSecondary)) {
-            calculateDataTicks(flags & AxisFlags::Logscale);
+            calculateDataTicks();
             l += (2 + 2 * ticks.size()) * n;
 
             if (flags & AxisFlags::PaintMinorTicks && ticks.size() > 1) {
@@ -139,19 +155,19 @@ void CoordinateAxis<orientation>::setUpCoordLines()
 }
 
 template<AxisFlags::AxisOrientation orientation>
-void CoordinateAxis<orientation>::calculateDataTicks(bool log)
+void CoordinateAxis<orientation>::calculateDataTicks()
 {
-    ticks.clear();
 
     switch(tickMode) {
     case AxisFlags::FixedAmount:
+        ticks.clear();
         calculateSimpleDataPointsForTicks();
         break;
     case AxisFlags::Smart:
-        calculateSmartDataPointsForTicks(log);
+        ticks.clear();
+        calculateSmartDataPointsForTicks(flags & AxisFlags::Logscale);
         break;
     case AxisFlags::Fixed:
-        //! @todo implement
         break;
     }
 }
@@ -165,7 +181,6 @@ void CoordinateAxis<orientation>::calculateSimpleDataPointsForTicks()
     }
 }
 
-//! @todo fix log
 template<AxisFlags::AxisOrientation orientation>
 void CoordinateAxis<orientation>::calculateSmartDataPointsForTicks(bool log)
 {
@@ -227,34 +242,36 @@ void CoordinateAxis<orientation>::calculateDataPointsInside(double divisor)
 template<AxisFlags::AxisOrientation orientation>
 void CoordinateAxis<orientation>::calculateMinorDataTicks()
 {
-    minorTicks.clear();
+    if (tickMode != AxisFlags::Fixed) {
+        minorTicks.clear();
 
-    if (ticks.size() > 0) {
-        if (canDoNiceLogMinorTicks()) {
-            //Before first tick
-            double thismin = (*ticks.begin()) - 1;
-            unsigned int mintick = ceil(pow(10.0, min()+fabs(thismin)));
-            for (unsigned int i = mintick; i < 10; ++i) {
-                minorTicks.push_back(thismin + log10(i));
-            }
-            //Between ticks
-            for (auto it = ticks.begin(); it != ticks.end(); it++) {
-                for (unsigned int i = 1; i < 10; ++i) {
-                    minorTicks.push_back(*it + log10(i));
+        if (ticks.size() > 0) {
+            if (canDoNiceLogMinorTicks()) {
+                //Before first tick
+                double thismin = (*ticks.begin()) - 1;
+                unsigned int mintick = ceil(pow(10.0, min()+fabs(thismin)));
+                for (unsigned int i = mintick; i < 10; ++i) {
+                    minorTicks.push_back(thismin + log10(i));
                 }
-            }
-            //After last tick
-            unsigned int maxtick = ceil(pow(10.0, max()));
-            double thismax = *ticks.rbegin();
-            for (unsigned int i = 1; i < maxtick; ++i) {
-                minorTicks.push_back(thismax + log10(i));
-            }
-        } else {
-            double delta = tickdelta / (nrMinorTicks + 1);
-            double val = ticks[0] - static_cast<unsigned int>((ticks[0] - min()) / delta) * delta;
-            while (val <= max()) {
-                minorTicks.push_back(val);
-                val += delta;
+                //Between ticks
+                for (auto it = ticks.begin(); it != ticks.end(); it++) {
+                    for (unsigned int i = 1; i < 10; ++i) {
+                        minorTicks.push_back(*it + log10(i));
+                    }
+                }
+                //After last tick
+                unsigned int maxtick = ceil(pow(10.0, max()));
+                double thismax = *ticks.rbegin();
+                for (unsigned int i = 1; i < maxtick; ++i) {
+                    minorTicks.push_back(thismax + log10(i));
+                }
+            } else {
+                double delta = tickdelta / (nrMinorTicks + 1);
+                double val = ticks[0] - static_cast<unsigned int>((ticks[0] - min()) / delta) * delta;
+                while (val <= max()) {
+                    minorTicks.push_back(val);
+                    val += delta;
+                }
             }
         }
     }
