@@ -28,8 +28,8 @@ PlotPrinter::Pixel PlotPrinter::transformCoordinates(double x, double y) const
 {
     Pixel p;
     // data -> interleave -> in geometry -> in output window
-    p.first = ((x - currentXMin) / (currentXMax - currentXMin) * currentGeometry.width + currentGeometry.leftOffset) * pixelX;
-    p.second = ((y - currentYMin) / (currentYMax - currentYMin) * currentGeometry.height + currentGeometry.topOffset) * pixelY;
+    p.first = (((x - currentXMin) / (currentXMax - currentXMin) * currentGeometry.width + currentGeometry.leftOffset) * pixelX + pixelBoundary) * sizefactor;
+    p.second = (((y - currentYMin) / (currentYMax - currentYMin) * currentGeometry.height + currentGeometry.topOffset) * pixelY + pixelBoundary) * sizefactor;
     return p;
 }
 }

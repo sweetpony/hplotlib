@@ -32,7 +32,8 @@ protected:
     void setCurrentGeometry(const Geometry& geometry, double xmin, double xmax, double ymin, double ymax);
     Pixel transformCoordinates(double x, double y) const;
 
-    unsigned int pixelX = 612, pixelY = 792;
+    unsigned int pixelX = 612, pixelY = 792, pixelBoundary = 20;
+    double sizefactor = 4.0;
     Orientation orientation = Landscape;
 
 private:

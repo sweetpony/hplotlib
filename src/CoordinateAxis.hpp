@@ -72,8 +72,6 @@ private:
     
     void setUpTick(unsigned int indexOffset, double primaryValue, double secondaryMeanValue, double length);
 
-
-    //! @todo tickLength should not be fixed but set geometry dependent
     float xOffset = 0.12f, yOffset = 0.08f;
     int nrTicks = 8;
     float tickLength = 0.02f;

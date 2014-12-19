@@ -81,7 +81,7 @@ void PostscriptPrinter::update()
 void PostscriptPrinter::writeHeader()
 {
     out << "%!PS-Adobe-3.0" << std::endl;
-    out << "%%BoundingBox 0 0 " << pixelX << " " << pixelY << std::endl;
+    out << "%%BoundingBox 0 0 " << (pixelX+2*pixelBoundary)*sizefactor << " " << (pixelY+2*pixelBoundary)*sizefactor << std::endl;
 }
 
 void PostscriptPrinter::writeFooter()
