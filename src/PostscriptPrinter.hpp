@@ -30,6 +30,7 @@ private:
     void setLineWidth(unsigned int width);
 
     void draw(int n, double const* x, double const* y, Drawable::Type type);
+    void draw(int n, double const* x, double const* y, double const* z, ColorTable const& ct);
 
     void drawLine(double x1, double y1, double x2, double y2);
     void drawPoint(double x, double y);

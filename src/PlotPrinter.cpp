@@ -24,6 +24,12 @@ void PlotPrinter::setCurrentGeometry(const Geometry& geometry, double xmin, doub
     currentYMax = ymax;
 }
 
+void PlotPrinter::setCurrentZLimits(double zmin, double zmax)
+{
+    currentZMin = zmin;
+    currentZMax = zmax;
+}
+
 PlotPrinter::Pixel PlotPrinter::transformCoordinates(double x, double y) const
 {
     Pixel p;

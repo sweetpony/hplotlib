@@ -46,34 +46,10 @@ void PostscriptPrinter::update()
             continue;
         }
         Contour* c = dynamic_cast<Contour*>(i->second);
-        if (c != 0) {
-            //! @todo implement
-            /*double* pixelCorners = c->getPixelCorners();
-            const float* rgbData = c->getRGBData();
-            const unsigned int n = c->getPixelsPerDimension();
-
-            for (unsigned int i = 0; i < n; i++) {
-                for (unsigned int j = 0; j < n; j++) {
-                    unsigned int k = (i*n+j)*3;
-                    setColor(o, Color(rgbData[k], rgbData[k+1], rgbData[k+2]));
-
-                    std::vector<double> x, y;
-                    for (unsigned l = 0; l < 4; l++) {
-                        unsigned int m = (i*n+j)*8+l*2;
-                        x.push_back(pixelCorners[m]);
-                        y.push_back(pixelCorners[m+1]);
-                    }
-
-                    fillShape(o, x, y);
-                }
-            }
-
-            delete[] pixelCorners;*/
+        if (c != 0 && c->getDataType() == Drawable::Type_Texture) {
+            setCurrentZLimits(c->getZmin(), c->getZmax());
+            draw(c->n, c->x, c->y, c->z, c->getColorTable());
         }
-        //! @todo implement
-        /*Text* t = dynamic_cast<Text*>(i->second);
-        if (t != 0) {
-        }*/
     }
     writeFooter();
 }
@@ -133,6 +109,32 @@ void PostscriptPrinter::draw(int n, double const* x, double const* y, Drawable::
             break;
         case Drawable::Type_Texture:
             break;
+    }
+}
+
+void PostscriptPrinter::draw(int n, double const* x, double const* y, double const* z, ColorTable const& ct)
+{
+    for (int i = 0; i < n; ++i) {
+        for (int j = 0; j < n; ++j) {
+            double zi = (z[i*n+j] - currentZMin) / (currentZMax - currentZMin);
+            unsigned int imin = static_cast<unsigned int>(zi * ct.num);
+            unsigned int imax = static_cast<unsigned int>(ceil(zi * ct.num));
+            if (imax >= ct.num) {
+                imax = ct.num - 1;
+            }
+            double delta = zi * ct.num - imin;
+            float r = ct.r[imin] * delta + ct.r[imax] * (1.0 - delta);
+            float g = ct.g[imin] * delta + ct.g[imax] * (1.0 - delta);
+            float b = ct.b[imin] * delta + ct.b[imax] * (1.0 - delta);
+            setColor(Color(r, g, b));
+
+            double dxp = 0.5 * (x[i] - (i == 0 ? currentXMin : x[i-1]));
+            double dyp = 0.5 * (y[i] - (i == 0 ? currentYMin : y[i-1]));
+            double dxn = 0.5 * ((i == 0 ? currentXMax : x[i+1]) - x[i]);
+            double dyn = 0.5 * ((i == 0 ? currentYMax : y[i+1]) - y[i]);
+
+            fillShape({x[i]-dxp, x[i]-dxp, x[i]+dxn, x[i]+dxn}, {y[i]-dyp, y[i]+dyn, y[i]+dyn, y[i]-dyp});
+        }
     }
 }
 
