@@ -32,8 +32,6 @@ CoordinateSystem::~CoordinateSystem()
 
 void CoordinateSystem::setGeometry(Geometry geom)
 {
-    geometry = geom;
-
     xAxis.setGeometry(geom);
     yAxis.setGeometry(geom);
 
@@ -41,6 +39,8 @@ void CoordinateSystem::setGeometry(Geometry geom)
     geom.topOffset += yAxis.getOffset() * geom.height;
     geom.width *= (1.0 - xAxis.getOffset());
     geom.height *= (1.0 - yAxis.getOffset());
+
+    geometry = geom;
 
     for (auto it = myPlots.begin(); it != myPlots.end(); ++it) {
         data.lookup(*it).setGeometry(geom);
