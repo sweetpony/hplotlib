@@ -111,17 +111,24 @@ void PostscriptPrinter::draw(int n, double const* x, double const* y, Drawable::
     switch (type) {
         case Drawable::Type_Lines:
             for (int i = 0; i < n-1; i+=2) {
-                drawLine(x[i], y[i], x[i+1], y[i+1]);
+                //! @todo this should actually be done in the Drawable derivates
+                if (isfinite(x[i], y[i]) && isfinite(x[i+1], y[i+1])) {
+                    drawLine(x[i], y[i], x[i+1], y[i+1]);
+                }
             }
             break;
         case Drawable::Type_LineStrips:
-            for (int i = 0; i < n; ++i) {
-                drawLine(x[i], y[i], x[i+1], y[i+1]);
+            for (int i = 0; i < n-1; ++i) {
+                if (isfinite(x[i], y[i]) && isfinite(x[i+1], y[i+1])) {
+                    drawLine(x[i], y[i], x[i+1], y[i+1]);
+                }
             }
             break;
         case Drawable::Type_Points:
             for (int i = 0; i < n; ++i) {
-                drawPoint(x[i], y[i]);
+                if (isfinite(x[i], y[i])) {
+                    drawPoint(x[i], y[i]);
+                }
             }
             break;
         case Drawable::Type_Texture:
