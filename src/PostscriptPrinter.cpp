@@ -58,10 +58,14 @@ void PostscriptPrinter::writeHeader()
 {
     out << "%!PS-Adobe-3.0" << std::endl;
     out << "%%BoundingBox 0 0 " << (pixelX+2*pixelBoundary)*sizefactor << " " << (pixelY+2*pixelBoundary)*sizefactor << std::endl;
+    out << "%%PageOrientation: Portrait" << std::endl;
+    out << "%%PageBoundingBox 0 0 " << (pixelX+2*pixelBoundary)*sizefactor << " " << (pixelY+2*pixelBoundary)*sizefactor << std::endl;
+    out << "%%EndPageSetup" << std::endl;
 }
 
 void PostscriptPrinter::writeFooter()
 {
+    out << "showpage" << std::endl;
     out << "%%EOF" << std::endl;
 }
 
