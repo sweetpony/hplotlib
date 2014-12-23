@@ -21,9 +21,30 @@ public:
         Portrait
     };
 
-    PlotPrinter(Orientation orientation = Landscape);
+    enum PageSize {
+        Letter,
+        A4,
+        A5
+    };
+
+    PlotPrinter(Orientation orientation = Portrait);
     virtual ~PlotPrinter();
 
+    void setOrientation(Orientation orientation);
+
+    void setPageSize(PageSize page);
+    void setPageSize(double x, double y);
+
+    inline void setPixelBoundary(unsigned int boundary) {
+        pixelBoundary = boundary;
+        update();
+    }
+    inline void setSizeFactor(double factor) {
+        sizefactor = factor;
+        update();
+    }
+
+    virtual void update() = 0;
     virtual bool saveToFile(const std::string& fileName) = 0;
 
 protected:
