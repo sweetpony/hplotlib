@@ -141,16 +141,10 @@ void OGLPlotter::init()
 
             float* data = new float[3 * c->n * c->n];
             for(int i = 0; i < c->n*c->n; ++i) {
-                double zi = (c->z[i] - c->getZmin()) / (c->getZmax() - c->getZmin());
-                unsigned int imin = static_cast<unsigned int>(zi * colorTable.num);
-                unsigned int imax = static_cast<unsigned int>(ceil(zi * colorTable.num));
-                if (imax >= colorTable.num) {
-                    imax = colorTable.num - 1;
-                }
-                double delta = zi * colorTable.num - imin;
-                data[i*3] = colorTable.r[imin] * delta + colorTable.r[imax] * (1.0 - delta);
-                data[i*3+1] = colorTable.g[imin] * delta + colorTable.g[imax] * (1.0 - delta);
-                data[i*3+2] = colorTable.b[imin] * delta + colorTable.b[imax] * (1.0 - delta);
+                Color col = c->getColorAtIndex(i);
+                data[i*3] = col.r;
+                data[i*3+1] = col.g;
+                data[i*3+2] = col.b;
             }
 
             glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB8, c->n, c->n, 0, GL_RGB, GL_FLOAT, data);

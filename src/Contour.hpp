@@ -1,6 +1,8 @@
 #ifndef CONTOUR_HPP
 #define CONTOUR_HPP
 
+#include <cmath>
+
 #include "Drawable.hpp"
 #include "Statistics.hpp"
 #include "ColorTable.hpp"
@@ -30,6 +32,9 @@ public:
     inline double getZmax() const {
         return zmax;
     }
+
+    Color* getColors() const;
+    Color getColorAtIndex(int i) const;
 
     template<ColorTable::Tables t>
     inline void setColorTable(unsigned int length) {

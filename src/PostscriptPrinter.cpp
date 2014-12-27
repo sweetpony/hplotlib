@@ -48,7 +48,10 @@ void PostscriptPrinter::update()
         Contour* c = dynamic_cast<Contour*>(i->second);
         if (c != 0 && c->getDataType() == Drawable::Type_Texture) {
             setCurrentZLimits(c->getZmin(), c->getZmax());
-            draw(c->n, c->x, c->y, c->z, c->getColorTable());
+            Color* colors = c->getColors();
+            draw(c->n, c->x, c->y, colors);
+            delete[] colors;
+            continue;
         }
     }
     writeFooter();
@@ -116,21 +119,11 @@ void PostscriptPrinter::draw(int n, double const* x, double const* y, Drawable::
     }
 }
 
-void PostscriptPrinter::draw(int n, double const* x, double const* y, double const* z, ColorTable const& ct)
+void PostscriptPrinter::draw(int n, double const* x, double const* y, Color const* colors)
 {
     for (int i = 0; i < n; ++i) {
         for (int j = 0; j < n; ++j) {
-            double zi = (z[i*n+j] - currentZMin) / (currentZMax - currentZMin);
-            unsigned int imin = static_cast<unsigned int>(zi * ct.num);
-            unsigned int imax = static_cast<unsigned int>(ceil(zi * ct.num));
-            if (imax >= ct.num) {
-                imax = ct.num - 1;
-            }
-            double delta = zi * ct.num - imin;
-            float r = ct.r[imin] * delta + ct.r[imax] * (1.0 - delta);
-            float g = ct.g[imin] * delta + ct.g[imax] * (1.0 - delta);
-            float b = ct.b[imin] * delta + ct.b[imax] * (1.0 - delta);
-            setColor(Color(r, g, b));
+            setColor(colors[i*n+j]);
 
             double dxp = 0.5 * (x[i] - (i == 0 ? currentXMin : x[i-1]));
             double dyp = 0.5 * (y[j] - (j == 0 ? currentYMin : y[j-1]));
