@@ -3,6 +3,7 @@ cmake_minimum_required (VERSION 2.8)
 project (hplotlib)
 
 option (BUILD_EXAMPLES "Build examples" ON)
+option (BUILD_TESTS "Build tests" ON)
 
 find_package (OpenGL REQUIRED)
 find_package (Threads REQUIRED)
@@ -20,7 +21,13 @@ if (CMAKE_CXX_COMPILER_ID MATCHES Clang)
 	add_definitions (-fcolor-diagnostics -fansi-escape-codes)
 endif()
 
+add_subdirectory (src)
+add_subdirectory (external)
+
 if (BUILD_EXAMPLES)
 	add_subdirectory (examples)
 endif ()
-add_subdirectory (src)
+
+if (BUILD_EXAMPLES)
+        add_subdirectory (tests)
+endif ()
