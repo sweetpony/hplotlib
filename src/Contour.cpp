@@ -6,7 +6,7 @@ Color* Contour::getColors() const
 {
     Color* colors = new Color[n*n];
 
-    for (int i = 0; i < n; ++i) {
+    for (int i = 0; i < n*n; ++i) {
         colors[i] = getColorAtIndex(i);
     }
 

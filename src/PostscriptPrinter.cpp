@@ -125,12 +125,12 @@ void PostscriptPrinter::draw(int n, double const* x, double const* y, Color cons
         for (int j = 0; j < n; ++j) {
             setColor(colors[i*n+j]);
 
-            double dxp = 0.5 * (x[i] - (i == 0 ? currentXMin : x[i-1]));
-            double dyp = 0.5 * (y[j] - (j == 0 ? currentYMin : y[j-1]));
-            double dxn = 0.5 * ((i == 0 ? currentXMax : x[i+1]) - x[i]);
-            double dyn = 0.5 * ((j == 0 ? currentYMax : y[j+1]) - y[j]);
+            double dxp = 0.5 * (x[j] - (j == 0 ? currentXMin : x[j-1]));
+            double dyp = 0.5 * (y[i] - (i == 0 ? currentYMin : y[i-1]));
+            double dxn = 0.5 * ((j == n-1 ? currentXMax : x[j+1]) - x[j]);
+            double dyn = 0.5 * ((i == n-1 ? currentYMax : y[i+1]) - y[i]);
 
-            fillShape({x[i]-dxp, x[i]-dxp, x[i]+dxn, x[i]+dxn}, {y[j]-dyp, y[j]+dyn, y[j]+dyn, y[j]-dyp});
+            fillShape({x[j]-dxp, x[j]-dxp, x[j]+dxn, x[j]+dxn}, {y[i]-dyp, y[i]+dyn, y[i]+dyn, y[i]-dyp});
         }
     }
 }

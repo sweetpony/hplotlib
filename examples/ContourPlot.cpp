@@ -2,7 +2,7 @@
 
 #include <Canvas.hpp>
 
-#define NUM_POINTS 200
+#define NUM_POINTS 10
 
 int main()
 {
