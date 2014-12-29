@@ -104,7 +104,6 @@ void OGLPlotter::init()
         unsigned int ar = actualRevision->at(it->first);
         if (ar != revision[it->first]) {
             const Contour* c = static_cast<const Contour*>(&plots->lookup(it->first));
-            const ColorTable& colorTable = c->getColorTable();
 
             float rectCorners[16];
             rectCorners[0] = 0.0f; rectCorners[1] = 1.0f;

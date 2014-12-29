@@ -169,15 +169,15 @@ void CustomTestPrinter::OnTestIterationEnd(const UnitTest& unit_test, int /*iter
     fflush(stdout);
 }
 
-static string FormatCountableNoun(int count, const char* singular_form, const char* plural_form) {
+string FormatCountableNoun(int count, const char* singular_form, const char* plural_form) {
   return internal::StreamableToString(count) + " " +
       (count == 1 ? singular_form : plural_form);
 }
 
-static string FormatTestCount(int test_count) {
+string FormatTestCount(int test_count) {
   return FormatCountableNoun(test_count, "test", "tests");
 }
 
-static string FormatTestCaseCount(int test_case_count) {
+string FormatTestCaseCount(int test_case_count) {
   return FormatCountableNoun(test_case_count, "test case", "test cases");
 }
