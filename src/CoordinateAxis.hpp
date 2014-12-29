@@ -6,6 +6,7 @@
 #include <vector>
 
 #include "Lines.hpp"
+#include "Text.hpp"
 #include "AxisFlags.hpp"
 #include "Limits.hpp"
 
@@ -84,6 +85,7 @@ private:
     double tickdelta;
     double* rawDataX = nullptr,* rawDataY = nullptr;
     Lines* lines = nullptr;
+    std::vector<Text*> labels;
     Drawable::ID linesID;
     Color coordLinesColor = Color(0.0f ,0.0f, 0.0f);
 

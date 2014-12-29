@@ -51,5 +51,6 @@ protected:
     float angle;
 
 };
+}
 
 #endif // TEXT_HPP
