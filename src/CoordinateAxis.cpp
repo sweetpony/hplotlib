@@ -43,7 +43,7 @@ float CoordinateAxis<AxisFlags::Vertical>::otherOffset() {
 }
 
 template<>
-void CoordinateAxis<AxisFlags::Horizontal>::setUpAxis(unsigned int indexOffset, double mean)
+void CoordinateAxis<AxisFlags::Horizontal>::setUpAxis(unsigned int indexOffset, double mean, bool primary)
 {
     rawDataX[indexOffset] = 1.0;
     rawDataY[indexOffset] = mean;
@@ -51,13 +51,18 @@ void CoordinateAxis<AxisFlags::Horizontal>::setUpAxis(unsigned int indexOffset, 
     rawDataY[indexOffset + 1] = mean;
 
     float spacing = (1.0 - offset()) / (max() - min());
+    bool paintLabels = flags & (primary ? AxisFlags::PaintLabelsPrimary : AxisFlags::PaintLabelsSecondary);
+
     for (unsigned int i = 0, o = indexOffset+2+2*i; i < ticks.size(); o = indexOffset+2+2*(++i)) {
         setUpTick(o, offset()+(ticks[i]-min())*spacing, mean, tickLength);
+        if (paintLabels) {
+            addLabelToTick(mean, primary);
+        }
     }
 }
 
 template<>
-void CoordinateAxis<AxisFlags::Vertical>::setUpAxis(unsigned int indexOffset, double mean)
+void CoordinateAxis<AxisFlags::Vertical>::setUpAxis(unsigned int indexOffset, double mean, bool primary)
 {
     rawDataX[indexOffset] = mean;
     rawDataY[indexOffset] = 1.0;
@@ -65,8 +70,13 @@ void CoordinateAxis<AxisFlags::Vertical>::setUpAxis(unsigned int indexOffset, do
     rawDataY[indexOffset + 1] = offset();
 
     float spacing = (1.0 - offset()) / (max() - min());
+    bool paintLabels = flags & (primary ? AxisFlags::PaintLabelsPrimary : AxisFlags::PaintLabelsSecondary);
+
     for (unsigned int i = 0, o = indexOffset+2+2*i; i < ticks.size(); o = indexOffset+2+2*(++i)) {
         setUpTick(o, offset()+(ticks[i]-min())*spacing, mean, tickLength);
+        if (paintLabels) {
+            addLabelToTick(mean, primary);
+        }
     }
 }
 
@@ -86,6 +96,30 @@ void CoordinateAxis<AxisFlags::Vertical>::setUpTick(unsigned int indexOffset, do
     rawDataY[indexOffset+1] = primaryValue;
     rawDataX[indexOffset] = secondaryMeanValue-0.5*length;
     rawDataX[indexOffset+1] = secondaryMeanValue+0.5*length;
+}
+
+template<>
+void CoordinateAxis<AxisFlags::Horizontal>::addLabelToTick(double value, bool primary)
+{
+    std::string s = std::to_string(value);
+    //! @todo these values are not final, y is just a dummy
+    double x = value-0.5*tickdelta;
+    double y = 0.0;
+    Text* label = new Text(s.length(), s.c_str(), x, y, 0.8*tickdelta, tickLength, axisLimits);
+    //! @Todo do something with label, not delete it
+    delete label;
+}
+
+template<>
+void CoordinateAxis<AxisFlags::Vertical>::addLabelToTick(double value, bool primary)
+{
+    std::string s = std::to_string(value);
+    //! @todo these values are not final, y is just a dummy
+    double x = value-0.5*tickdelta;
+    double y = 0.0;
+    Text* label = new Text(s.length(), s.c_str(), x, y, 0.8*tickdelta, tickLength, axisLimits);
+    //! @Todo do something with label, not delete it
+    delete label;
 }
 
 }

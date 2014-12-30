@@ -105,7 +105,7 @@ void CoordinateAxis<orientation>::setUpCoordLines()
         unsigned int o = 0;
 
         if (flags & AxisFlags::PaintPrimary) {
-            setUpAxis(o, otherOffset());
+            setUpAxis(o, otherOffset(), true);
             o += 2 + 2 * ticks.size();
 
             if (flags & AxisFlags::PaintMinorTicks) {
@@ -114,7 +114,7 @@ void CoordinateAxis<orientation>::setUpCoordLines()
             }
         }
         if (flags & AxisFlags::PaintSecondary) {
-            setUpAxis(o, 1.0);
+            setUpAxis(o, 1.0, false);
             o += 2 + 2 * ticks.size();
 
             if (flags & AxisFlags::PaintMinorTicks) {
@@ -311,5 +311,10 @@ void CoordinateAxis<orientation>::setUpMinorAxis(unsigned int indexOffset, doubl
         setUpTick(o, offset()+(minorTicks[i]-min())*spacing, mean, minorTickLength);
     }
 }
+template<>
+void CoordinateAxis<AxisFlags::Horizontal>::addLabelToTick(double value, bool primary);
+
+template<>
+void CoordinateAxis<AxisFlags::Vertical>::addLabelToTick(double value, bool primary);
 
 }

@@ -8,8 +8,8 @@ namespace AxisFlags {
     constexpr int PaintSecondary = 1 << 1;
     constexpr int Logscale = 1 << 2;
     constexpr int PaintMinorTicks = 1 << 3;
-    constexpr int PaintTextPrimary = 1 << 4;
-    constexpr int PaintTextSecondary = 1 << 5;
+    constexpr int PaintLabelsPrimary = 1 << 4;
+    constexpr int PaintLabelsSecondary = 1 << 5;
 
     enum AxisOrientation {
         Horizontal,

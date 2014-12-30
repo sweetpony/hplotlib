@@ -4,6 +4,7 @@
 #include <cmath>
 #include <map>
 #include <vector>
+#include <string>
 
 #include "Lines.hpp"
 #include "Text.hpp"
@@ -68,10 +69,11 @@ private:
     bool canDoNiceLogMinorTicks() const;
     bool ticksAreMagnitudes() const;
     
-    void setUpAxis(unsigned int indexOffset, double mean);
+    void setUpAxis(unsigned int indexOffset, double mean, bool primary);
     void setUpMinorAxis(unsigned int indexOffset, double mean);
     
     void setUpTick(unsigned int indexOffset, double primaryValue, double secondaryMeanValue, double length);
+    void addLabelToTick(double value, bool primary);
 
     float xOffset = 0.12f, yOffset = 0.08f;
     int nrTicks = 8;
