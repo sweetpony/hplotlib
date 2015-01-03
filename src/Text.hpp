@@ -2,6 +2,7 @@
 #define TEXT_HPP
 
 #include "Drawable.hpp"
+#include <iostream>
 
 namespace hpl
 {

@@ -115,6 +115,8 @@ void CoordinateAxis<orientation>::setUpCoordLines()
             }
         }
     }
+    labels.clear();
+    labelsIDs.clear();
 
     if (n != 0 && limits.valid()) {
         if (flags & (AxisFlags::PaintPrimary | AxisFlags::PaintSecondary)) {

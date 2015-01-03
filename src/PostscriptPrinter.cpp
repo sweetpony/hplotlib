@@ -57,6 +57,7 @@ void PostscriptPrinter::update()
             //! @todo calculate fontsize properly
             unsigned int fontSize = 10;
             setFont(t->getFontName(), fontSize);
+            std::cout << "Write text: " << t->text << std::endl;
             writeText(t->x, t->y, t->text);
             continue;
         }
@@ -177,7 +178,7 @@ void PostscriptPrinter::fillShape(std::vector<double> x, std::vector<double> y)
     out << "gsave fill grestore" << std::endl;
 }
 
-void PostscriptPrinter::writeText(double x, double y, std::string text)
+void PostscriptPrinter::writeText(double x, double y, const char* text)
 {
     Pixel p = transformCoordinates(x, y);
     out << p.first << " " << p.second << " moveto" << std::endl;

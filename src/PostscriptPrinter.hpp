@@ -5,6 +5,7 @@
 #include <fstream>
 #include <vector>
 #include <cmath>
+#include <iostream>
 
 #include "AbstractPlotter.hpp"
 #include "PlotPrinter.hpp"
@@ -35,7 +36,7 @@ private:
     void drawLine(double x1, double y1, double x2, double y2);
     void drawPoint(double x, double y);
     void fillShape(std::vector<double> x, std::vector<double> y);
-    void writeText(double x, double y, std::string text);
+    void writeText(double x, double y, const char* text);
 
     inline bool isfinite(double x, double y) const {
         return std::isfinite(x) && std::isfinite(y);
