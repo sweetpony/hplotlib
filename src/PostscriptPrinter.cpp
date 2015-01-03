@@ -25,7 +25,6 @@ bool PostscriptPrinter::saveToFile(const std::string& fileName)
 void PostscriptPrinter::update()
 {
     writeHeader();
-    setFont(10);
 
     for(auto i = plots->cbegin(); i != plots->cend(); i++) {
         setCurrentGeometry(i->second->getGeometry(), i->second->xmin(), i->second->xmax(), i->second->ymin(), i->second->ymax());
@@ -53,6 +52,14 @@ void PostscriptPrinter::update()
             delete[] colors;
             continue;
         }
+        Text* t = dynamic_cast<Text*>(i->second);
+        if (t != 0) {
+            //! @todo calculate fontsize properly
+            unsigned int fontSize = 10;
+            setFont(t->getFontName(), fontSize);
+            writeText(t->x, t->y, t->text);
+            continue;
+        }
     }
     writeFooter();
 }
@@ -72,9 +79,10 @@ void PostscriptPrinter::writeFooter()
     out << "%%EOF" << std::endl;
 }
 
-void PostscriptPrinter::setFont(unsigned int size)
+void PostscriptPrinter::setFont(std::string fontname, unsigned int size)
 {
-    out << "/Inconsolata findfont" << std::endl;
+    fontname[0] = toupper(fontname[0]);
+    out << "/" << fontname << " findfont" << std::endl;
     out << size << " scalefont" << std::endl;
     out << "setfont" << std::endl;
 }

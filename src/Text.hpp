@@ -2,7 +2,6 @@
 #define TEXT_HPP
 
 #include "Drawable.hpp"
-#include "Font.hpp"
 
 namespace hpl
 {
@@ -11,9 +10,8 @@ class Text : public Drawable
 {
 
 public:
-    Text(int n, char const* text, double x, double y, double width, double height, const Limits& limits) :
-        Drawable(Drawable::Type_Texture, limits), n(n), text(text), x(x), y(y), width(width), height(height) {}
-    virtual ~Text() {}
+    Text(int n, char const* text, double x, double y, double width, double height, const Limits& limits);
+    virtual ~Text();
 
     virtual inline void setColor(const Color& c) {
         color = c;
@@ -23,12 +21,12 @@ public:
         return color;
     }
 
-    virtual inline void setFont(std::string path) {
-        font.init(path);
+    virtual inline void setFont(std::string fontname) {
+        this->fontname = fontname;
         changed.invoke(plotId);
     }
-    virtual inline const Font& getFont() {
-        return font;
+    virtual inline const std::string& getFontName() {
+        return fontname;
     }
 
     virtual inline void setAngle(float angle) {
@@ -47,8 +45,8 @@ public:
 
 protected:
     Color color = Color(0.0f, 0.0f, 0.0f);
-    Font font;
-    float angle;
+    std::string fontname = "inconsolata";
+    float angle = 0.0f;
 
 };
 }

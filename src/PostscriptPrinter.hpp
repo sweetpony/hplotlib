@@ -25,7 +25,7 @@ public:
 private:
     void writeHeader();
     void writeFooter();
-    void setFont(unsigned int size);
+    void setFont(std::string fontname, unsigned int size);
     void setColor(const Color& color);
     void setLineWidth(unsigned int width);
 

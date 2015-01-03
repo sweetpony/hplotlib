@@ -1,9 +1,19 @@
-#include "Font.hpp"
+#include "FontTexture.hpp"
 #include <cstdio>
 
 namespace hpl {
-void Font::init(std::string const& path)
+
+FontTexture::FontTexture()
 {
+    if (firstInstantiation) {
+        fb.addSearchPath("../fonts/");
+        firstInstantiation = false;
+    }
+}
+
+void FontTexture::init(std::string const& fontname)
+{
+    std::string path = fb.getFontPath(fontname);
     FILE* in = fopen(path.c_str(), "rb");
     fread(&_header, sizeof(Header), 1, in);
     fread(_chars, sizeof(Char), _header.count, in);
@@ -28,12 +38,12 @@ void Font::init(std::string const& path)
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
 }
 
-void Font::destroy()
+void FontTexture::destroy()
 {
     glDeleteTextures(1, &_glyphs);
 }
 
-void Font::bind(GLint position, GLuint textureUnit)
+void FontTexture::bind(GLint position, GLuint textureUnit)
 {
     glActiveTexture(GL_TEXTURE0 + textureUnit);
     glBindTexture(GL_TEXTURE_2D, _glyphs);

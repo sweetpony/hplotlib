@@ -5,7 +5,6 @@
 #include <string>
 
 #include "Dir.hpp"
-#include "Font.hpp"
 
 namespace hpl
 {

@@ -17,7 +17,6 @@
 #include <Contour.hpp>
 #include <ColorTable.hpp>
 #include <OGLPlotter.hpp>
-#include <FileBrowser.hpp>
 
 #define NUM_POINTS 200
 
@@ -40,13 +39,7 @@ int main()
             m[i*NUM_POINTS+j] = sin(10.0 * x[i]) * cos(20.0 * x[j]);
         }
     }
-
-    //! @todo should not stay here, only for testing
-    hpl::FileBrowser fb;
-    fb.addSearchPath("../fonts/");
-    std::string fontPath = fb.getFontPath("inconsolata");
-
-    hpl::Canvas canvas/*("../fonts/inconsolata.font")*/;
+    hpl::Canvas canvas;
 
     hpl::OGLPlotter plotter;
     canvas.connectToPlotter(&plotter);

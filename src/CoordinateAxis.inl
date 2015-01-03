@@ -17,6 +17,18 @@ CoordinateAxis<orientation>::~CoordinateAxis()
 }
 
 template<AxisFlags::AxisOrientation orientation>
+void CoordinateAxis<orientation>::setColor(const Color& c)
+{
+    coordLinesColor = c;
+    if (lines != nullptr) {
+        lines->setColor(c);
+    }
+    for (auto it = labels.begin(); it != labels.end(); ++it) {
+        (*it)->setColor(c);
+    }
+}
+
+template<AxisFlags::AxisOrientation orientation>
 void CoordinateAxis<orientation>::setLimits(double xmin, double xmax, double ymin, double ymax)
 {
     originalLimits.setLimits(xmin, xmax, ymin, ymax);
@@ -127,12 +139,26 @@ void CoordinateAxis<orientation>::setUpCoordLines()
         rawDataY = nullptr;
     }
 
+    //! @todo refactor
     if (lines != nullptr) {
         if (data.has(linesID)) {
             data.remove(linesID);
         }
         for (auto it = dataRevisions.begin(); it != dataRevisions.end(); it++) {
             if (it->first == linesID) {
+                dataRevisions.erase(it);
+                break;
+            }
+        }
+    }
+
+    for (unsigned int i = 0; i < labels.size(); ++i) {
+        Drawable::ID id = labelsIDs[i];
+        if (data.has(id)) {
+            data.remove(id);
+        }
+        for (auto it = dataRevisions.begin(); it != dataRevisions.end(); it++) {
+            if (it->first == id) {
                 dataRevisions.erase(it);
                 break;
             }

@@ -105,9 +105,16 @@ void CoordinateAxis<AxisFlags::Horizontal>::addLabelToTick(double value, bool pr
     //! @todo these values are not final, y is just a dummy
     double x = value-0.5*tickdelta;
     double y = 0.0;
+    //! @todo refactore, see below
     Text* label = new Text(s.length(), s.c_str(), x, y, 0.8*tickdelta, tickLength, axisLimits);
-    //! @Todo do something with label, not delete it
-    delete label;
+    Drawable::ID labelID = data.add(label);
+    label->setId(labelID);
+    dataRevisions[labelID] = 1;
+    label->setGeometry(geometry);
+    label->setColor(coordLinesColor);
+    labels.push_back(label);
+    labelsIDs.push_back(labelID);
+    label->changed.template bind<Delegate<Drawable::ID>, &Delegate<Drawable::ID>::invoke>(&changed);
 }
 
 template<>
@@ -117,9 +124,16 @@ void CoordinateAxis<AxisFlags::Vertical>::addLabelToTick(double value, bool prim
     //! @todo these values are not final, y is just a dummy
     double x = value-0.5*tickdelta;
     double y = 0.0;
+    //! @todo refactore, see below
     Text* label = new Text(s.length(), s.c_str(), x, y, 0.8*tickdelta, tickLength, axisLimits);
-    //! @Todo do something with label, not delete it
-    delete label;
+    Drawable::ID labelID = data.add(label);
+    label->setId(labelID);
+    dataRevisions[labelID] = 1;
+    label->setGeometry(geometry);
+    label->setColor(coordLinesColor);
+    labels.push_back(label);
+    labelsIDs.push_back(labelID);
+    label->changed.template bind<Delegate<Drawable::ID>, &Delegate<Drawable::ID>::invoke>(&changed);
 }
 
 }

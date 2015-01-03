@@ -21,12 +21,7 @@ public:
     CoordinateAxis(Registry<Drawable>& data, std::map<Drawable::ID, unsigned int>& dataRevisions, Limits& originalLimits, Limits& limits);
     ~CoordinateAxis();
 
-    inline void setColor(const Color& c) {
-        coordLinesColor = c;
-        if (lines != nullptr) {
-            lines->setColor(c);
-        }
-    }
+    void setColor(const Color& c);
     inline Color getColor() const {
         return coordLinesColor;
     }
@@ -89,6 +84,7 @@ private:
     Lines* lines = nullptr;
     std::vector<Text*> labels;
     Drawable::ID linesID;
+    std::vector<Drawable::ID> labelsIDs;
     Color coordLinesColor = Color(0.0f ,0.0f, 0.0f);
 
     int flags = AxisFlags::PaintPrimary;
