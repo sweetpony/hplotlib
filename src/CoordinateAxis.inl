@@ -102,6 +102,20 @@ void CoordinateAxis<orientation>::setUpCoordLines()
     delete[] rawDataX;
     delete[] rawDataY;
 
+    //! @todo refactor
+    for (unsigned int i = 0; i < labels.size(); ++i) {
+        Drawable::ID id = labelsIDs[i];
+        if (data.has(id)) {
+            data.remove(id);
+        }
+        for (auto it = dataRevisions.begin(); it != dataRevisions.end(); it++) {
+            if (it->first == id) {
+                dataRevisions.erase(it);
+                break;
+            }
+        }
+    }
+
     if (n != 0 && limits.valid()) {
         if (flags & (AxisFlags::PaintPrimary | AxisFlags::PaintSecondary)) {
             calculateDataTicks();
@@ -146,19 +160,6 @@ void CoordinateAxis<orientation>::setUpCoordLines()
         }
         for (auto it = dataRevisions.begin(); it != dataRevisions.end(); it++) {
             if (it->first == linesID) {
-                dataRevisions.erase(it);
-                break;
-            }
-        }
-    }
-
-    for (unsigned int i = 0; i < labels.size(); ++i) {
-        Drawable::ID id = labelsIDs[i];
-        if (data.has(id)) {
-            data.remove(id);
-        }
-        for (auto it = dataRevisions.begin(); it != dataRevisions.end(); it++) {
-            if (it->first == id) {
                 dataRevisions.erase(it);
                 break;
             }
