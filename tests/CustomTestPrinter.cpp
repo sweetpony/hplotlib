@@ -1,4 +1,4 @@
-#include "customtestprinter.h"
+#include "CustomTestPrinter.hpp"
 
 CustomTestPrinter::CustomTestPrinter()
 {

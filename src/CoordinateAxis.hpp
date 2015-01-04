@@ -5,6 +5,7 @@
 #include <map>
 #include <vector>
 #include <string>
+#include <iostream>
 
 #include "Lines.hpp"
 #include "Text.hpp"

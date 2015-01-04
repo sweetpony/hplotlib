@@ -107,6 +107,7 @@ void CoordinateAxis<AxisFlags::Horizontal>::addLabelToTick(double value, bool pr
     double y = 0.0;
     //! @todo refactore, see below
     Text* label = new Text(s.length(), s.c_str(), x, y, 0.8*tickdelta, tickLength, axisLimits);
+    std::cout << "New label " << label << " " << s << ": " << label->text << std::endl;
     Drawable::ID labelID = data.add(label);
     label->setId(labelID);
     dataRevisions[labelID] = 1;
@@ -126,6 +127,7 @@ void CoordinateAxis<AxisFlags::Vertical>::addLabelToTick(double value, bool prim
     double y = 0.0;
     //! @todo refactore, see below
     Text* label = new Text(s.length(), s.c_str(), x, y, 0.8*tickdelta, tickLength, axisLimits);
+    std::cout << "New label " << label << " " << s << ": " << label->text << std::endl;
     Drawable::ID labelID = data.add(label);
     label->setId(labelID);
     dataRevisions[labelID] = 1;

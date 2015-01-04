@@ -1,5 +1,5 @@
 #include <gtest/gtest.h>
-#include "customtestprinter.h"
+#include "CustomTestPrinter.hpp"
 
 using testing::UnitTest;
 using testing::TestEventListeners;
