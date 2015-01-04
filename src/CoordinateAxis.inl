@@ -102,18 +102,8 @@ void CoordinateAxis<orientation>::setUpCoordLines()
     delete[] rawDataX;
     delete[] rawDataY;
 
-    //! @todo refactor
     for (unsigned int i = 0; i < labels.size(); ++i) {
-        Drawable::ID id = labelsIDs[i];
-        if (data.has(id)) {
-            data.remove(id);
-        }
-        for (auto it = dataRevisions.begin(); it != dataRevisions.end(); it++) {
-            if (it->first == id) {
-                dataRevisions.erase(it);
-                break;
-            }
-        }
+        removeOwnDrawable(labelsIDs[i]);
     }
     labels.clear();
     labelsIDs.clear();
@@ -155,17 +145,8 @@ void CoordinateAxis<orientation>::setUpCoordLines()
         rawDataY = nullptr;
     }
 
-    //! @todo refactor
     if (lines != nullptr) {
-        if (data.has(linesID)) {
-            data.remove(linesID);
-        }
-        for (auto it = dataRevisions.begin(); it != dataRevisions.end(); it++) {
-            if (it->first == linesID) {
-                dataRevisions.erase(it);
-                break;
-            }
-        }
+        removeOwnDrawable(linesID);
     }
 
     if (l != 0) {
@@ -327,6 +308,20 @@ bool CoordinateAxis<orientation>::ticksAreMagnitudes() const
     return ret;
 }
 
+template<AxisFlags::AxisOrientation orientation>
+void CoordinateAxis<orientation>::setUpTicksAndLabels(unsigned int indexOffset, double mean, bool primary)
+{
+    float spacing = (1.0 - offset()) / (max() - min());
+    bool paintLabels = flags & (primary ? AxisFlags::PaintLabelsPrimary : AxisFlags::PaintLabelsSecondary);
+
+    for (unsigned int i = 0, o = indexOffset+2+2*i; i < ticks.size(); o = indexOffset+2+2*(++i)) {
+        setUpTick(o, offset()+(ticks[i]-min())*spacing, mean, tickLength);
+        if (paintLabels) {
+            addLabelToTick(mean, primary);
+        }
+    }
+}
+
 template<>
 void CoordinateAxis<AxisFlags::Horizontal>::setUpTick(unsigned int indexOffset, double primaryValue, double secondaryMeanValue, double length);
 template<>
@@ -345,5 +340,40 @@ void CoordinateAxis<AxisFlags::Horizontal>::addLabelToTick(double value, bool pr
 
 template<>
 void CoordinateAxis<AxisFlags::Vertical>::addLabelToTick(double value, bool primary);
+
+template<AxisFlags::AxisOrientation orientation>
+std::string CoordinateAxis<orientation>::getLabelForTick(double value)
+{
+    std::stringstream label;
+    label << std::scientific << std::setprecision(2) << value;
+    return label.str();
+}
+
+template<AxisFlags::AxisOrientation orientation>
+void CoordinateAxis<orientation>::addNewLabelToSystem(Text* label)
+{
+    Drawable::ID labelID = data.add(label);
+    label->setId(labelID);
+    dataRevisions[labelID] = 0;
+    label->setGeometry(geometry);
+    label->setColor(coordLinesColor);
+    labels.push_back(label);
+    labelsIDs.push_back(labelID);
+    label->changed.template bind<Delegate<Drawable::ID>, &Delegate<Drawable::ID>::invoke>(&changed);
+}
+
+template<AxisFlags::AxisOrientation orientation>
+void CoordinateAxis<orientation>::removeOwnDrawable(Drawable::ID id)
+{
+    if (data.has(id)) {
+        data.remove(id);
+    }
+    for (auto it = dataRevisions.begin(); it != dataRevisions.end(); it++) {
+        if (it->first == id) {
+            dataRevisions.erase(it);
+            break;
+        }
+    }
+}
 
 }

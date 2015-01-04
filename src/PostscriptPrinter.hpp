@@ -5,7 +5,6 @@
 #include <fstream>
 #include <vector>
 #include <cmath>
-#include <iostream>
 
 #include "AbstractPlotter.hpp"
 #include "PlotPrinter.hpp"

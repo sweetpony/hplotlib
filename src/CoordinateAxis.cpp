@@ -51,15 +51,7 @@ void CoordinateAxis<AxisFlags::Horizontal>::setUpAxis(unsigned int indexOffset, 
     rawDataX[indexOffset + 1] = offset();
     rawDataY[indexOffset + 1] = mean;
 
-    float spacing = (1.0 - offset()) / (max() - min());
-    bool paintLabels = flags & (primary ? AxisFlags::PaintLabelsPrimary : AxisFlags::PaintLabelsSecondary);
-
-    for (unsigned int i = 0, o = indexOffset+2+2*i; i < ticks.size(); o = indexOffset+2+2*(++i)) {
-        setUpTick(o, offset()+(ticks[i]-min())*spacing, mean, tickLength);
-        if (paintLabels) {
-            addLabelToTick(mean, primary);
-        }
-    }
+    setUpTicksAndLabels(indexOffset, mean, primary);
 }
 
 template<>
@@ -70,15 +62,7 @@ void CoordinateAxis<AxisFlags::Vertical>::setUpAxis(unsigned int indexOffset, do
     rawDataX[indexOffset + 1] = mean;
     rawDataY[indexOffset + 1] = offset();
 
-    float spacing = (1.0 - offset()) / (max() - min());
-    bool paintLabels = flags & (primary ? AxisFlags::PaintLabelsPrimary : AxisFlags::PaintLabelsSecondary);
-
-    for (unsigned int i = 0, o = indexOffset+2+2*i; i < ticks.size(); o = indexOffset+2+2*(++i)) {
-        setUpTick(o, offset()+(ticks[i]-min())*spacing, mean, tickLength);
-        if (paintLabels) {
-            addLabelToTick(mean, primary);
-        }
-    }
+    setUpTicksAndLabels(indexOffset, mean, primary);
 }
 
 template<>
@@ -102,43 +86,23 @@ void CoordinateAxis<AxisFlags::Vertical>::setUpTick(unsigned int indexOffset, do
 template<>
 void CoordinateAxis<AxisFlags::Horizontal>::addLabelToTick(double value, bool primary)
 {
-	char buffer[64];
-	sprintf(buffer, "%lf", value);
     //! @todo these values are not final, y is just a dummy
     double x = value-0.5*tickdelta;
     double y = 0.0;
-    //! @todo refactore, see below
-    Text* label = new Text(buffer, x, y, 0.8*tickdelta, tickLength, axisLimits);
-    std::cout << "New label " << label << " " << buffer << ": " << label->text << std::endl;
-    Drawable::ID labelID = data.add(label);
-    label->setId(labelID);
-    dataRevisions[labelID] = 0;
-    label->setGeometry(geometry);
-    label->setColor(coordLinesColor);
-    labels.push_back(label);
-    labelsIDs.push_back(labelID);
-    label->changed.template bind<Delegate<Drawable::ID>, &Delegate<Drawable::ID>::invoke>(&changed);
+
+    Text* label = new Text(getLabelForTick(value), x, y, 0.8*tickdelta, tickLength, axisLimits);
+    addNewLabelToSystem(label);
 }
 
 template<>
 void CoordinateAxis<AxisFlags::Vertical>::addLabelToTick(double value, bool primary)
 {
-	char buffer[64];
-	sprintf(buffer, "%lf", value);
     //! @todo these values are not final, y is just a dummy
     double x = value-0.5*tickdelta;
     double y = 0.0;
-    //! @todo refactore, see below
-    Text* label = new Text(buffer, x, y, 0.8*tickdelta, tickLength, axisLimits);
-    std::cout << "New label " << label << " " << buffer << ": " << label->text << std::endl;
-    Drawable::ID labelID = data.add(label);
-    label->setId(labelID);
-    dataRevisions[labelID] = 0;
-    label->setGeometry(geometry);
-    label->setColor(coordLinesColor);
-    labels.push_back(label);
-    labelsIDs.push_back(labelID);
-    label->changed.template bind<Delegate<Drawable::ID>, &Delegate<Drawable::ID>::invoke>(&changed);
+
+    Text* label = new Text(getLabelForTick(value), x, y, 0.8*tickdelta, tickLength, axisLimits);
+    addNewLabelToSystem(label);
 }
 
 }

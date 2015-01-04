@@ -5,7 +5,8 @@
 #include <map>
 #include <vector>
 #include <string>
-#include <iostream>
+#include <sstream>
+#include <iomanip>
 
 #include "Lines.hpp"
 #include "Text.hpp"
@@ -64,12 +65,18 @@ private:
     void calculateMinorDataTicks();
     bool canDoNiceLogMinorTicks() const;
     bool ticksAreMagnitudes() const;
-    
+
     void setUpAxis(unsigned int indexOffset, double mean, bool primary);
     void setUpMinorAxis(unsigned int indexOffset, double mean);
     
+    void setUpTicksAndLabels(unsigned int indexOffset, double mean, bool primary);
+
     void setUpTick(unsigned int indexOffset, double primaryValue, double secondaryMeanValue, double length);
     void addLabelToTick(double value, bool primary);
+    std::string getLabelForTick(double value);
+    void addNewLabelToSystem(Text* label);
+
+    void removeOwnDrawable(Drawable::ID id);
 
     float xOffset = 0.12f, yOffset = 0.08f;
     int nrTicks = 8;

@@ -57,7 +57,6 @@ void PostscriptPrinter::update()
             //! @todo calculate fontsize properly
             unsigned int fontSize = 10;
             setFont(t->getFontName(), fontSize);
-            std::cout << "Write text " << t << ": " << t->text << std::endl;
             writeText(t->x, t->y, t->text);
             continue;
         }
