@@ -2,6 +2,9 @@
 #include <cstdio>
 
 namespace hpl {
+	
+bool FontTexture::firstInstantiation = true;
+FileBrowser FontTexture::fb;
 
 FontTexture::FontTexture()
 {

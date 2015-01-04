@@ -317,7 +317,7 @@ void CoordinateAxis<orientation>::setUpTicksAndLabels(unsigned int indexOffset, 
     for (unsigned int i = 0, o = indexOffset+2+2*i; i < ticks.size(); o = indexOffset+2+2*(++i)) {
         setUpTick(o, offset()+(ticks[i]-min())*spacing, mean, tickLength);
         if (paintLabels) {
-            addLabelToTick(mean, primary);
+            addLabelToTick(offset()+(ticks[i]-min())*spacing, primary);
         }
     }
 }

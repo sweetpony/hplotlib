@@ -113,6 +113,76 @@ void OGLPlotter::syn(Contour const& ref, OGLContour& target)
 	delete[] data;
 }
 
+
+void OGLPlotter::del(OGLText& target)
+{
+	glDeleteBuffers(1, &target.textBuffer);
+}
+
+void OGLPlotter::syn(Text const& ref, OGLText& target)
+{	
+	FontTexture* fnt = &font;
+
+	Header header = fnt->header();
+	target.n = 4 * ref.text.length(); // 4 Vertices per char
+	int bufferSize = 4 * target.n; // x,y,u,v per Vertex
+	float* text = new float[bufferSize];
+	float textWidth = 0.0f;
+	float textHeight = header.lineHeight;
+	for (auto it = ref.text.cbegin(); it != ref.text.cend(); ++it) {
+		textWidth += fnt->ch(*it).xadvance;
+	}
+	float xscale = ref.width / textWidth;
+	float yscale = ref.height / textHeight;
+	float scale = (xscale < yscale) ? xscale : yscale;
+	
+	float xadv = 0.0f;
+	for (int c = 0; c < ref.text.length(); ++c) {
+		Char ch = fnt->ch(ref.text[c]);
+		
+		float x = ref.x + 0.5 * (ref.width - scale * textWidth) + scale * (xadv + ch.xoffset);
+		float y = ref.y + 0.5 * (ref.height - scale * textHeight) + scale * (textHeight - ch.yoffset - ch.height);
+		xadv += ch.xadvance;
+		text[4*4*c + 0] = x;
+		text[4*4*c + 1] = y;
+		text[4*4*c + 2] = ch.x / header.width;
+		text[4*4*c + 3] = (ch.y + ch.height) / header.height;
+		
+		text[4*4*c + 4] = x;
+		text[4*4*c + 5] = y + ch.height*scale;
+		text[4*4*c + 6] = ch.x / header.width;
+		text[4*4*c + 7] = ch.y / header.height;
+		
+		text[4*4*c + 8] = x + ch.width*scale;
+		text[4*4*c + 9] = y + ch.height*scale;
+		text[4*4*c + 10] = (ch.x + ch.width) / header.width;
+		text[4*4*c + 11] = ch.y / header.height;
+		
+		text[4*4*c + 12] = x + ch.width*scale;
+		text[4*4*c + 13] = y;
+		text[4*4*c + 14] = (ch.x + ch.width) / header.width;
+		text[4*4*c + 15] = (ch.y + ch.height) / header.height;
+	}
+
+	glGenBuffers(1, &target.textBuffer);
+	glBindBuffer(GL_ARRAY_BUFFER, target.textBuffer);
+	glBufferData(GL_ARRAY_BUFFER, bufferSize * sizeof(float), text, GL_STATIC_DRAW);
+	glBindBuffer(GL_ARRAY_BUFFER, 0);
+
+	target.pos = glGetAttribLocation(programsDatabase.getTextProgram(), "Position");
+	target.uv = glGetAttribLocation(programsDatabase.getTextProgram(), "UV");
+	target.rect = glGetUniformLocation(programsDatabase.getTextProgram(), "Rect");
+	target.color = glGetUniformLocation(programsDatabase.getTextProgram(), "Color");
+	target.textmvp = glGetUniformLocation(programsDatabase.getTextProgram(), "MVP");
+	target.glyphs = glGetUniformLocation(programsDatabase.getTextProgram(), "Glyphs");
+
+	target.g = ref.getGeometry();
+	target.c = ref.getColor();
+	target.font = fnt;
+
+	delete[] text;
+}
+
 OGLPlotter::OGLPlotter() : AbstractPlotter(), Window()
 {
 }
@@ -128,7 +198,7 @@ void OGLPlotter::init()
     glEnable(GL_BLEND);
     glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 
-    //font.init(fontFile);
+    font.init("inconsolata");
 
     programsDatabase.init();
 }
@@ -148,6 +218,7 @@ void OGLPlotter::destroy()
     }
 
     programsDatabase.destroy();
+    font.destroy();
 }
 
 void OGLPlotter::processDrawables()
@@ -176,6 +247,12 @@ void OGLPlotter::processDrawables()
 						if (c != contourCollection.end()) {
 							del(c->second);
 							contourCollection.erase(c);
+						} else {
+							auto t = textCollection.find(r->first);
+							if (t != textCollection.end()) {
+								del(t->second);
+								textCollection.erase(t);
+							}
 						}
 					}
 				}
@@ -199,6 +276,13 @@ void OGLPlotter::processDrawables()
 							OGLContour& c = contourCollection[r->first];
 							del(c);
 							syn(*ac, c);
+						} else {
+							Text const* at = dynamic_cast<Text const*>(da);
+							if (at != nullptr) {
+								OGLText& t = textCollection[r->first];
+								del(t);
+								syn(*at, t);
+							}
 						}
 					}
 				}
@@ -286,6 +370,38 @@ void OGLPlotter::draw()
         glUniformMatrix3fv(it->second.contourmvp, 1, GL_FALSE, mvp);
 
         glDrawArrays(GL_TRIANGLE_STRIP, 0, 4);
+        glDisableVertexAttribArray(it->second.pos);
+        glDisableVertexAttribArray(it->second.uv);
+    }
+    
+	for (auto it = textCollection.begin(); it != textCollection.end(); ++it) {
+        glUseProgram(programsDatabase.getTextProgram());
+        glEnableVertexAttribArray(it->second.pos);
+        glBindBuffer(GL_ARRAY_BUFFER, it->second.textBuffer);
+        glVertexAttribPointer(
+            it->second.pos,
+            2,
+            GL_FLOAT,
+            GL_FALSE,
+            4*sizeof(GLfloat),
+            (GLvoid const*) 0
+        );
+        glEnableVertexAttribArray(it->second.uv);
+        glVertexAttribPointer(
+            it->second.uv,
+            2,
+            GL_FLOAT,
+            GL_FALSE,
+            4*sizeof(GLfloat),
+            (GLvoid const*) (2*sizeof(float))
+        );
+        glUniform4f(it->second.rect, it->second.g.leftOffset, it->second.g.topOffset, it->second.g.width, it->second.g.height);
+        glUniform3f(it->second.color, it->second.c.r, it->second.c.g, it->second.c.b);
+        glUniformMatrix3fv(it->second.textmvp, 1, GL_FALSE, mvp);
+        glActiveTexture(GL_TEXTURE0);
+        it->second.font->bind(it->second.glyphs, 0);
+
+        glDrawArrays(GL_QUADS, 0, it->second.n);
         glDisableVertexAttribArray(it->second.pos);
         glDisableVertexAttribArray(it->second.uv);
     }

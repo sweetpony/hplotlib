@@ -7,7 +7,7 @@
 #include "Lines.hpp"
 #include "Points.hpp"
 #include "Contour.hpp"
-//#include "Text.hpp"
+#include "Text.hpp"
 #include "Color.hpp"
 
 namespace hpl {

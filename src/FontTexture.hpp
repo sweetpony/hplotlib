@@ -46,8 +46,6 @@ private:
     Header _header = {0};
     Char _chars[128];
 };
-
-bool FontTexture::firstInstantiation = true;
 }
 
 #endif

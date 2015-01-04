@@ -50,6 +50,7 @@ public:
         OGLPlotter plotter;
         CoordinateSystem& cosy = canvas.setUpEasySystem(&plotter);
         cosy.addPlot<T>(n, x, y);
+        canvas.synchronise();
         plotter.wait();
     }
 
@@ -59,6 +60,7 @@ public:
         OGLPlotter plotter;
         CoordinateSystem& cosy = canvas.setUpEasySystem(&plotter);
         cosy.addPlot<T>(n, x, y, z);
+        canvas.synchronise();
         plotter.wait();
     }
     

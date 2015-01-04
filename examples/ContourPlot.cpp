@@ -36,6 +36,7 @@ int main()
     canvas.connectToPlotter(&ps);
     ps.saveToFile("contourplot");
 
+	canvas.synchronise();
     plotter.wait();
 
     return 0;

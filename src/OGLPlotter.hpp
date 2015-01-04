@@ -4,6 +4,7 @@
 #include "AbstractPlotter.hpp"
 #include "Window.hpp"
 #include "ProgramDatabase.hpp"
+#include "FontTexture.hpp"
 
 namespace hpl {
 class OGLPlotter : public AbstractPlotter, public Window
@@ -47,6 +48,14 @@ protected:
         GLint pos, uv, rect, colorMap, contourmvp;
         Geometry g;
     };
+    struct OGLText {
+		GLuint textBuffer = 0;
+		GLint pos, uv, rect, color, glyphs, textmvp;
+		GLint n;
+		Geometry g;
+		Color c;
+		FontTexture* font;
+	};
 
     virtual void init();
     virtual void destroy();
@@ -58,6 +67,7 @@ protected:
     GLenum convert(Drawable::Type type);
 
     ProgramDatabase programsDatabase;
+    FontTexture font;
 
     float mvp[9] = {
         1.0, 0.0, 0.0,
@@ -68,14 +78,17 @@ protected:
     std::map<Drawable::ID, OGLLines> lineCollection;
     std::map<Drawable::ID, OGLPoints> pointCollection;
     std::map<Drawable::ID, OGLContour> contourCollection;
+    std::map<Drawable::ID, OGLText> textCollection;
     
     void del(OGLLines& target);
     void del(OGLPoints& target);
     void del(OGLContour& target);
+    void del(OGLText& target);
 
     void syn(Lines const& ref, OGLLines& target);
     void syn(Points const& ref, OGLPoints& target);
     void syn(Contour const& ref, OGLContour& target);
+    void syn(Text const& ref, OGLText& target);
 };
 }
 
