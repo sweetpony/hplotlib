@@ -172,7 +172,7 @@ void CoordinateAxis<orientation>::setUpCoordLines()
         lines = new Lines(l, rawDataX, rawDataY, axisLimits, true);
         linesID = data.add(lines);
         lines->setId(linesID);
-        dataRevisions[linesID] = 1;
+        dataRevisions[linesID] = 0;
         lines->setGeometry(geometry);
         lines->changed.template bind<Delegate<Drawable::ID>, &Delegate<Drawable::ID>::invoke>(&changed);
         changed.invoke(linesID);
