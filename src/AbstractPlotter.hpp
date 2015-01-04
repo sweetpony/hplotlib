@@ -29,13 +29,13 @@ public:
     }
 
     virtual void update() = 0;
+    virtual void synchronise() = 0;
 
-protected:
+protected:    
     const Registry<Drawable>* plots = nullptr;
     std::map<Drawable::ID, unsigned int> revision;
-    const std::map<Drawable::ID, unsigned int>* actualRevision;
+    const std::map<Drawable::ID, unsigned int>* actualRevision = nullptr;
     Color backgroundColor = Color(1.0f, 1.0f, 1.0f);
-
 };
 }
 

@@ -8,6 +8,7 @@
 #define HPLOTLIB_X11WINDOW_HPP
 
 #include "../Window.hpp"
+#include "../WindowBase.hpp"
 #include "../GL/glld.h"
 #include <GL/glx.h>
 #include <X11/X.h>
@@ -16,16 +17,16 @@
 
 namespace hpl
 {
-	class X11Window {
+	class X11Window : public WindowBase {
 	public:
-		bool show(Window* win);
-		void poll();
-		void update();
+		X11Window(Window* win) : WindowBase(win) {}
+		virtual bool show();
+		virtual void poll();
+		virtual void update();
 		
 	private:
 		void close();
 
-		Window* win;
 		::Window xwin;
 		::Display* dpy;
 		::GLXContext glc;

@@ -8,10 +8,8 @@
 
 #include <iostream>
 
-bool hpl::X11Window::show(hpl::Window* win)
+bool hpl::X11Window::show()
 {
-	this->win = win;
-
 	GLint att[] = {
 		GLX_X_RENDERABLE, True,
 		GLX_DRAWABLE_TYPE, GLX_WINDOW_BIT,

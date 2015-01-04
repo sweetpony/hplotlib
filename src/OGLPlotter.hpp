@@ -14,22 +14,38 @@ public:
     virtual ~OGLPlotter();
 
     virtual inline void update() {
-        checkAndCleanCollections();
         Window::update();
     }
+    
+    virtual inline void synchronise() {
+		Window::synchronise();
+	}
 
 protected:
-    struct LineCollection {
-        GLuint lineBuffer;
+	virtual void processDrawables();
+
+    struct OGLLines {
+        GLuint lineBuffer = 0;
         GLint pos, rect, color, linemvp;
+        GLint n;
+        Geometry g;
+        Color c;
+        GLenum type;
+        GLfloat size;
     };
-    struct PointCollection {
-        GLuint pointBuffer;
+    struct OGLPoints {
+        GLuint pointBuffer = 0;
         GLint pos, rect, color, pointmvp;
+		GLint n;
+        Geometry g;
+        Color c;
+        GLenum type;
+        GLfloat size;
     };
-    struct ContourCollection {
-        GLuint textureid, mapBuffer;
+    struct OGLContour {
+        GLuint textureid = 0, mapBuffer = 0;
         GLint pos, uv, rect, colorMap, contourmvp;
+        Geometry g;
     };
 
     virtual void init();
@@ -38,8 +54,6 @@ protected:
     virtual void moveEvent(int deltax, int deltay);
     virtual void mouseWheelEvent(int x, int y, double delta);
     virtual void resetEvent();
-
-    void checkAndCleanCollections();
 
     GLenum convert(Drawable::Type type);
 
@@ -51,10 +65,17 @@ protected:
         0.0, 0.0, 1.0
     };
 
-    std::map<Drawable::ID, LineCollection> lineCollection;
-    std::map<Drawable::ID, PointCollection> pointCollection;
-    std::map<Drawable::ID, ContourCollection> contourCollection;
+    std::map<Drawable::ID, OGLLines> lineCollection;
+    std::map<Drawable::ID, OGLPoints> pointCollection;
+    std::map<Drawable::ID, OGLContour> contourCollection;
+    
+    void del(OGLLines& target);
+    void del(OGLPoints& target);
+    void del(OGLContour& target);
 
+    void syn(Lines const& ref, OGLLines& target);
+    void syn(Points const& ref, OGLPoints& target);
+    void syn(Contour const& ref, OGLContour& target);
 };
 }
 

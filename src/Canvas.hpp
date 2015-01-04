@@ -61,6 +61,8 @@ public:
         cosy.addPlot<T>(n, x, y, z);
         plotter.wait();
     }
+    
+    void synchronise();
 
 private:
 	struct Slot {

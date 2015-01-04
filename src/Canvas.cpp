@@ -78,10 +78,6 @@ void Canvas::processUpdate(Drawable::ID id) {
     if (id != Drawable::ID()) {
         ++ dataRevisions[id];
     }
-
-    for (auto it = connectedPlotters.begin(); it != connectedPlotters.end(); it++) {
-        (*it)->update();
-    }
 }
 
 CoordinateSystem& Canvas::setUpEasySystem(AbstractPlotter* plotter)
@@ -91,5 +87,13 @@ CoordinateSystem& Canvas::setUpEasySystem(AbstractPlotter* plotter)
     CoordinateSystem& cosy = addCoordinateSystem();
     addCoordinateSystemToLayout(cosy.id(), layout.id());
     return cosy;
+}
+
+void Canvas::synchronise()
+{
+	for (auto it = connectedPlotters.begin(); it != connectedPlotters.end(); it++) {
+        (*it)->synchronise();
+        (*it)->update();
+    }
 }
 }

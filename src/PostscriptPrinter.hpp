@@ -21,6 +21,8 @@ public:
 
     virtual bool saveToFile(const std::string& fileName);
     virtual void update();
+    
+    virtual void synchronise() {}
 
 private:
     void writeHeader();

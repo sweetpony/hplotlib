@@ -7,7 +7,8 @@
 #include "../Window.hpp"
 #include "X11Window.hpp"
 
-void* hpl::Window::run(void* self)
+hpl::Window::Window()
 {
-	return runProto<X11Window>(self);
+	base = new X11Window(this);
+	pthread_create(&windowThread, nullptr, run, this);
 }
