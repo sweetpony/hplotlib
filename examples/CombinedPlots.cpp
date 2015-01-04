@@ -104,9 +104,9 @@ int main()
     hpl::Lines& plot5 = cs4.addPlot<hpl::Lines>(NUM_POINTS, x, n);
     canvas.addCoordinateSystemToLayout(cs4.id(), layout1.id());
 
-    /*hpl::PostscriptPrinter ps(hpl::PlotPrinter::Portrait);
+    hpl::PostscriptPrinter ps(hpl::PlotPrinter::Portrait);
     canvas.connectToPlotter(&ps);
-    ps.saveToFile("testoutput");*/
+    ps.saveToFile("testoutput");
     
     canvas.synchronise();
     plotter.wait();
