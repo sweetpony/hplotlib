@@ -178,7 +178,7 @@ void PostscriptPrinter::fillShape(std::vector<double> x, std::vector<double> y)
     out << "gsave fill grestore" << std::endl;
 }
 
-void PostscriptPrinter::writeText(double x, double y, const char* text)
+void PostscriptPrinter::writeText(double x, double y, std::string const& text)
 {
     Pixel p = transformCoordinates(x, y);
     out << p.first << " " << p.second << " moveto" << std::endl;

@@ -6,7 +6,7 @@ using namespace hpl;
 
 Text* generateText() {
     Limits limits(0.0, 0.0, 10.0, 10.0);
-    Text* t = new Text(5, "abcde", 1.0, 2.0, 4.0, 5.0, limits);
+    Text* t = new Text("abcde", 1.0, 2.0, 4.0, 5.0, limits);
     return t;
 }
 

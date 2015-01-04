@@ -1,4 +1,5 @@
 #include "CoordinateAxis.hpp"
+#include <cstdio>
 
 namespace hpl {
 
@@ -101,13 +102,14 @@ void CoordinateAxis<AxisFlags::Vertical>::setUpTick(unsigned int indexOffset, do
 template<>
 void CoordinateAxis<AxisFlags::Horizontal>::addLabelToTick(double value, bool primary)
 {
-    std::string s = std::to_string(value);
+	char buffer[64];
+	sprintf(buffer, "%lf", value);
     //! @todo these values are not final, y is just a dummy
     double x = value-0.5*tickdelta;
     double y = 0.0;
     //! @todo refactore, see below
-    Text* label = new Text(s.length(), s.c_str(), x, y, 0.8*tickdelta, tickLength, axisLimits);
-    std::cout << "New label " << label << " " << s << ": " << label->text << std::endl;
+    Text* label = new Text(buffer, x, y, 0.8*tickdelta, tickLength, axisLimits);
+    std::cout << "New label " << label << " " << buffer << ": " << label->text << std::endl;
     Drawable::ID labelID = data.add(label);
     label->setId(labelID);
     dataRevisions[labelID] = 1;
@@ -121,13 +123,14 @@ void CoordinateAxis<AxisFlags::Horizontal>::addLabelToTick(double value, bool pr
 template<>
 void CoordinateAxis<AxisFlags::Vertical>::addLabelToTick(double value, bool primary)
 {
-    std::string s = std::to_string(value);
+	char buffer[64];
+	sprintf(buffer, "%lf", value);
     //! @todo these values are not final, y is just a dummy
     double x = value-0.5*tickdelta;
     double y = 0.0;
     //! @todo refactore, see below
-    Text* label = new Text(s.length(), s.c_str(), x, y, 0.8*tickdelta, tickLength, axisLimits);
-    std::cout << "New label " << label << " " << s << ": " << label->text << std::endl;
+    Text* label = new Text(buffer, x, y, 0.8*tickdelta, tickLength, axisLimits);
+    std::cout << "New label " << label << " " << buffer << ": " << label->text << std::endl;
     Drawable::ID labelID = data.add(label);
     label->setId(labelID);
     dataRevisions[labelID] = 1;

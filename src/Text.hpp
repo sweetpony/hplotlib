@@ -10,7 +10,7 @@ class Text : public Drawable
 {
 
 public:
-    Text(int n, char const* text, double x, double y, double width, double height, const Limits& limits);
+    Text(std::string const& text, double x, double y, double width, double height, const Limits& limits);
     virtual ~Text();
 
     virtual inline void setColor(const Color& c) {
@@ -39,8 +39,7 @@ public:
 
     inline virtual void recalculateData() {}
 
-    const int n;
-    const char* text;
+    std::string text;
     const double x, y, width, height;
 
 protected:
