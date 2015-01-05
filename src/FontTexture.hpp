@@ -31,6 +31,7 @@ class FontTexture
 public:
     FontTexture();
 
+    void read(std::string const& fontname);
     void init(std::string const& fontname);
 	void destroy();    
     void bind(GLint position, GLuint textureUnit);

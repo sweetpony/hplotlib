@@ -14,6 +14,21 @@ FontTexture::FontTexture()
     }
 }
 
+//! @todo refactor methods below
+void FontTexture::read(std::string const& fontname)
+{
+    std::string path = fb.getFontPath(fontname);
+    FILE* in = fopen(path.c_str(), "rb");
+    fread(&_header, sizeof(Header), 1, in);
+    fread(_chars, sizeof(Char), _header.count, in);
+    fclose(in);
+
+    for (int i = _header.count-1; i >= 0; --i) {
+        unsigned char id = _chars[i].id;
+        _chars[id] = _chars[i];
+    }
+}
+
 void FontTexture::init(std::string const& fontname)
 {
     std::string path = fb.getFontPath(fontname);
@@ -25,11 +40,11 @@ void FontTexture::init(std::string const& fontname)
     unsigned char data[texels];
     fread(data, sizeof(unsigned char), texels, in);
     fclose(in);
-    
+
     for (int i = _header.count-1; i >= 0; --i) {
         unsigned char id = _chars[i].id;
-		_chars[id] = _chars[i];
-	}
+        _chars[id] = _chars[i];
+    }
 
     glGenTextures(1, &_glyphs);
 

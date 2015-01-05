@@ -9,6 +9,7 @@
 #include "AbstractPlotter.hpp"
 #include "PlotPrinter.hpp"
 #include "Color.hpp"
+#include "FontTexture.hpp"
 
 namespace hpl
 {

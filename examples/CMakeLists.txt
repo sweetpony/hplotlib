@@ -11,3 +11,6 @@ target_link_libraries (SimplePlot hplotlib)
 add_executable (ContourPlot ContourPlot.cpp)
 target_link_libraries (ContourPlot hplotlib)
 
+add_executable (SimpleLayout SimpleLayout.cpp)
+target_link_libraries (SimpleLayout hplotlib)
+

@@ -11,8 +11,6 @@
 #include <Drawable.hpp>
 #include <Color.hpp>
 #include <Geometry.hpp>
-#include <HorizontalLayout.hpp>
-#include <VerticalLayout.hpp>
 #include <GridLayout.hpp>
 #include <Contour.hpp>
 #include <ColorTable.hpp>
@@ -32,7 +30,6 @@ int main()
         x[i] = i / static_cast<double>(NUM_POINTS);
         y[i] = sin(10.0 * x[i]);
         z[i] = cos(20.0 * x[i]);
-        n[i] = pow(x[i], 2.0);
     }
     for (int i = 0; i < NUM_POINTS; ++i) {
         for (int j = 0; j < NUM_POINTS; ++j) {
@@ -45,8 +42,7 @@ int main()
     canvas.connectToPlotter(&plotter);
     plotter.setBackgroundColor(hpl::Color(0.9f, 0.9f, 0.9f));
 
-    hpl::HorizontalLayout& layout1 = canvas.addLayout<hpl::HorizontalLayout>();
-    hpl::VerticalLayout& layout2 = canvas.addLayout<hpl::VerticalLayout>();
+    hpl::GridLayout& layout = canvas.addLayout<hpl::GridLayout>();
 
     hpl::CoordinateSystem& cs1 = canvas.addCoordinateSystem();
     cs1.setColor(hpl::Color(0.6f, 0.6f, 0.6f));
@@ -58,56 +54,24 @@ int main()
     plot1.setThickness(5.0);
 
     hpl::CoordinateSystem& cs2 = canvas.addCoordinateSystem();
-    cs2.setAxisProperties(hpl::AxisFlags::PaintNothing);
     hpl::Contour& plot2 = cs2.addPlot<hpl::Contour>(NUM_POINTS, x, x, m);
 
     hpl::CoordinateSystem& cs3 = canvas.addCoordinateSystem();
-    cs3.setAxisProperties(hpl::AxisFlags::PaintPrimary | hpl::AxisFlags::Logscale | hpl::AxisFlags::PaintMinorTicks | hpl::AxisFlags::PaintLabelsPrimary);
+    cs3.setAxisProperties(hpl::AxisFlags::PaintPrimary | hpl::AxisFlags::PaintMinorTicks | hpl::AxisFlags::PaintLabelsPrimary);
     cs3.setTickMode(hpl::AxisFlags::Smart);
     hpl::Points& plot3 = cs3.addPlot<hpl::Points>(NUM_POINTS, x, z);
     plot3.setColor(hpl::Color(0.0f, 0.0f, 1.0f));
     hpl::Lines& plot4 = cs3.addPlot<hpl::Lines>(NUM_POINTS, x, y);
     plot4.setColor(hpl::Color(0.0f, 0.0f, 0.0f));
 
-    canvas.addCoordinateSystemToLayout(cs1.id(), layout1.id());
-    canvas.addLayoutToLayout(layout2.id(), layout1.id());
-    canvas.addCoordinateSystemToLayout(cs2.id(), layout2.id());
-    canvas.addCoordinateSystemToLayout(cs3.id(), layout2.id());
-
-	canvas.synchronise();
-    hpl::sleep(1e6);
-
-    plot2.setColorTable<hpl::ColorTable::BlueRed>(256);
-    plot3.setSymbol(hpl::Points::FilledCircle);
-    plot3.setSymbolSize(2.0);
-
-	canvas.synchronise();
-    hpl::sleep(1e6);
-
-    layout2.changeOrientation(hpl::VerticalLayout::BottomToTop);
-
-    //! @todo Interpolation (Dotted) with log and negative values not working
-    cs3.getYAxis().setAxisProperties(hpl::AxisFlags::PaintPrimary | hpl::AxisFlags::PaintMinorTicks | hpl::AxisFlags::PaintLabelsPrimary);
-    plot1.setStyle(hpl::Lines::Dashed);
-    plot4.setStyle(hpl::Lines::Dotted);
-    plot4.setThickness(3.0);
-
-	canvas.synchronise();
-    hpl::sleep(1e6);
-
-    layout1.changeOrientation(hpl::HorizontalLayout::RightToLeft);
-    plot2.setColorTable<hpl::ColorTable::RainbowBlack>(256);
-
-    hpl::CoordinateSystem& cs4 = canvas.addCoordinateSystem();
-    cs4.setTickMode(hpl::AxisFlags::Smart);
-    cs4.setAxisProperties(hpl::AxisFlags::PaintPrimary | hpl::AxisFlags::Logscale | hpl::AxisFlags::PaintMinorTicks | hpl::AxisFlags::PaintLabelsPrimary);
-    hpl::Lines& plot5 = cs4.addPlot<hpl::Lines>(NUM_POINTS, x, n);
-    canvas.addCoordinateSystemToLayout(cs4.id(), layout1.id());
+    canvas.addCoordinateSystemToLayout(cs1.id(), layout.id());
+    canvas.addCoordinateSystemToLayout(cs2.id(), layout.id());
+    canvas.addCoordinateSystemToLayout(cs3.id(), layout.id());
 
     hpl::PostscriptPrinter ps(hpl::PlotPrinter::Portrait);
     canvas.connectToPlotter(&ps);
-    ps.saveToFile("combinedplots");
-    
+    ps.saveToFile("simplelayout");
+
     canvas.synchronise();
     plotter.wait();
 
