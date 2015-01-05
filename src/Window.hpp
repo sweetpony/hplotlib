@@ -12,23 +12,31 @@
 #include <algorithm>
 
 #include "Sleep.hpp"
+#include "WindowBase.hpp"
 
 namespace hpl
-{
+{	
 	class Window {
 		friend class Win32Window;
 		friend class X11Window;
 	public:
-		void wait() {
+        void wait() {
+            needsRepaint = true;
 			pthread_join(windowThread, nullptr);			
 		}
-		void update() { needsRepaint = true; }
+
+        virtual void update() { needsRepaint = true; }
+        
+		virtual void synchronise();
+
 	protected:
-		Window() { pthread_create(&windowThread, nullptr, run, this); }
+		Window();
+		~Window() { delete base; }
 
 		virtual void init() = 0;
 		virtual void destroy() = 0;
 		virtual void draw() = 0;
+		virtual void processDrawables() = 0;
 		virtual void resetEvent() = 0;
 		virtual void moveEvent(int deltax, int deltay) = 0;
 		virtual void mouseWheelEvent(int x, int y, double delta) = 0;
@@ -36,13 +44,15 @@ namespace hpl
 		double width = 0.0;
 		double height = 0.0;
         bool needsRepaint = false;
+        bool needsSynchronise = false;
+
+		pthread_mutex_t mutex = PTHREAD_MUTEX_INITIALIZER;
+		pthread_cond_t synCond = PTHREAD_COND_INITIALIZER;
 		
 	private:	
 		static double constexpr RefreshRate = 60.0;
 		
-		static void* run(void* self);
-		template<class T>
-		static void* runProto(void* self);
+		static void* run(void* winBase);
 		bool loadOpenGL();
 		void close() { destroy(); isOpen = false; }
 	
@@ -50,33 +60,10 @@ namespace hpl
 		bool isOpen = true;
 		double lastx = 0.0;
 		double lasty = 0.0;
+		
+		WindowBase* base = nullptr;
 	};
 }
-
-template<class T>
-void* hpl::Window::runProto(void* self)
-{
-	Window* win = static_cast<Window*>(self);
-	T window;
-	window.show(win);
-
-	auto last = std::chrono::steady_clock::now();
-	while (win->isOpen) {
-		window.poll();
-
-		if (win->needsRepaint) {
-			window.update();
-			win->needsRepaint = false;
-		}
-
-		std::chrono::microseconds timeSpan = std::chrono::duration_cast<std::chrono::microseconds>(std::chrono::steady_clock::now() - last);
-		sleep(std::round(std::max(0.0, 1e6 / RefreshRate - timeSpan.count())));
-		last = std::chrono::steady_clock::now();
-	}
-
-	return nullptr;
-}
-
 
 #endif
 

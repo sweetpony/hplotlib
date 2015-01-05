@@ -7,52 +7,48 @@
 #ifndef HPLOTLIB_COORDINATESYSTEM_HPP
 #define HPLOTLIB_COORDINATESYSTEM_HPP
 
-#include "Plot.hpp"
+#include <queue>
+#include <map>
+#include <vector>
+#include <cmath>
+
+#include "Drawable.hpp"
 #include "Statistics.hpp"
 #include "Contour.hpp"
+#include "Registry.hpp"
+#include "Lines.hpp"
+#include "CoordinateAxis.hpp"
+#include "Limits.hpp"
 
 #include "GL/glld.h"
 
-#include <queue>
-
 namespace hpl
 {
-class Font;
 class CoordinateSystem {
 public:
-	typedef IDBase<CoordinateSystem> ID;
+    typedef IDBase<CoordinateSystem> ID;
 
-    struct Label {
-        char label[16];
-        int len = 0;
-        float x, y, width, height;
-    };
-
-	static constexpr float XOffset = 0.12f;
-	static constexpr float YOffset = 0.08f;
-	static constexpr int Ticks = 8;
-	static constexpr float TickLength = 0.02f;
-
-    CoordinateSystem(Font* font);
+    CoordinateSystem(Registry<Drawable>& dataContainer, std::map<Drawable::ID, unsigned int>& dataRevisions);
     ~CoordinateSystem();
 
-    float* getLines() const;
-    inline unsigned int getLinesCount() const {
-        return 8 + 2*Ticks*4;
+    inline CoordinateAxis<AxisFlags::Horizontal>& getXAxis() {
+        return xAxis;
+    }
+    inline CoordinateAxis<AxisFlags::Vertical>& getYAxis() {
+        return yAxis;
     }
 
-    Label* getLabels() const;
-    inline unsigned int getLabelsCount() const {
-        return 2*Ticks;
+    inline void setColor(const Color& c) {
+        xAxis.setColor(c);
+        yAxis.setColor(c);
     }
-
-    inline Registry<Plot>& getPlots() {
-        return plots;
+    inline void setAxisProperties(int flags) {
+        xAxis.setAxisProperties(flags);
+        yAxis.setAxisProperties(flags);
     }
-    
-    void setColor(const Color& c);
-    inline Color getColor() const {
-        return drawColor;
+    inline void setTickMode(AxisFlags::TickMode mode) {
+        xAxis.setTickMode(mode);
+        yAxis.setTickMode(mode);
     }
 
     void setGeometry(Geometry geom);
@@ -62,73 +58,61 @@ public:
     template<typename T>
     T& addPlot(int n, double const* x, double const* y, double const* z);
 
-    virtual void init(GLuint lineprogram, GLuint textprogram, GLuint mapprogram);
-	virtual void destroy();
-	virtual void draw(float const* mvp);
-	
-	virtual void update();
+    void setLimits(double xmin, double xmax, double ymin, double ymax);
 
-    Delegate<> changed;
+    Delegate<Drawable::ID> changed;
     
     inline ID id() const { return csId; }
     inline void setId(ID id) { csId = id; }
 	
 private:
-    void updateLimits(double xmin, double xmax, double ymin, double ymax);
+    Drawable::ID addNewPlot(Drawable* plot);
+    void removePlot(Drawable::ID id);
 
-    Registry<Plot> plots;
-	std::queue<Plot::ID> plotInit;
+    void updateXlogOnPlots(bool log);
+    void updateYlogOnPlots(bool log);
+    void updateLogOnPlots();
+
+    void setLimitsFromOriginal();
+
+    Registry<Drawable>& data;
+    std::map<Drawable::ID, unsigned int>& dataRevisions;
+    std::vector<Drawable::ID> myPlots;
     ID csId;
 	Geometry geometry;
+    bool xlog = false, ylog = false;
 
-	Font* font;
-	Color drawColor;
-	bool updateLabels = false;
+    bool needLimitUpdate = true;
 
-    double xmin = std::numeric_limits<double>::max();
-    double xmax = std::numeric_limits<double>::min();
-    double ymin = std::numeric_limits<double>::max();
-    double ymax = std::numeric_limits<double>::min();
+    Limits originalLimits, originalPosLimits, limits;
 
-    GLuint lineBuffer;
-    GLuint textBuffer;
-    GLuint lineprogram;
-    GLuint textprogram;
-    GLuint mapprogram;
-    
-	GLint linepos, linerect, linecolor, linemvp, textpos, textuv, textrect, textglyphs, textmvp, textcolor;
-	int numLines = 0;
-	int numChars = 0;
-
-    float* lines = nullptr;
-    Label* labels = nullptr;
+    CoordinateAxis<AxisFlags::Horizontal> xAxis;
+    CoordinateAxis<AxisFlags::Vertical> yAxis;
 };
 
 template<typename T>
 T& CoordinateSystem::addPlot(int n, double const* x, double const* y)
 {
-	updateLimits(hpl::min(n, x), hpl::max(n, x), hpl::min(n, y), hpl::max(n, y));
-	
-    T* plot = new T(n, x, y);
-    plot->changed.template bind<Delegate<>, &Delegate<>::invoke>(&changed);
-    Plot::ID id = plots.add(plot);    
-    plotInit.push(id);
-    setGeometry(geometry);
-    changed.invoke();
+    if (needLimitUpdate) {
+        originalPosLimits.setLimits(minPos(n, x), maxPos(n, x), minPos(n, y), maxPos(n, y));
+        setLimits(hpl::min(n, x), hpl::max(n, x), hpl::min(n, y), hpl::max(n, y));
+    }
+
+    T* plot = new T(n, x, y, limits);
+    addNewPlot(plot);
     return *plot;
 }
 
 template<typename T>
 T& CoordinateSystem::addPlot(int n, double const* x, double const* y, double const* z)
 {
-    updateLimits(hpl::min(n, x), hpl::max(n, x), hpl::min(n, y), hpl::max(n, y));
+    if (needLimitUpdate) {
+        originalPosLimits.setLimits(minPos(n, x), maxPos(n, x), minPos(n, y), maxPos(n, y));
+        setLimits(hpl::min(n, x), hpl::max(n, x), hpl::min(n, y), hpl::max(n, y));
+    }
 
-    T* plot = new T(n, x, y, z);
-    plot->changed.template bind<Delegate<>, &Delegate<>::invoke>(&changed);
-    Plot::ID id = plots.add(plot);
-    plotInit.push(id);
-    setGeometry(geometry);
-    changed.invoke();
+    T* plot = new T(n, x, y, z, limits);
+    addNewPlot(plot);
     return *plot;
 }
 }

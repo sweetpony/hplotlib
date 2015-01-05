@@ -121,10 +121,8 @@ LRESULT CALLBACK Win32Window::WndProc(HWND hWnd, UINT message, WPARAM wParam, LP
     return 0;
 }
 
-bool Win32Window::show(Window* windowBase)
+bool Win32Window::show()
 {
-	win = windowBase;
-
     char const windowClass[] = "canvas";
 
     HINSTANCE hInstance = GetModuleHandle(NULL);

@@ -7,24 +7,23 @@
 #ifndef HPLOTLIB_CANVAS_HPP
 #define HPLOTLIB_CANVAS_HPP
 
-#include "Window.hpp"
-#include "ProgramDatabase.hpp"
-#include "Font.hpp"
-#include "Color.hpp"
-#include "Geometry.hpp"
-#include "Layout.hpp"
-#include "PostscriptPrinter.hpp"
-#include "Registry.hpp"
-
 #include <vector>
 #include <string>
 #include <queue>
 
+#include "AbstractPlotter.hpp"
+#include "OGLPlotter.hpp"
+#include "Geometry.hpp"
+#include "Layout.hpp"
+#include "GridLayout.hpp"
+#include "PostscriptPrinter.hpp"
+#include "Registry.hpp"
+
 namespace hpl
 {
-class Canvas : public Window {
+class Canvas {
 public:
-	Canvas(std::string const& fontFile) : fontFile(fontFile) {}
+    Canvas();
 	~Canvas();
 	
 	void addCoordinateSystemToLayout(CoordinateSystem::ID cs, Layout::ID to) { addSlotToLayout(Slot(cs), to); }
@@ -33,29 +32,40 @@ public:
 	template<typename T>
 	T& addLayout() {
 		T* layout = new T;
-		Layout::ID id = layouts.add(layout);
+        layouts.add(layout);
 		layout->changed.template bind<Canvas, &Canvas::recalculateLayout>(this);
 		return *layout;
 	}
-	
-	template<typename T>
-    T& addCoordinateSystem();
 
-    inline void setBackgroundColor(const Color& c) {
-        backgroundColor = c;
+    CoordinateSystem& addCoordinateSystem();
+
+    inline void connectToPlotter(AbstractPlotter* plotter) {
+        plotter->setPlots(&rawData, &dataRevisions);
+        connectedPlotters.push_back(plotter);
     }
 
-    bool saveToFile(const std::string& fileName);
+    template<typename T>
+    static void plotAndWait(int n, double const* x, double const* y) {
+        Canvas canvas;
+        OGLPlotter plotter;
+        CoordinateSystem& cosy = canvas.setUpEasySystem(&plotter);
+        cosy.addPlot<T>(n, x, y);
+        canvas.synchronise();
+        plotter.wait();
+    }
 
+    template<typename T>
+    static void plotAndWait(int n, double const* x, double const* y, double const* z) {
+        Canvas canvas;
+        OGLPlotter plotter;
+        CoordinateSystem& cosy = canvas.setUpEasySystem(&plotter);
+        cosy.addPlot<T>(n, x, y, z);
+        canvas.synchronise();
+        plotter.wait();
+    }
+    
+    void synchronise();
 
-protected:
-	virtual void init();
-	virtual void destroy();
-	virtual void draw();
-	virtual void moveEvent(int deltax, int deltay);
-	virtual void mouseWheelEvent(int x, int y, double delta);
-	virtual void resetEvent();
-	
 private:
 	struct Slot {
         Slot(Layout::ID l) : layout(l) {}
@@ -79,41 +89,20 @@ private:
 	void addSlotToLayout(Slot const& slot, Layout::ID to);
 	void recalculateLayout(Layout::ID layout);
 
+    void processUpdate(Drawable::ID id = Drawable::ID());
+
+    CoordinateSystem& setUpEasySystem(AbstractPlotter* plotter);
+
 	Registry<Layout> layouts;
-	Registry<CoordinateSystem> csystems;
-	std::queue<CoordinateSystem::ID> csInit;
+    Registry<CoordinateSystem> csystems;
 
-	std::unordered_map<Layout::ID, Rack, std::hash<Layout::ID::Type>> racks;
+    Registry<Drawable> rawData;
+    std::map<Drawable::ID, unsigned int> dataRevisions;
 
-	std::string fontFile;
-	Font font;
-	pthread_mutex_t mutex = PTHREAD_MUTEX_INITIALIZER;
-    Color backgroundColor = Color(1.0f, 1.0f, 1.0f);
-	
-    ProgramDatabase programsDatabase;
-    
-    float mvp[9] = {
-		1.0, 0.0, 0.0,
-		0.0, 1.0, 0.0,
-		0.0, 0.0, 1.0
-	};
+    std::unordered_map<Layout::ID, Rack, std::hash<Layout::ID::Type>> racks;
+
+    std::vector<AbstractPlotter*> connectedPlotters;
 };
-
-template<typename T>
-T& Canvas::addCoordinateSystem()
-{
-    T* cs = new T(&font);
-    cs->changed.template bind<Window, &Window::update>(this);
-
-    pthread_mutex_lock(&mutex);
-    CoordinateSystem::ID id = csystems.add(cs);
-    csInit.push(id);
-	pthread_mutex_unlock(&mutex);
-
-    update();
-
-    return *cs;
-}
 }
 
 #endif

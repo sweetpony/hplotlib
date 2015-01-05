@@ -18,13 +18,16 @@ public:
 		}
 	}
 
-	inline bool has(typename T::ID id) {
+    inline bool has(typename T::ID id) const {
 		return objects.count(id) > 0;
 	}
 	
 	inline T& lookup(typename T::ID id) {
 		return *objects[id];
-	}
+    }
+    inline const T& lookup(typename T::ID id) const {
+        return *objects.at(id);
+    }
 	
 	inline typename T::ID add(T* object) {
 		typename T::ID id = nextID;

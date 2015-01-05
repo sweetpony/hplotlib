@@ -1,82 +1,238 @@
 #include "Points.hpp"
 
+#include <cmath>
+
+#define M_PI		3.14159265358979323846
+#define METH_PB(X, Y) \
+    vert.push_back(std::pair<double, double>(X, Y))
+
 namespace hpl
 {
-Points::Points(int n, double const* x, double const* y) : n(n)
+void Points::setSymbol(Symbol s)
 {
-    xmin = hpl::min(n, x);
-    xmax = hpl::max(n, x);
-    ymin = hpl::min(n, y);
-    ymax = hpl::max(n, y);
-
-    points = new float[2*n];
-    for (int i = 0; i < n; ++i) {
-        points[(i << 1)] = (x[i] - xmin) / (xmax - xmin);
-        points[(i << 1) + 1] = (y[i] - ymin) / (ymax - ymin);
+    if (s != symbol) {
+        symbol = s;
+        recalculateData();
     }
 }
 
-Points::~Points()
+void Points::recalculateData()
 {
-    delete[] points;
-}
-
-float* Points::getX() const
-{
-    float* x = new float[n];
-    for (unsigned int i = 0; i < n; i++) {
-        x[i] = points[i << 1] * geometry.width + geometry.leftOffset;
+    delete points;
+    const double* thisx = _x,* thisy = _y;
+    if (xlog) {
+        thisx = log(_n, _x);
     }
-    return x;
-}
-
-float* Points::getY() const
-{
-    float* y = new float[n];
-    for (unsigned int i = 0; i < n; i++) {
-        y[i] = points[(i << 1) + 1] * geometry.height + geometry.topOffset;
+    if (ylog) {
+        thisy = log(_n, _y);
     }
-    return y;
+
+    std::vector<std::pair<double, double> > vert = getSymbolVertices();
+    if (vert.size() == 1 && vert[0].first == 0.0 && vert[1].second == 0.0) {
+        limitsInCalc = false;
+        points = new SimplePoints(_n, thisx, thisy, xlog, ylog);
+    } else {
+        limitsInCalc = true;
+        int n = _n * vert.size();
+        double* x = new double[n];
+        double* y = new double[n];
+
+        //! @todo Actually would need aspect ratio of current box, which is geometry & aspect ratio of window
+        double facx = 0.005;
+        double facy = facx * (limits.ymax() - limits.ymin()) / (limits.xmax() - limits.xmin());
+
+        for (int i = 0, k = 0; i < _n; ++i) {
+            for (unsigned int j = 0; j < vert.size(); ++j, ++k) {
+                x[k] = thisx[i] + facx * vert[j].first;
+                y[k] = thisy[i] + facy * vert[j].second;
+            }
+        }
+
+        points = new SimplePoints(n, x, y, true, true);
+
+        if (xlog) {
+            delete[] thisx;
+        }
+        if (ylog) {
+            delete[] thisy;
+        }
+    }
+    setTypeForSymbol();
+
+    changed.invoke(plotId);
 }
 
-void Points::init(GLuint lineprogram, GLuint)
+std::vector<std::pair<double, double> > Points::getSymbolVertices() const
 {
-    program = lineprogram;
+    std::vector<std::pair<double, double> > vert;
+    double l = 0.5*size;
 
-    glGenBuffers(1, &pointBuffer);
-    glBindBuffer(GL_ARRAY_BUFFER, pointBuffer);
-    glBufferData(GL_ARRAY_BUFFER, 2 * n * sizeof(float), points, GL_STATIC_DRAW);
-    glBindBuffer(GL_ARRAY_BUFFER, 0);
+    switch(symbol) {
+    case Dot:
+        METH_PB(0.0, 0.0);
+        break;
+    case Plus:
+        METH_PB(0.0, l);
+        METH_PB(0.0, -l);
+        METH_PB(l, 0.0);
+        METH_PB(-l, 0.0);
+        break;
+    case Cross:
+        METH_PB(l, l);
+        METH_PB(-l, -l);
+        METH_PB(l, -l);
+        METH_PB(-l, l);
+        break;
+    case Asterisk:
+        METH_PB(0.0, l);
+        METH_PB(0.0, -l);
+        METH_PB(l, 0.0);
+        METH_PB(-l, 0.0);
+        METH_PB(l, l);
+        METH_PB(-l, -l);
+        METH_PB(l, -l);
+        METH_PB(-l, l);
+        break;
+    case Diamond:
+    case FilledDiamond:
+        METH_PB(0.0, l);
+        METH_PB(l, 0.0);
+        METH_PB(0.0, -l);
+        METH_PB(-l, 0.0);
+        METH_PB(0.0, l);
+        break;
+    case Circle:
+    case FilledCircle:
+        for (unsigned int i = 0; i < maxSymbolVertices/2; i++) {
+            METH_PB(std::cos(i * 4 * M_PI / maxSymbolVertices), std::sin(i * 4 * M_PI / maxSymbolVertices));
+            METH_PB(std::cos((i+1) * 4 * M_PI / maxSymbolVertices), std::sin((i+1) * 4 * M_PI / maxSymbolVertices));
+        }
+        break;
+    case CirclePlus:
+        METH_PB(0.0, l);
+        METH_PB(0.0, -l);
+        METH_PB(l, 0.0);
+        METH_PB(-l, 0.0);
+        for (unsigned int i = 0; i < (maxSymbolVertices-4)/2; i++) {
+            METH_PB(std::cos(i * 4 * M_PI / (maxSymbolVertices-4)), std::sin(i * 4 * M_PI / (maxSymbolVertices-4)));
+            METH_PB(std::cos((i+1) * 4 * M_PI / (maxSymbolVertices-4)), std::sin((i+1) * 4 * M_PI / (maxSymbolVertices-4)));
+        }
+        break;
+    case CircleCross:
+        METH_PB(l, l);
+        METH_PB(-l, -l);
+        METH_PB(l, -l);
+        METH_PB(-l, l);
+        for (unsigned int i = 0; i < (maxSymbolVertices-4)/2; i++) {
+            METH_PB(std::cos(i * 4 * M_PI / (maxSymbolVertices-4)), std::sin(i * 4 * M_PI / (maxSymbolVertices-4)));
+            METH_PB(std::cos((i+1) * 4 * M_PI / (maxSymbolVertices-4)), std::sin((i+1) * 4 * M_PI / (maxSymbolVertices-4)));
+        }
+        break;
+    case Triangle:
+    case FilledTriangle:
+        METH_PB(-l, -l);
+        METH_PB(0.0, l);
+        METH_PB(0.0, l);
+        METH_PB(l, -l);
+        METH_PB(l, -l);
+        METH_PB(-l, -l);
+        break;
+    case DownwardTriangle:
+    case FilledDownwardTriangle:
+        METH_PB(-l, l);
+        METH_PB(0.0, -l);
+        METH_PB(0.0, -l);
+        METH_PB(l, l);
+        METH_PB(l, l);
+        METH_PB(-l, l);
+        break;
+    case RightwardTriangle:
+    case FilledRightwardTriangle:
+        METH_PB(-l, l);
+        METH_PB(l, 0.0);
+        METH_PB(l, 0.0);
+        METH_PB(-l, -l);
+        METH_PB(-l, -l);
+        METH_PB(-l, l);
+        break;
+    case LeftwardTriangle:
+    case FilledLeftwardTriangle:
+        METH_PB(l, l);
+        METH_PB(-l, 0.0);
+        METH_PB(-l, 0.0);
+        METH_PB(l, -l);
+        METH_PB(l, -l);
+        METH_PB(l, l);
+        break;
+    case Square:
+    case FilledSquare:
+        METH_PB(-l, l);
+        METH_PB(l, l);
+        METH_PB(l, l);
+        METH_PB(l, -l);
+        METH_PB(l, -l);
+        METH_PB(-l, -l);
+        METH_PB(-l, -l);
+        METH_PB(-l, l);
+        break;
+    case Hourglass:
+    case FilledHourglass:
+        METH_PB(-l, -l);
+        METH_PB(l, -l);
+        METH_PB(l, -l);
+        METH_PB(-l, l);
+        METH_PB(-l, l);
+        METH_PB(l, l);
+        METH_PB(l, l);
+        METH_PB(-l, -l);
+        break;
+    case Bowtie:
+    case FilledBowtie:
+        METH_PB(-l, -l);
+        METH_PB(-l, l);
+        METH_PB(-l, l);
+        METH_PB(l, -l);
+        METH_PB(l, -l);
+        METH_PB(l, l);
+        METH_PB(l, l);
+        METH_PB(-l, -l);
+        break;
+    case VerticalBar:
+    case FilledVerticalBar:
+        METH_PB(-0.5*l, -l);
+        METH_PB(-0.5*l, l);
+        METH_PB(-0.5*l, l);
+        METH_PB(0.5*l, l);
+        METH_PB(0.5*l, l);
+        METH_PB(0.5*l, -l);
+        METH_PB(0.5*l, -l);
+        METH_PB(-0.5*l, -l);
+        break;
+    case HorizontalBar:
+    case FilledHorizontalBar:
+        METH_PB(-l, -0.5*l);
+        METH_PB(-l, 0.5*l);
+        METH_PB(-l, 0.5*l);
+        METH_PB(l, 0.5*l);
+        METH_PB(l, 0.5*l);
+        METH_PB(l, -0.5*l);
+        METH_PB(l, -0.5*l);
+        METH_PB(-l, -0.5*l);
+        break;
+    }
 
-    pos = glGetAttribLocation(program, "Position");
-    rect = glGetUniformLocation(program, "Rect");
-    color = glGetUniformLocation(program, "Color");
-    pointmvp = glGetUniformLocation(program, "MVP");
+    return vert;
 }
 
-void Points::destroy()
+void Points::setTypeForSymbol()
 {
-    glDeleteBuffers(1, &pointBuffer);
-}
-
-void Points::draw(float const* mvp)
-{
-    glUseProgram(program);
-    glBindBuffer(GL_ARRAY_BUFFER, pointBuffer);
-    glVertexAttribPointer(
-        pos,
-        2,
-        GL_FLOAT,
-        GL_FALSE,
-        0,
-        (GLvoid const*) 0
-    );
-    glEnableVertexAttribArray(pos);
-    glUniform4f(rect, geometry.leftOffset, geometry.topOffset, geometry.width, geometry.height);
-    glUniform3f(color, drawColor.r, drawColor.g, drawColor.b);
-    glUniformMatrix3fv(pointmvp, 1, GL_FALSE, mvp);
-
-    glDrawArrays(GL_POINTS, 0, n);
-    glDisableVertexAttribArray(pos);
+    switch(symbol) {
+    case Dot:
+        type = Type_Points;
+        break;
+    default:
+        type = Type_Lines;
+        break;
+    }
 }
 }

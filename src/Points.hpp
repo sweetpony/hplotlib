@@ -1,38 +1,120 @@
 #ifndef POINTS_H
 #define POINTS_H
 
-#include "Plot.hpp"
-#include "Statistics.hpp"
+#include <map>
+#include <vector>
+
+#include "Drawable.hpp"
 
 namespace hpl
 {
-class Points : public Plot
+struct SimplePoints {
+    SimplePoints(int n, double const* x, double const* y, bool ownsX, bool ownsY) : _n(n), _x(x), _y(y), _ownsX(ownsX), _ownsY(ownsY) {}
+    virtual ~SimplePoints() {
+        if (_ownsX) {
+            delete[] _x;
+        }
+        if (_ownsY) {
+            delete[] _y;
+        }
+    }
+
+    const int _n;
+    const double* _x, * _y;
+    const bool _ownsX, _ownsY;
+};
+
+class Points : public Drawable, private SimplePoints
 {
 
 public:
-    Points(int n, double const* x, double const* y);
-    virtual ~Points();
+    enum Symbol {
+        Dot,
+        Plus,
+        Cross,
+        Asterisk,
+        Diamond,
+        Circle,
+        CirclePlus,
+        CircleCross,
+        Triangle,
+        DownwardTriangle,
+        RightwardTriangle,
+        LeftwardTriangle,
+        Square,
+        Hourglass,
+        Bowtie,
+        VerticalBar,
+        HorizontalBar,
+        FilledDiamond,
+        FilledCircle,
+        FilledTriangle,
+        FilledDownwardTriangle,
+        FilledRightwardTriangle,
+        FilledLeftwardTriangle,
+        FilledSquare,
+        FilledHourglass,
+        FilledBowtie,
+        FilledVerticalBar,
+        FilledHorizontalBar
+    };
 
-    float* getX() const;
-    float* getY() const;
-
-    inline int getN() const {
-        return n;
+    Points(int n, double const* x, double const* y, const Limits& limits) :
+        Drawable(Type_Points, limits), SimplePoints(n, x, y, false, false), points(new SimplePoints(n, x, y, false, false)){}
+    virtual ~Points() {
+        delete points;
     }
 
-    virtual void init(GLuint lineprogram, GLuint);
-    virtual void destroy();
-    virtual void draw(float const* mvp);
+    virtual inline int n() const {
+        return points->_n;
+    }
 
-private:
-    int n;
-    float* points = nullptr;
-    double xmin, ymin, xmax, ymax;
+    virtual inline const double* x() const {
+        return points->_x;
+    }
 
-    GLuint pointBuffer;
-    GLuint program;
+    virtual inline const double* y() const {
+        return points->_y;
+    }
 
-    GLint pos, rect, color, pointmvp;
+    virtual inline void setColor(const Color& c) {
+        color = c;
+        changed.invoke(plotId);
+    }
+    virtual inline Color getColor() const {
+        return color;
+    }
+
+    inline void setSymbolSize(double thick) {
+        size = thick;
+        changed.invoke(plotId);
+    }
+    inline double getSymbolSize() const {
+        return size;
+    }
+
+    void setSymbol(Symbol s);
+    inline Symbol getSymbol() const {
+        return symbol;
+    }
+    //! @todo how to handle filling of symbols?
+    inline bool isFilledSymbol() const {
+        return symbol >= FilledDiamond;
+    }
+
+    virtual void recalculateData();
+
+protected:
+    std::vector<std::pair<double, double> > getSymbolVertices() const;
+    void setTypeForSymbol();
+
+    SimplePoints* points;
+    Color color = Color(0.0f, 0.0f, 0.0f);
+    double size = 1.0;
+    Symbol symbol = Dot;
+    bool limitsInCalc = false;
+
+    const unsigned int maxSymbolVertices = 64;
 
 };
 }

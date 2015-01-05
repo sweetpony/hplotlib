@@ -1,7 +1,8 @@
-#ifndef HPLOTLIB_FONT_HPP
-#define HPLOTLIB_FONT_HPP
+#ifndef HPLOTLIB_FONTTEXTURE_HPP
+#define HPLOTLIB_FONTTEXTURE_HPP
 
 #include "GL/glld.h"
+#include "FileBrowser.hpp"
 
 #include <string>
 
@@ -16,7 +17,7 @@ struct Header {
 };
 
 struct Char {
-	char id;
+    unsigned char id;
 	float x;
 	float y;
 	float width;
@@ -25,17 +26,23 @@ struct Char {
 	float yoffset;
 	float xadvance;
 };
-class Font
+class FontTexture
 {
-public:    
-	void init(std::string const& path);
+public:
+    FontTexture();
+
+    void read(std::string const& fontname);
+    void init(std::string const& fontname);
 	void destroy();    
     void bind(GLint position, GLuint textureUnit);
     
     inline Header const& header() const { return _header; }
-    inline Char const& ch(char id) const { return _chars[id]; }
+    inline Char const& ch(unsigned char id) const { return _chars[id]; }
 
-private:  
+private:
+    static FileBrowser fb;
+    static bool firstInstantiation;
+
     GLuint _glyphs;
     Header _header = {0};
     Char _chars[128];

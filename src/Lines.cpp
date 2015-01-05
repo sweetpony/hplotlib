@@ -1,89 +1,96 @@
-/*
- * Lines.cpp
- *
- *  Created on: Oct 15, 2014
- *      Author: Carsten Uphoff (uphoff@mytum.de)
- */
 #include "Lines.hpp"
 
-namespace hpl
+namespace hpl {
+void Lines::setThickness(double thick)
 {
-Lines::Lines(int n, double const* x, double const* y)
-    : n(n)
-{
-    xmin = hpl::min(n, x);
-    xmax = hpl::max(n, x);
-    ymin = hpl::min(n, y);
-    ymax = hpl::max(n, y);
+    thickness = thick;
+    changed.invoke(plotId);
+}
 
-    interleave = new float[2*n];
-    for (int i = 0; i < n; ++i) {
-        interleave[(i << 1)] = (x[i] - xmin) / (xmax - xmin);
-        interleave[(i << 1) + 1] = (y[i] - ymin) / (ymax - ymin);
+void Lines::setStyle(Style s)
+{
+    if (s != style) {
+        style = s;
+        recalculateData();
     }
 }
 
-Lines::~Lines()
+// Assume _seperate is always false for relevant cases. Can do this as long as _seperate is a hidden property only to distinguish coordinate system and real plots
+void Lines::recalculateData()
 {
-    delete[] interleave;
+    delete lines;
+    const double* thisx = _x,* thisy = _y;
+    if (xlog) {
+        thisx = log(_n, _x);
+    }
+    if (ylog) {
+        thisy = log(_n, _y);
+    }
+
+    switch(style) {
+        case Solid:
+            lines = new SimpleLines(_n, thisx, thisy, _separate, xlog, ylog);
+            type = (lines->_separate ? Type_Lines : Type_LineStrips);
+            break;
+        case Dashed:
+            //! @todo perhaps want to improve this such that beginning and end are connected by visible lines no matter if n % 2 is 0 or 1
+            lines = new SimpleLines(_n, thisx, thisy, !_separate, xlog, ylog);
+            type = (lines->_separate ? Type_Lines : Type_LineStrips);
+            break;
+        case Dotted:
+            calculateInterpolationDots(thisx, thisy);
+            type = Type_Points;
+            break;
+    }
+
+    changed.invoke(plotId);
 }
 
-float* Lines::getX() const
+void Lines::calculateInterpolationDots(const double* thisx, const double* thisy)
 {
-    float* x = new float[n];
+    unsigned int n = 300;
+    double dx = limits.xmax() - limits.xmin();
+    double dy = limits.ymax() - limits.ymin();
+
+    //! @todo Actually would need aspect ratio of current box, which is geometry & aspect ratio of window
+    double fx = (thisx[_n-1] - thisx[0]) / dx;
+    double fy = (max(_n, thisy) - min(_n, thisy)) / dy;
+    double f = std::min(fx, fy);
+    if (f < 1.0) {
+        n *= f;
+    }
+
+    dx /= n;
+    dy /= n;
+
+    double* x = new double[n];
+    double* y = new double[n];
+
+    unsigned int j = 0;
+    while (thisx[j+1] < limits.xmin()) {
+        ++j;
+    }
+
     for (unsigned int i = 0; i < n; i++) {
-        x[i] = interleave[i << 1] * geometry.width + geometry.leftOffset;
+        x[i] = (i == 0 ? limits.xmin() : x[i-1]) + dx;
+
+        while (x[i] > thisx[j+1]) {
+            j++;
+        }
+        if (j+1 < static_cast<unsigned int>(_n)) {
+            y[i] = interpolate(x[i], thisx[j], thisy[j], thisx[j+1], thisy[j+1]);
+        } else {
+            y[i] = interpolate(x[i], thisx[j], thisy[j], thisx[j], thisy[j]);
+        }
     }
-    return x;
-}
 
-float* Lines::getY() const
-{
-    float* y = new float[n];
-    for (unsigned int i = 0; i < n; i++) {
-        y[i] = interleave[(i << 1) + 1] * geometry.height + geometry.topOffset;
+    lines = new SimpleLines(n, x, y, true, true, true);
+
+    if (xlog) {
+        delete[] thisx;
     }
-    return y;
-}
-
-void Lines::init(GLuint lineprogram, GLuint)
-{
-    program = lineprogram;
-
-    glGenBuffers(1, &lineBuffer);
-    glBindBuffer(GL_ARRAY_BUFFER, lineBuffer);
-    glBufferData(GL_ARRAY_BUFFER, 2 * n * sizeof(float), interleave, GL_STATIC_DRAW);
-    glBindBuffer(GL_ARRAY_BUFFER, 0);
-
-    pos = glGetAttribLocation(program, "Position");
-    rect = glGetUniformLocation(program, "Rect");
-    color = glGetUniformLocation(program, "Color");
-    linemvp = glGetUniformLocation(program, "MVP");
-}
-
-void Lines::destroy()
-{
-    glDeleteBuffers(1, &lineBuffer);
-}
-
-void Lines::draw(float const* mvp)
-{
-    glUseProgram(program);
-    glBindBuffer(GL_ARRAY_BUFFER, lineBuffer);
-    glVertexAttribPointer(
-        pos,
-        2,
-        GL_FLOAT,
-        GL_FALSE,
-        0,
-        (GLvoid const*) 0
-    );
-    glEnableVertexAttribArray(pos);
-    glUniform4f(rect, geometry.leftOffset, geometry.topOffset, geometry.width, geometry.height);
-    glUniform3f(color, drawColor.r, drawColor.g, drawColor.b);
-    glUniformMatrix3fv(linemvp, 1, GL_FALSE, mvp);
-
-    glDrawArrays(GL_LINE_STRIP, 0, n);
-    glDisableVertexAttribArray(pos);
+    if (ylog) {
+        delete[] thisy;
+    }
 }
 }

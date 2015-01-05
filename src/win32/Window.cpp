@@ -7,7 +7,10 @@
 #include "../Window.hpp"
 #include "Win32Window.hpp"
 
-void* hpl::Window::run(void* self)
+#include <iostream>
+
+hpl::Window::Window()
 {
-	return runProto<Win32Window>(self);
+	base = new Win32Window(this);
+	pthread_create(&windowThread, nullptr, run, this);
 }
