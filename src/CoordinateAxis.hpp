@@ -95,7 +95,7 @@ private:
     std::vector<Drawable::ID> labelsIDs;
     Color coordLinesColor = Color(0.0f ,0.0f, 0.0f);
 
-    int flags = AxisFlags::PaintPrimary;
+    int flags = AxisFlags::PaintPrimary | AxisFlags::PaintLabelsPrimary;
     AxisFlags::TickMode tickMode = AxisFlags::FixedAmount;
 
     Registry<Drawable>& data;

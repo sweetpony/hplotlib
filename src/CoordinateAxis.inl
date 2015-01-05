@@ -345,7 +345,12 @@ template<AxisFlags::AxisOrientation orientation>
 std::string CoordinateAxis<orientation>::getLabelForTick(double value)
 {
     std::stringstream label;
-    label << std::scientific << std::setprecision(2) << value;
+    label << std::scientific << std::setprecision(2);
+    if (flags & AxisFlags::Logscale) {
+        label << pow(10.0, value);
+    } else {
+        label << value;
+    }
     return label.str();
 }
 
