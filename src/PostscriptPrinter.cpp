@@ -67,10 +67,12 @@ void PostscriptPrinter::update()
 void PostscriptPrinter::writeHeader()
 {
     out << "%!PS-Adobe-3.0" << std::endl;
-    out << "%%BoundingBox 0 0 " << (pixelX+2*pixelBoundary)*sizefactor << " " << (pixelY+2*pixelBoundary)*sizefactor << std::endl;
+    out << "%%BoundingBox 0 0 " << (pixelX+2*pixelBoundary) << " " << (pixelY+2*pixelBoundary) << std::endl;
     out << "%%PageOrientation: " << (orientation == Portrait ? "Portrait" : "Landscape") << std::endl;
-    out << "%%PageBoundingBox 0 0 " << (pixelX+2*pixelBoundary)*sizefactor << " " << (pixelY+2*pixelBoundary)*sizefactor << std::endl;
+    out << "%%PageBoundingBox 0 0 " << (pixelX+2*pixelBoundary) << " " << (pixelY+2*pixelBoundary) << std::endl;
     out << "%%EndPageSetup" << std::endl;
+    double s = 1.0 / sizefactor;
+    out << s << " " << s << " scale" << std::endl;
 }
 
 void PostscriptPrinter::writeFooter()
@@ -83,7 +85,7 @@ void PostscriptPrinter::setFont(std::string fontname, unsigned int size)
 {
     fontname[0] = toupper(fontname[0]);
     out << "/" << fontname << " findfont" << std::endl;
-    out << size << " scalefont" << std::endl;
+    out << size * sizefactor << " scalefont" << std::endl;
     out << "setfont" << std::endl;
 }
 

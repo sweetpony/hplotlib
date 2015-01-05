@@ -54,7 +54,7 @@ protected:
     void setCurrentZLimits(double zmin, double zmax);
     Pixel transformCoordinates(double x, double y) const;
 
-    unsigned int pixelX = 612, pixelY = 792, pixelBoundary = 20;
+    unsigned int pixelX = 595, pixelY = 842, pixelBoundary = 00;
     double sizefactor = 4.0;
     Orientation orientation = Landscape;
 

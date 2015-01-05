@@ -53,8 +53,8 @@ public:
     static void PrintFailedTests(const UnitTest& unit_test);
 };
 
-static string FormatCountableNoun(int count, const char* singular_form, const char* plural_form);
-static string FormatTestCount(int test_count);
-static string FormatTestCaseCount(int test_case_count);
+string FormatCountableNoun(int count, const char* singular_form, const char* plural_form);
+string FormatTestCount(int test_count);
+string FormatTestCaseCount(int test_case_count);
 
 #endif // CUSTOMTESTPRINTER_H
