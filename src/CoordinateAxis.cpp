@@ -96,11 +96,11 @@ void CoordinateAxis<AxisFlags::Vertical>::setUpTick(unsigned int indexOffset, do
 }
 
 template<>
-void CoordinateAxis<AxisFlags::Horizontal>::addLabelToTick(double value, bool primary)
+void CoordinateAxis<AxisFlags::Horizontal>::addLabelToTick(double pos, double value, bool primary)
 {
     double width = 0.8 * tickdelta;
     double height = 0.8 * otherOffset();
-    double x = value - 0.5 * width;
+    double x = pos - 0.5 * width;
     double y = primary ? (0.5 * otherOffset() - 0.5 * height) : (1.0);
 
     Text* label = new Text(getLabelForTick(value), x, y, width, height, axisLimits);
@@ -108,7 +108,7 @@ void CoordinateAxis<AxisFlags::Horizontal>::addLabelToTick(double value, bool pr
 }
 
 template<>
-void CoordinateAxis<AxisFlags::Vertical>::addLabelToTick(double value, bool primary)
+void CoordinateAxis<AxisFlags::Vertical>::addLabelToTick(double pos, double value, bool primary)
 {
 	double width = 0.8 * otherOffset();
     double height = 0.8 * tickdelta;
@@ -116,7 +116,7 @@ void CoordinateAxis<AxisFlags::Vertical>::addLabelToTick(double value, bool prim
     if (! primary) {
         x += 1.0;
     }
-    double y = value -  0.5 * height;
+    double y = pos -  0.5 * height;
 
     Text* label = new Text(getLabelForTick(value), x, y, width, height, axisLimits);
     addNewLabelToSystem(label);

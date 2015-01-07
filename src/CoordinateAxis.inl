@@ -326,9 +326,10 @@ void CoordinateAxis<orientation>::setUpTicksAndLabels(unsigned int indexOffset, 
     bool paintLabels = flags & (primary ? AxisFlags::PaintLabelsPrimary : AxisFlags::PaintLabelsSecondary);
 
     for (unsigned int i = 0, o = indexOffset+2+2*i; i < ticks.size(); o = indexOffset+2+2*(++i)) {
-        setUpTick(o, offset()+(ticks[i]-min())*spacing, mean, tickLength);
+        double pos = offset()+(ticks[i]-min())*spacing;
+        setUpTick(o, pos, mean, tickLength);
         if (paintLabels) {
-            addLabelToTick(offset()+(ticks[i]-min())*spacing, primary);
+            addLabelToTick(pos, ticks[i], primary);
         }
     }
 }
@@ -347,10 +348,10 @@ void CoordinateAxis<orientation>::setUpMinorAxis(unsigned int indexOffset, doubl
     }
 }
 template<>
-void CoordinateAxis<AxisFlags::Horizontal>::addLabelToTick(double value, bool primary);
+void CoordinateAxis<AxisFlags::Horizontal>::addLabelToTick(double pos, double value, bool primary);
 
 template<>
-void CoordinateAxis<AxisFlags::Vertical>::addLabelToTick(double value, bool primary);
+void CoordinateAxis<AxisFlags::Vertical>::addLabelToTick(double pos, double value, bool primary);
 
 template<AxisFlags::AxisOrientation orientation>
 std::string CoordinateAxis<orientation>::getLabelForTick(double value)

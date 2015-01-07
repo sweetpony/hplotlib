@@ -74,7 +74,7 @@ private:
     void setUpTicksAndLabels(unsigned int indexOffset, double mean, bool primary);
 
     void setUpTick(unsigned int indexOffset, double primaryValue, double secondaryMeanValue, double length);
-    void addLabelToTick(double value, bool primary);
+    void addLabelToTick(double pos, double value, bool primary);
     std::string getLabelForTick(double value);
     void addNewLabelToSystem(Text* label);
 

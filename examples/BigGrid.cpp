@@ -1,10 +1,3 @@
-/*
- * lines.cpp
- *
- *  Created on: Oct 22, 2014
- *      Author: Carsten Uphoff (uphoff@mytum.de)
- */
-
 #include <cmath>
 
 #include <Canvas.hpp>

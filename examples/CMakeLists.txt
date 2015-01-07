@@ -17,3 +17,6 @@ target_link_libraries (SimpleLayout hplotlib)
 add_executable (BigGrid BigGrid.cpp)
 target_link_libraries (BigGrid hplotlib)
 
+add_executable (ManualSettings ManualSettings.cpp)
+target_link_libraries (ManualSettings hplotlib)
+
