@@ -14,3 +14,6 @@ target_link_libraries (ContourPlot hplotlib)
 add_executable (SimpleLayout SimpleLayout.cpp)
 target_link_libraries (SimpleLayout hplotlib)
 
+add_executable (BigGrid BigGrid.cpp)
+target_link_libraries (BigGrid hplotlib)
+
