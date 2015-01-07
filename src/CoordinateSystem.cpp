@@ -49,7 +49,6 @@ void CoordinateSystem::setGeometry(Geometry geom)
 
 void CoordinateSystem::setLimits(double xmin, double xmax, double ymin, double ymax)
 {
-    needLimitUpdate = false;
     originalLimits.setLimits(xmin, xmax, ymin, ymax);
     changed.invoke(Drawable::ID());
 }
@@ -112,7 +111,7 @@ void CoordinateSystem::updateLogOnPlots()
 
 void CoordinateSystem::setLimitsFromOriginal()
 {
-    if (xlog && !needLimitUpdate) {
+    if (xlog && originalPosLimits.xValid()) {
         double mi = originalLimits.xmin(), ma = originalLimits.xmax();
         if (mi <= 0.0) {
             mi = originalPosLimits.xmin();
@@ -125,7 +124,7 @@ void CoordinateSystem::setLimitsFromOriginal()
         limits.setXLimits(originalLimits);
     }
 
-    if (ylog && !needLimitUpdate) {
+    if (ylog && originalPosLimits.yValid()) {
         double mi = originalLimits.ymin(), ma = originalLimits.ymax();
         if (mi <= 0.0) {
             mi = originalPosLimits.ymin();

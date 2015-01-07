@@ -85,8 +85,6 @@ private:
 	Geometry geometry;
     bool xlog = false, ylog = false;
 
-    bool needLimitUpdate = true;
-
     Limits originalLimits, originalPosLimits, limits;
 
     CoordinateAxis<AxisFlags::Horizontal> xAxis;
@@ -96,9 +94,14 @@ private:
 template<typename T>
 T& CoordinateSystem::addPlot(int n, double const* x, double const* y, double copyData)
 {
-    if (needLimitUpdate) {
+    if (! originalPosLimits.valid()) {
         originalPosLimits.setLimits(minPos(n, x), maxPos(n, x), minPos(n, y), maxPos(n, y));
-        setLimits(hpl::min(n, x), hpl::max(n, x), hpl::min(n, y), hpl::max(n, y));
+    }
+    if (! originalLimits.xValid()) {
+        originalLimits.setXLimits(hpl::min(n, x), hpl::max(n, x));
+    }
+    if (! originalLimits.yValid()) {
+        originalLimits.setYLimits(hpl::min(n, y), hpl::max(n, y));
     }
 
     if (copyData) {
@@ -114,9 +117,14 @@ T& CoordinateSystem::addPlot(int n, double const* x, double const* y, double cop
 template<typename T>
 T& CoordinateSystem::addPlot(int n, double const* x, double const* y, double const* z, double copyData)
 {
-    if (needLimitUpdate) {
+    if (! originalPosLimits.valid()) {
         originalPosLimits.setLimits(minPos(n, x), maxPos(n, x), minPos(n, y), maxPos(n, y));
-        setLimits(hpl::min(n, x), hpl::max(n, x), hpl::min(n, y), hpl::max(n, y));
+    }
+    if (! originalLimits.xValid()) {
+        originalLimits.setXLimits(hpl::min(n, x), hpl::max(n, x));
+    }
+    if (! originalLimits.yValid()) {
+        originalLimits.setYLimits(hpl::min(n, y), hpl::max(n, y));
     }
 
     if (copyData) {

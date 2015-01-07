@@ -39,6 +39,7 @@ public:
     }
 
     void setLimits(double xmin, double xmax, double ymin, double ymax);
+    void setLimits(double min, double max);
     void setAxisProperties(int flags);
     void setTickMode(AxisFlags::TickMode mode);
     void setMajorTicks(const std::vector<double>& ticks);

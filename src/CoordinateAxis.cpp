@@ -4,6 +4,18 @@
 namespace hpl {
 
 template<>
+void CoordinateAxis<AxisFlags::Horizontal>::setLimits(double min, double max)
+{
+    originalLimits.setXLimits(min, max);
+}
+
+template<>
+void CoordinateAxis<AxisFlags::Vertical>::setLimits(double min, double max)
+{
+    originalLimits.setYLimits(min, max);
+}
+
+template<>
 double CoordinateAxis<AxisFlags::Horizontal>::min() {
     return limits.xmin();
 }

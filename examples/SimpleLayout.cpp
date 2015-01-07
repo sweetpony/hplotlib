@@ -46,8 +46,10 @@ int main()
     hpl::CoordinateSystem& cs1 = canvas.addCoordinateSystem();
     cs1.setColor(hpl::Color(0.6f, 0.6f, 0.6f));
     cs1.setAxisProperties(hpl::AxisFlags::PaintPrimary | hpl::AxisFlags::PaintSecondary | hpl::AxisFlags::PaintMinorTicks | hpl::AxisFlags::PaintLabelsPrimary | hpl::AxisFlags::PaintLabelsSecondary);
-    cs1.getXAxis().setMajorTicks({0.0, 0.25, 0.5, 0.75});
-    cs1.getXAxis().setMinorTicks({0.125, 0.375, 0.615, 0.875});
+    cs1.getXAxis().setTickMode(hpl::AxisFlags::Fixed);
+    cs1.getXAxis().setLimits(-0.3, 1.3);
+    cs1.getXAxis().setMajorTicks({0.0, 0.25, 0.5, 0.75, 1.0, 1.25});
+    cs1.getXAxis().setMinorTicks({0.125, 0.375, 0.615, 0.875, 1.125});
     hpl::Lines& plot1 = cs1.addPlot<hpl::Lines>(NUM_POINTS, x, y, true);
     plot1.setColor(hpl::Color(1.0f, 0.0f, 0.0f));
     plot1.setThickness(5.0);

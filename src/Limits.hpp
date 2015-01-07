@@ -60,9 +60,14 @@ public:
         return _ymax;
     }
 
+    inline bool xValid() const {
+        return _xmin != std::numeric_limits<double>::min() && _xmax != std::numeric_limits<double>::max();
+    }
+    inline bool yValid() const {
+        return _ymin != std::numeric_limits<double>::min() && _ymax != std::numeric_limits<double>::max();
+    }
     inline bool valid() const {
-        return _xmin != std::numeric_limits<double>::min() && _xmax != std::numeric_limits<double>::max()
-            && _ymin != std::numeric_limits<double>::min() && _ymax != std::numeric_limits<double>::max();
+        return xValid() && yValid();
     }
 
     MultiDelegate<> changed;
