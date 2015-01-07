@@ -178,6 +178,7 @@ void CoordinateAxis<orientation>::calculateDataTicks()
         calculateSmartDataPointsForTicks(flags & AxisFlags::Logscale);
         break;
     case AxisFlags::Fixed:
+        setTickDeltaFromTicks();
         break;
     }
 }
@@ -246,6 +247,16 @@ void CoordinateAxis<orientation>::calculateDataPointsInside(double divisor)
     while (val <= max()) {
         ticks.push_back(val);
         val += divisor;
+    }
+}
+
+template<AxisFlags::AxisOrientation orientation>
+void CoordinateAxis<orientation>::setTickDeltaFromTicks()
+{
+    if (ticks.size() > 1) {
+        tickdelta = ticks[1] - ticks[0];
+    } else {
+        tickdelta = max() - min();
     }
 }
 

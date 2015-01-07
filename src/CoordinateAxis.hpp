@@ -62,6 +62,7 @@ private:
     void calculateSimpleDataPointsForTicks();
     void calculateSmartDataPointsForTicks(bool log);
     void calculateDataPointsInside(double divisor);
+    void setTickDeltaFromTicks();
 
     void calculateMinorDataTicks();
     bool canDoNiceLogMinorTicks() const;

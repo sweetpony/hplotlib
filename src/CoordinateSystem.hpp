@@ -67,6 +67,7 @@ public:
     inline void setId(ID id) { csId = id; }
 	
 private:
+    void setLimitsFromAddedPlotIfNeeded(int n, double const* x, double const* y);
     Drawable::ID addNewPlot(Drawable* plot);
     void removePlot(Drawable::ID id);
 
@@ -94,15 +95,7 @@ private:
 template<typename T>
 T& CoordinateSystem::addPlot(int n, double const* x, double const* y, double copyData)
 {
-    if (! originalPosLimits.valid()) {
-        originalPosLimits.setLimits(minPos(n, x), maxPos(n, x), minPos(n, y), maxPos(n, y));
-    }
-    if (! originalLimits.xValid()) {
-        originalLimits.setXLimits(hpl::min(n, x), hpl::max(n, x));
-    }
-    if (! originalLimits.yValid()) {
-        originalLimits.setYLimits(hpl::min(n, y), hpl::max(n, y));
-    }
+    setLimitsFromAddedPlotIfNeeded(n, x, y);
 
     if (copyData) {
         x = this->copyData(n, x);
@@ -117,15 +110,7 @@ T& CoordinateSystem::addPlot(int n, double const* x, double const* y, double cop
 template<typename T>
 T& CoordinateSystem::addPlot(int n, double const* x, double const* y, double const* z, double copyData)
 {
-    if (! originalPosLimits.valid()) {
-        originalPosLimits.setLimits(minPos(n, x), maxPos(n, x), minPos(n, y), maxPos(n, y));
-    }
-    if (! originalLimits.xValid()) {
-        originalLimits.setXLimits(hpl::min(n, x), hpl::max(n, x));
-    }
-    if (! originalLimits.yValid()) {
-        originalLimits.setYLimits(hpl::min(n, y), hpl::max(n, y));
-    }
+    setLimitsFromAddedPlotIfNeeded(n, x, y);
 
     if (copyData) {
         x = this->copyData(n, x);

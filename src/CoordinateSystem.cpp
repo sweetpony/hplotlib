@@ -53,6 +53,19 @@ void CoordinateSystem::setLimits(double xmin, double xmax, double ymin, double y
     changed.invoke(Drawable::ID());
 }
 
+void CoordinateSystem::setLimitsFromAddedPlotIfNeeded(int n, double const* x, double const* y)
+{
+    if (! originalPosLimits.valid()) {
+        originalPosLimits.setLimits(minPos(n, x), maxPos(n, x), minPos(n, y), maxPos(n, y));
+    }
+    if (! originalLimits.xValid()) {
+        originalLimits.setXLimits(hpl::min(n, x), hpl::max(n, x));
+    }
+    if (! originalLimits.yValid()) {
+        originalLimits.setYLimits(hpl::min(n, y), hpl::max(n, y));
+    }
+}
+
 Drawable::ID CoordinateSystem::addNewPlot(Drawable* plot)
 {
     Drawable::ID id = data.add(plot);
