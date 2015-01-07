@@ -20,11 +20,10 @@
 
 int main()
 {
-    double x[NUM_POINTS];
-    double y[NUM_POINTS];
-    double z[NUM_POINTS];
-    double m[NUM_POINTS * NUM_POINTS];
-    double n[NUM_POINTS];
+    double* x = new double[NUM_POINTS];
+    double* y = new double[NUM_POINTS];
+    double* z = new double[NUM_POINTS];
+    double* m = new double[NUM_POINTS * NUM_POINTS];
 
     for (int i = 0; i < NUM_POINTS; ++i) {
         x[i] = i / static_cast<double>(NUM_POINTS);
@@ -49,19 +48,19 @@ int main()
     cs1.setAxisProperties(hpl::AxisFlags::PaintPrimary | hpl::AxisFlags::PaintSecondary | hpl::AxisFlags::PaintMinorTicks | hpl::AxisFlags::PaintLabelsPrimary | hpl::AxisFlags::PaintLabelsSecondary);
     cs1.getXAxis().setMajorTicks({0.0, 0.25, 0.5, 0.75});
     cs1.getXAxis().setMinorTicks({0.125, 0.375, 0.615, 0.875});
-    hpl::Lines& plot1 = cs1.addPlot<hpl::Lines>(NUM_POINTS, x, y);
+    hpl::Lines& plot1 = cs1.addPlot<hpl::Lines>(NUM_POINTS, x, y, true);
     plot1.setColor(hpl::Color(1.0f, 0.0f, 0.0f));
     plot1.setThickness(5.0);
 
     hpl::CoordinateSystem& cs2 = canvas.addCoordinateSystem();
-    hpl::Contour& plot2 = cs2.addPlot<hpl::Contour>(NUM_POINTS, x, x, m);
+    hpl::Contour& plot2 = cs2.addPlot<hpl::Contour>(NUM_POINTS, x, x, m, true);
 
     hpl::CoordinateSystem& cs3 = canvas.addCoordinateSystem();
     cs3.setAxisProperties(hpl::AxisFlags::PaintPrimary | hpl::AxisFlags::PaintMinorTicks | hpl::AxisFlags::PaintLabelsPrimary);
     cs3.setTickMode(hpl::AxisFlags::Smart);
-    hpl::Points& plot3 = cs3.addPlot<hpl::Points>(NUM_POINTS, x, z);
+    hpl::Points& plot3 = cs3.addPlot<hpl::Points>(NUM_POINTS, x, z, true);
     plot3.setColor(hpl::Color(0.0f, 0.0f, 1.0f));
-    hpl::Lines& plot4 = cs3.addPlot<hpl::Lines>(NUM_POINTS, x, y);
+    hpl::Lines& plot4 = cs3.addPlot<hpl::Lines>(NUM_POINTS, x, y, true);
     plot4.setColor(hpl::Color(0.0f, 0.0f, 0.0f));
 
     canvas.addCoordinateSystemToLayout(cs1.id(), layout.id());
@@ -71,6 +70,11 @@ int main()
     hpl::PostscriptPrinter ps(hpl::PlotPrinter::Portrait);
     canvas.connectToPlotter(&ps);
     ps.saveToFile("simplelayout");
+
+    delete[] x;
+    delete[] y;
+    delete[] z;
+    delete[] m;
 
     canvas.synchronise();
     plotter.wait();

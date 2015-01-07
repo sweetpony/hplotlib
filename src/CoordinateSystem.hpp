@@ -11,6 +11,7 @@
 #include <map>
 #include <vector>
 #include <cmath>
+#include <algorithm>
 
 #include "Drawable.hpp"
 #include "Statistics.hpp"
@@ -54,9 +55,9 @@ public:
     void setGeometry(Geometry geom);
     
     template<typename T>
-    T& addPlot(int n, double const* x, double const* y);
+    T& addPlot(int n, double const* x, double const* y, double copyData = false);
     template<typename T>
-    T& addPlot(int n, double const* x, double const* y, double const* z);
+    T& addPlot(int n, double const* x, double const* y, double const* z, double copyData = false);
 
     void setLimits(double xmin, double xmax, double ymin, double ymax);
 
@@ -75,6 +76,8 @@ private:
 
     void setLimitsFromOriginal();
 
+    double* copyData(int n, double const* dat);
+
     Registry<Drawable>& data;
     std::map<Drawable::ID, unsigned int>& dataRevisions;
     std::vector<Drawable::ID> myPlots;
@@ -91,11 +94,16 @@ private:
 };
 
 template<typename T>
-T& CoordinateSystem::addPlot(int n, double const* x, double const* y)
+T& CoordinateSystem::addPlot(int n, double const* x, double const* y, double copyData)
 {
     if (needLimitUpdate) {
         originalPosLimits.setLimits(minPos(n, x), maxPos(n, x), minPos(n, y), maxPos(n, y));
         setLimits(hpl::min(n, x), hpl::max(n, x), hpl::min(n, y), hpl::max(n, y));
+    }
+
+    if (copyData) {
+        x = this->copyData(n, x);
+        y = this->copyData(n, y);
     }
 
     T* plot = new T(n, x, y, limits);
@@ -104,11 +112,17 @@ T& CoordinateSystem::addPlot(int n, double const* x, double const* y)
 }
 
 template<typename T>
-T& CoordinateSystem::addPlot(int n, double const* x, double const* y, double const* z)
+T& CoordinateSystem::addPlot(int n, double const* x, double const* y, double const* z, double copyData)
 {
     if (needLimitUpdate) {
         originalPosLimits.setLimits(minPos(n, x), maxPos(n, x), minPos(n, y), maxPos(n, y));
         setLimits(hpl::min(n, x), hpl::max(n, x), hpl::min(n, y), hpl::max(n, y));
+    }
+
+    if (copyData) {
+        x = this->copyData(n, x);
+        y = this->copyData(n, y);
+        z = this->copyData(n*n, z);
     }
 
     T* plot = new T(n, x, y, z, limits);

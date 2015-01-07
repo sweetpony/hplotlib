@@ -138,4 +138,11 @@ void CoordinateSystem::setLimitsFromOriginal()
         limits.setYLimits(originalLimits);
     }
 }
+
+double* CoordinateSystem::copyData(int n, double const* dat)
+{
+    double* ret = new double[n];
+    std::copy(dat, dat+n, ret);
+    return ret;
+}
 }

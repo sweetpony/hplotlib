@@ -14,12 +14,18 @@ class Contour : public Drawable
 {
 
 public:
-    Contour(int n, double const* x, double const* y, double const* z, const Limits& limits) :
-        Drawable(Type_Texture, limits), n(n), x(x), y(y), z(z) {
+    Contour(int n, double const* x, double const* y, double const* z, const Limits& limits, bool ownsData = false) :
+        Drawable(Type_Texture, limits), n(n), x(x), y(y), z(z), ownsData(ownsData) {
         zmin = hpl::min(n*n, z);
         zmax = hpl::max(n*n, z);
     }
-    virtual ~Contour() {}
+    virtual ~Contour() {
+        if (ownsData) {
+            delete[] x;
+            delete[] y;
+            delete[] z;
+        }
+    }
 
     inline virtual void setLimits(double zmin, double zmax) {
         this->zmin = zmin;
@@ -52,6 +58,7 @@ public:
 
 protected:
     double zmin, zmax;
+    bool ownsData;
     ColorTable colorTable = ColorTable::getPredefinedTable<ColorTable::RainbowBlack>(256);
 };
 }

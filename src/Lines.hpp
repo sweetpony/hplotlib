@@ -35,8 +35,8 @@ public:
         Dotted
     };
 
-    Lines(int n, double const* x, double const* y, const Limits& limits, bool separate = false) :
-        Drawable((separate ? Type_Lines : Type_LineStrips), limits), SimpleLines(n, x, y, separate, false, false), lines(new SimpleLines(n, x, y, separate, false, false)) {}
+    Lines(int n, double const* x, double const* y, const Limits& limits, bool separate = false, bool ownsData = false) :
+        Drawable((separate ? Type_Lines : Type_LineStrips), limits), SimpleLines(n, x, y, separate, ownsData, ownsData), lines(new SimpleLines(n, x, y, separate, false, false)) {}
     virtual ~Lines() {
         delete lines;
     }

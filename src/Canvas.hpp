@@ -45,21 +45,21 @@ public:
     }
 
     template<typename T>
-    static void plotAndWait(int n, double const* x, double const* y) {
+    static void plotAndWait(int n, double const* x, double const* y, double copyData = false) {
         Canvas canvas;
         OGLPlotter plotter;
         CoordinateSystem& cosy = canvas.setUpEasySystem(&plotter);
-        cosy.addPlot<T>(n, x, y);
+        cosy.addPlot<T>(n, x, y, copyData);
         canvas.synchronise();
         plotter.wait();
     }
 
     template<typename T>
-    static void plotAndWait(int n, double const* x, double const* y, double const* z) {
+    static void plotAndWait(int n, double const* x, double const* y, double const* z, double copyData = false) {
         Canvas canvas;
         OGLPlotter plotter;
         CoordinateSystem& cosy = canvas.setUpEasySystem(&plotter);
-        cosy.addPlot<T>(n, x, y, z);
+        cosy.addPlot<T>(n, x, y, z, copyData);
         canvas.synchronise();
         plotter.wait();
     }

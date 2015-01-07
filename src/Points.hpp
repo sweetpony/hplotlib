@@ -59,8 +59,8 @@ public:
         FilledHorizontalBar
     };
 
-    Points(int n, double const* x, double const* y, const Limits& limits) :
-        Drawable(Type_Points, limits), SimplePoints(n, x, y, false, false), points(new SimplePoints(n, x, y, false, false)){}
+    Points(int n, double const* x, double const* y, const Limits& limits, bool ownsData = false) :
+        Drawable(Type_Points, limits), SimplePoints(n, x, y, ownsData, ownsData), points(new SimplePoints(n, x, y, false, false)){}
     virtual ~Points() {
         delete points;
     }

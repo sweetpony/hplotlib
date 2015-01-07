@@ -137,7 +137,7 @@ void OGLPlotter::syn(Text const& ref, OGLText& target)
 	float scale = (xscale < yscale) ? xscale : yscale;
 	
 	float xadv = 0.0f;
-	for (int c = 0; c < ref.text.length(); ++c) {
+    for (unsigned int c = 0; c < ref.text.length(); ++c) {
 		Char ch = fnt->ch(ref.text[c]);
 		
 		float x = ref.x + 0.5 * (ref.width - scale * textWidth) + scale * (xadv + ch.xoffset);
