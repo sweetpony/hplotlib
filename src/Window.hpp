@@ -12,26 +12,24 @@
 #include <algorithm>
 
 #include "Sleep.hpp"
-#include "WindowBase.hpp"
 
 namespace hpl
-{	
+{
+	struct WindowPlatformStuff;
 	class Window {
-		friend class Win32Window;
-		friend class X11Window;
+		friend WindowPlatformStuff;
 	public:
         void wait() {
             needsRepaint = true;
 			pthread_join(windowThread, nullptr);			
 		}
 
-        virtual void update() { needsRepaint = true; }
-        
-		virtual void synchronise();
+        virtual void update() { needsRepaint = true; }        
+		virtual void synchronise();		
 
 	protected:
-		Window();
-		~Window() { delete base; }
+		Window(std::string const& title);
+		~Window();
 
 		virtual void init() = 0;
 		virtual void destroy() = 0;
@@ -49,19 +47,23 @@ namespace hpl
 		pthread_mutex_t mutex = PTHREAD_MUTEX_INITIALIZER;
 		pthread_cond_t synCond = PTHREAD_COND_INITIALIZER;
 		
-	private:	
+	private:
+		bool show();
+		void poll();
+		void repaint();
+	
 		static double constexpr RefreshRate = 60.0;
 		
-		static void* run(void* winBase);
+		static void* run(void* self);
 		bool loadOpenGL();
-		void close() { destroy(); isOpen = false; }
 	
         pthread_t windowThread;
-		bool isOpen = true;
 		double lastx = 0.0;
 		double lasty = 0.0;
 		
-		WindowBase* base = nullptr;
+		WindowPlatformStuff* platform = nullptr;
+		std::string title;
+		bool isOpen = true;
 	};
 }
 

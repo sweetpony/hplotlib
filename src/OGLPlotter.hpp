@@ -11,7 +11,7 @@ class OGLPlotter : public AbstractPlotter, public Window
 {
 
 public:
-    OGLPlotter();
+    OGLPlotter(std::string const& title = "Canvas");
     virtual ~OGLPlotter();
 
     virtual inline void update() {

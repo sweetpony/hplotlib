@@ -9,7 +9,9 @@
 #include "GL/glld.h"
 #include <iostream>
 
-bool hpl::Window::loadOpenGL()
+namespace hpl
+{
+bool Window::loadOpenGL()
 {
 	bool success = (ogl_LoadFunctions() != ogl_LOAD_FAILED);
 	if (!success) {
@@ -18,7 +20,7 @@ bool hpl::Window::loadOpenGL()
 	return success;
 }
 
-void hpl::Window::synchronise()
+void Window::synchronise()
 {
 	pthread_mutex_lock(&mutex);
 	needsSynchronise = true;
@@ -26,14 +28,14 @@ void hpl::Window::synchronise()
 	pthread_mutex_unlock(&mutex);
 }
 
-void* hpl::Window::run(void* self)
+void* Window::run(void* self)
 {
 	Window* win = static_cast<Window*>(self);
-	win->base->show();
+	win->show();
 
 	auto last = std::chrono::steady_clock::now();
 	while (win->isOpen) {
-		win->base->poll();
+		win->poll();
 		
 		pthread_mutex_lock(&win->mutex);
 		if (win->needsSynchronise) {
@@ -43,7 +45,7 @@ void* hpl::Window::run(void* self)
 		}
 		pthread_mutex_unlock(&win->mutex);
 		if (win->needsRepaint) {
-			win->base->update();
+			win->repaint();
 			win->needsRepaint = false;
 		}
 
@@ -53,4 +55,5 @@ void* hpl::Window::run(void* self)
 	}
 
 	return nullptr;
+}
 }

@@ -183,7 +183,7 @@ void OGLPlotter::syn(Text const& ref, OGLText& target)
 	delete[] text;
 }
 
-OGLPlotter::OGLPlotter() : AbstractPlotter(), Window()
+OGLPlotter::OGLPlotter(std::string const& title) : AbstractPlotter(), Window(title)
 {
 }
 
