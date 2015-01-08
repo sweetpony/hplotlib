@@ -25,7 +25,7 @@ int main()
     hpl::GridLayout& layout = canvas.addLayout<hpl::GridLayout>();
 
     hpl::CoordinateSystem& cs = canvas.addCoordinateSystem();
-    cs.setColor(hpl::Color(0.6f, 0.6f, 0.6f));
+    cs.setColor(hpl::Color(0.0f, 0.0f, 1.0f));
     cs.setAxisProperties(hpl::AxisFlags::PaintPrimary | hpl::AxisFlags::PaintSecondary | hpl::AxisFlags::PaintMinorTicks | hpl::AxisFlags::PaintLabelsPrimary | hpl::AxisFlags::PaintLabelsSecondary);
     cs.getXAxis().setTickMode(hpl::AxisFlags::Fixed);
     cs.getXAxis().setLimits(-0.3, 1.3);

@@ -4,6 +4,8 @@
 #include <string>
 #include <map>
 
+#include <iostream>
+
 #include "Drawable.hpp"
 #include "Lines.hpp"
 #include "Points.hpp"
@@ -59,7 +61,6 @@ protected:
     Orientation orientation = Landscape;
 
     double currentXMin = 0.0, currentXMax = 1.0, currentYMin = 0.0, currentYMax = 1.0, currentZMin = 0.0, currentZMax = 1.0;
-private:
     Geometry currentGeometry;
 
 };
