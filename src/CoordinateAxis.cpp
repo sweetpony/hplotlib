@@ -98,7 +98,7 @@ void CoordinateAxis<AxisFlags::Vertical>::setUpTick(unsigned int indexOffset, do
 template<>
 void CoordinateAxis<AxisFlags::Horizontal>::addLabelToTick(double pos, double value, bool primary)
 {
-    float spacing = (1.0 - offset()) / (max() - min());    
+    float spacing = (1.0 - offset()) / (max() - min());
     double width = 0.9 * tickdelta * spacing;
     double height = 0.9 * otherOffset();
     double x = pos - 0.5 * width;

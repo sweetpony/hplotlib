@@ -35,15 +35,15 @@ int main()
             m[i*NUM_POINTS+j] = sin(10.0 * x[i]) * cos(20.0 * x[j]);
         }
     }
-    hpl::Canvas canvas;
+    hpl::Canvas* canvas = new hpl::Canvas;
 
-    hpl::OGLPlotter plotter;
-    canvas.connectToPlotter(&plotter);
-    plotter.setBackgroundColor(hpl::Color(0.9f, 0.9f, 0.9f));
+    hpl::OGLPlotter* plotter = new hpl::OGLPlotter;
+    canvas->connectToPlotter(plotter);
+    plotter->setBackgroundColor(hpl::Color(0.9f, 0.9f, 0.9f));
 
-    hpl::GridLayout& layout = canvas.addLayout<hpl::GridLayout>();
+    hpl::GridLayout& layout = canvas->addLayout<hpl::GridLayout>();
 
-    hpl::CoordinateSystem& cs1 = canvas.addCoordinateSystem();
+    hpl::CoordinateSystem& cs1 = canvas->addCoordinateSystem();
     cs1.setColor(hpl::Color(0.6f, 0.6f, 0.6f));
     cs1.setAxisProperties(hpl::AxisFlags::PaintPrimary | hpl::AxisFlags::PaintSecondary | hpl::AxisFlags::PaintMinorTicks | hpl::AxisFlags::PaintLabelsPrimary | hpl::AxisFlags::PaintLabelsSecondary);
     cs1.getXAxis().setTickMode(hpl::AxisFlags::Fixed);
@@ -54,10 +54,10 @@ int main()
     plot1.setColor(hpl::Color(1.0f, 0.0f, 0.0f));
     plot1.setThickness(5.0);
 
-    hpl::CoordinateSystem& cs2 = canvas.addCoordinateSystem();
+    hpl::CoordinateSystem& cs2 = canvas->addCoordinateSystem();
     hpl::Contour& plot2 = cs2.addPlot<hpl::Contour>(NUM_POINTS, x, x, m, true);
 
-    hpl::CoordinateSystem& cs3 = canvas.addCoordinateSystem();
+    hpl::CoordinateSystem& cs3 = canvas->addCoordinateSystem();
     cs3.setAxisProperties(hpl::AxisFlags::PaintPrimary | hpl::AxisFlags::PaintMinorTicks | hpl::AxisFlags::PaintLabelsPrimary);
     cs3.setTickMode(hpl::AxisFlags::Smart);
     hpl::Points& plot3 = cs3.addPlot<hpl::Points>(NUM_POINTS, x, z, true);
@@ -65,12 +65,12 @@ int main()
     hpl::Lines& plot4 = cs3.addPlot<hpl::Lines>(NUM_POINTS, x, y, true);
     plot4.setColor(hpl::Color(0.0f, 0.0f, 0.0f));
 
-    canvas.addCoordinateSystemToLayout(cs1.id(), layout.id());
-    canvas.addCoordinateSystemToLayout(cs2.id(), layout.id());
-    canvas.addCoordinateSystemToLayout(cs3.id(), layout.id());
+    canvas->addCoordinateSystemToLayout(cs1.id(), layout.id());
+    canvas->addCoordinateSystemToLayout(cs2.id(), layout.id());
+    canvas->addCoordinateSystemToLayout(cs3.id(), layout.id());
 
     hpl::PostscriptPrinter ps(hpl::PlotPrinter::Portrait);
-    canvas.connectToPlotter(&ps);
+    canvas->connectToPlotter(&ps);
     ps.saveToFile("simplelayout");
 
     delete[] x;
@@ -78,8 +78,11 @@ int main()
     delete[] z;
     delete[] m;
 
-    canvas.synchronise();
-    plotter.wait();
+    canvas->synchronise();
+    plotter->wait();
+
+    delete canvas;
+    delete plotter;
 
     return 0;
 }

@@ -121,7 +121,8 @@ void OGLPlotter::del(OGLText& target)
 
 void OGLPlotter::syn(Text const& ref, OGLText& target)
 {	
-	FontTexture* fnt = &font;
+    FontTexture* fnt = fontLoader->getFont(ref.getFontName());
+    fnt->init();
 
 	Header header = fnt->header();
 	target.n = 4 * ref.text.length(); // 4 Vertices per char
@@ -133,7 +134,7 @@ void OGLPlotter::syn(Text const& ref, OGLText& target)
 		textWidth += fnt->ch(*it).xadvance;
 	}
 	float xscale = ref.width / textWidth;
-	float yscale = ref.height / textHeight;
+    float yscale = ref.height / textHeight;
 	float scale = (xscale < yscale) ? xscale : yscale;
 	
 	float xadv = 0.0f;
@@ -189,6 +190,7 @@ OGLPlotter::OGLPlotter(std::string const& title) : AbstractPlotter(), Window(tit
 
 OGLPlotter::~OGLPlotter()
 {
+    fontLoader->deleteTextures();
 }
 
 void OGLPlotter::init()
@@ -197,8 +199,6 @@ void OGLPlotter::init()
     glEnable(GL_MULTISAMPLE);
     glEnable(GL_BLEND);
     glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
-
-    font.init("inconsolata");
 
     programsDatabase.init();
 }
@@ -218,7 +218,6 @@ void OGLPlotter::destroy()
     }
 
     programsDatabase.destroy();
-    font.destroy();
 }
 
 void OGLPlotter::processDrawables()
@@ -258,7 +257,7 @@ void OGLPlotter::processDrawables()
 				}
 
 			} else if (r->second != ar->second) {
-				Drawable const* da = &plots->lookup(r->first);
+                Drawable const* da = &plots->lookup(r->first);
 				Lines const* al = dynamic_cast<Lines const*>(da);
 				if (al != nullptr) {
 					OGLLines& l = lineCollection[r->first];
@@ -283,7 +282,7 @@ void OGLPlotter::processDrawables()
 								del(t);
 								syn(*at, t);
 							}
-						}
+                        }
 					}
 				}
 				r->second = ar->second;

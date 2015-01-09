@@ -59,20 +59,19 @@ void PostscriptPrinter::update()
         Text* t = dynamic_cast<Text*>(i->second);
         if (t != 0) {
             //! @todo refactor this, this is basically taken from OGLPlotter -> Pull into Text probably
-            FontTexture fnt;
-            fnt.read(t->getFontName());
+            FontTexture* fnt = fontLoader->getFont(t->getFontName());
 
-            Header header = fnt.header();
+            Header header = fnt->header();
             float textWidth = 0.0f;
             float textHeight = header.lineHeight;
             for (auto it = t->text.cbegin(); it != t->text.cend(); ++it) {
-                textWidth += fnt.ch(*it).xadvance;
+                textWidth += fnt->ch(*it).xadvance;
             }
             float xscale = t->width / textWidth;
             float yscale = t->height / textHeight;
             float scale = (xscale < yscale) ? xscale : yscale;
 
-            Char ch = fnt.ch(t->text[0]);
+            Char ch = fnt->ch(t->text[0]);
 
             float x = t->x + 0.5 * (t->width - scale * textWidth) + scale * ch.xoffset;
             float y = t->y + 0.5 * (t->height - scale * textHeight) + scale * (textHeight - ch.yoffset - ch.height);
