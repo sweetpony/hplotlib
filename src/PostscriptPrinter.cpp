@@ -194,7 +194,7 @@ void PostscriptPrinter::writeText(double x, double y, std::string const& text)
 void PostscriptPrinter::writeTextCentered(double x, double y, std::string const& text)
 {
     Pixel p = transformCoordinates(x, y);
-    out << p.first << " " << p.second << " moveto (" << text << ") dup true charpath pathbbox 3 -1 roll sub 2 div neg 3 1 roll sub 2 div exch "
-        << p.first << " " << p.second << " moveto rmoveto show" << std::endl;
+    out << "save " << p.first << " " << p.second << " moveto (" << text << ") dup true charpath pathbbox 3 -1 roll sub 2 div neg 3 1 roll sub 2 div exch "
+        << p.first << " " << p.second << " moveto rmoveto show restore" << std::endl;
 }
 }
