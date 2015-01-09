@@ -1,6 +1,8 @@
 #ifndef TEXT_HPP
 #define TEXT_HPP
 
+#include <string>
+
 #include "Drawable.hpp"
 
 namespace hpl
