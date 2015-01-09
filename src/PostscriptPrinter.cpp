@@ -58,8 +58,8 @@ void PostscriptPrinter::update()
         }
         Text* t = dynamic_cast<Text*>(i->second);
         if (t != 0) {
-            //! @todo calculate fontsize properly
-            unsigned int fontSize = 10;
+            //! @todo calculate fontsize properly, determine if width or height has to be used
+            unsigned int fontSize = 11 * currentGeometry.width;
             setFont(t->getFontName(), fontSize);
             setColor(t->getColor());
             writeTextCentered(t->x + 0.5 * t->width, t->y + 0.5 * t->height, t->text);
