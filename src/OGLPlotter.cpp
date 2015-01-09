@@ -122,8 +122,7 @@ void OGLPlotter::del(OGLText& target)
 void OGLPlotter::syn(Text const& ref, OGLText& target)
 {	
     FontTexture* fnt = fontLoader->getFont(ref.getFontName());
-    //! @todo really here? also refactor method, why give name twice?
-    fnt->init(ref.getFontName());
+    fnt->init();
 
 	Header header = fnt->header();
 	target.n = 4 * ref.text.length(); // 4 Vertices per char
@@ -191,6 +190,7 @@ OGLPlotter::OGLPlotter() : AbstractPlotter(), Window()
 
 OGLPlotter::~OGLPlotter()
 {
+    fontLoader->deleteTextures();
 }
 
 void OGLPlotter::init()
@@ -257,8 +257,7 @@ void OGLPlotter::processDrawables()
 				}
 
 			} else if (r->second != ar->second) {
-                Drawable
-                        font.destroy();const* da = &plots->lookup(r->first);
+                Drawable const* da = &plots->lookup(r->first);
 				Lines const* al = dynamic_cast<Lines const*>(da);
 				if (al != nullptr) {
 					OGLLines& l = lineCollection[r->first];
@@ -283,8 +282,7 @@ void OGLPlotter::processDrawables()
 								del(t);
 								syn(*at, t);
 							}
-						}
-                        font.destroy();
+                        }
 					}
 				}
 				r->second = ar->second;

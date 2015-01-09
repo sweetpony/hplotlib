@@ -3,7 +3,6 @@
 
 #include <string>
 #include <map>
-#include <vector>
 
 #include "FileBrowser.hpp"
 #include "FontTexture.hpp"
@@ -17,6 +16,8 @@ public:
     FontLoader();
     ~FontLoader();
 
+    void deleteTextures();
+
     inline void addSearchPath(const std::string& path) {
         fileBrowser.addSearchPath(path);
     }
@@ -24,10 +25,8 @@ public:
     FontTexture* getFont(const std::string& name);
 
 private:
-    FontTexture* findExistingFont(const std::string& name);
-
     FileBrowser fileBrowser;
-    std::vector<std::pair<std::string, FontTexture*> > fonts;
+    std::map<std::string, FontTexture*> fonts;
 
 };
 }

@@ -29,8 +29,9 @@ class FontTexture
 {
 public:
     FontTexture(std::string const& path);
+    ~FontTexture();
 
-    void init(std::string const& path);
+    void init();
 	void destroy();    
     void bind(GLint position, GLuint textureUnit);
     
@@ -45,7 +46,9 @@ private:
     GLuint _glyphs;
     Header _header = {0};
     Char _chars[128];
+    unsigned char* data = nullptr;
 
+    std::string const& path;
     bool initialised = false;
 };
 }

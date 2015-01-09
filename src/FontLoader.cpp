@@ -11,37 +11,30 @@ FontLoader::FontLoader()
 FontLoader::~FontLoader()
 {
     for (auto it = fonts.begin(); it != fonts.end(); ++it) {
-        FontTexture* ft = *it;
-        //! @todo this has to be done in ogl thread
-        if (ft->isInitialised()) {
-            ft->destroy();
-        }
+        FontTexture* ft = it->second;
+        ft->destroy();
         delete ft;
+    }
+}
+
+void FontLoader::deleteTextures()
+{
+    for (auto it = fonts.begin(); it != fonts.end(); ++it) {
+        it->second->destroy();
     }
 }
 
 FontTexture* FontLoader::getFont(const std::string& name)
 {
-    FontTexture* ft = findExistingFont(name);
-    if (ft != nullptr) {
-        //! @todo reuse or create new??
-        return new FontTexture(*it);
+    auto it = fonts.find(name);
+    if (it != fonts.end()) {
+        return it->second;
     } else {
         std::string path = fileBrowser.getFontPath(name);
         FontTexture* ft = new FontTexture(path);
-        fonts.push_back(std::pair<std::string, FontTexture*>(name, ft));
+        fonts[name] = ft;
         return ft;
     }
-}
-
-FontTexture* FontLoader::findExistingFont(const std::string& name)
-{
-    for (auto it = fonts.begin(); it != fonts.end(); ++it) {
-        if (it->first == name) {
-            return it->second;
-        }
-    }
-    return nullptr;
 }
 
 }
