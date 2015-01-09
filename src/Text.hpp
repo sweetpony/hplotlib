@@ -25,7 +25,7 @@ public:
         this->fontname = fontname;
         changed.invoke(plotId);
     }
-    virtual inline const std::string& getFontName() {
+    virtual inline const std::string& getFontName() const {
         return fontname;
     }
 

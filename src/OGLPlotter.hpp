@@ -67,7 +67,6 @@ protected:
     GLenum convert(Drawable::Type type);
 
     ProgramDatabase programsDatabase;
-    FontTexture font;
 
     float mvp[9] = {
         1.0, 0.0, 0.0,
@@ -85,7 +84,7 @@ protected:
     void del(OGLContour& target);
     void del(OGLText& target);
 
-    void syn(Lines const& ref, OGLLines& target);
+    void syn(Lines const& refthread, OGLLines& target);
     void syn(Points const& ref, OGLPoints& target);
     void syn(Contour const& ref, OGLContour& target);
     void syn(Text const& ref, OGLText& target);

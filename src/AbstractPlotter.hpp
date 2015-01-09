@@ -9,6 +9,7 @@
 #include "Contour.hpp"
 #include "Text.hpp"
 #include "Color.hpp"
+#include "FontLoader.hpp"
 
 namespace hpl {
 class AbstractPlotter
@@ -21,6 +22,10 @@ public:
     inline void setPlots(const Registry<Drawable>* plots, const std::map<Drawable::ID, unsigned int>* actualRevision) {
         this->plots = plots;
         this->actualRevision = actualRevision;
+    }
+
+    inline void setFontLoader(FontLoader& fontLoader) {
+        this->fontLoader = &fontLoader;
     }
 
     inline void setBackgroundColor(const Color& c) {
@@ -36,6 +41,7 @@ protected:
     std::map<Drawable::ID, unsigned int> revision;
     const std::map<Drawable::ID, unsigned int>* actualRevision = nullptr;
     Color backgroundColor = Color(1.0f, 1.0f, 1.0f);
+    FontLoader* fontLoader;
 };
 }
 

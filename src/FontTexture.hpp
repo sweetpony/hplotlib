@@ -2,7 +2,6 @@
 #define HPLOTLIB_FONTTEXTURE_HPP
 
 #include "GL/glld.h"
-#include "FileBrowser.hpp"
 
 #include <string>
 
@@ -29,23 +28,25 @@ struct Char {
 class FontTexture
 {
 public:
-    FontTexture();
+    FontTexture(std::string const& path);
 
-    void read(std::string const& fontname);
-    void init(std::string const& fontname);
+    void init(std::string const& path);
 	void destroy();    
     void bind(GLint position, GLuint textureUnit);
     
     inline Header const& header() const { return _header; }
     inline Char const& ch(unsigned char id) const { return _chars[id]; }
 
-private:
-    static FileBrowser fb;
-    static bool firstInstantiation;
+    inline bool isInitialised() {
+        return initialised;
+    }
 
+private:
     GLuint _glyphs;
     Header _header = {0};
     Char _chars[128];
+
+    bool initialised = false;
 };
 }
 

@@ -18,6 +18,7 @@
 #include "GridLayout.hpp"
 #include "PostscriptPrinter.hpp"
 #include "Registry.hpp"
+#include "FontLoader.hpp"
 
 namespace hpl
 {
@@ -41,6 +42,7 @@ public:
 
     inline void connectToPlotter(AbstractPlotter* plotter) {
         plotter->setPlots(&rawData, &dataRevisions);
+        plotter->setFontLoader(fontLoader);
         connectedPlotters.push_back(plotter);
     }
 
@@ -65,6 +67,10 @@ public:
     }
     
     void synchronise();
+
+    inline void addFontSearchPath(const std::string& path) {
+        fontLoader.addSearchPath(path);
+    }
 
 private:
 	struct Slot {
@@ -102,6 +108,8 @@ private:
     std::unordered_map<Layout::ID, Rack, std::hash<Layout::ID::Type>> racks;
 
     std::vector<AbstractPlotter*> connectedPlotters;
+
+    FontLoader fontLoader;
 };
 }
 

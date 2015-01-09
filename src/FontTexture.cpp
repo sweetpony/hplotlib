@@ -2,22 +2,9 @@
 #include <cstdio>
 
 namespace hpl {
-	
-bool FontTexture::firstInstantiation = true;
-FileBrowser FontTexture::fb;
 
-FontTexture::FontTexture()
+FontTexture::FontTexture(std::string const& path)
 {
-    if (firstInstantiation) {
-        fb.addSearchPath("../fonts/");
-        firstInstantiation = false;
-    }
-}
-
-//! @todo refactor methods below
-void FontTexture::read(std::string const& fontname)
-{
-    std::string path = fb.getFontPath(fontname);
     FILE* in = fopen(path.c_str(), "rb");
     fread(&_header, sizeof(Header), 1, in);
     fread(_chars, sizeof(Char), _header.count, in);
@@ -29,9 +16,14 @@ void FontTexture::read(std::string const& fontname)
     }
 }
 
-void FontTexture::init(std::string const& fontname)
+//! @todo refactor method below, use things done in ctor
+//! @todo make sure this also works if two OGLPlotter are used
+void FontTexture::init(std::string const& path)
 {
-    std::string path = fb.getFontPath(fontname);
+    if (initialised) {
+        destroy();
+    }
+
     FILE* in = fopen(path.c_str(), "rb");
     fread(&_header, sizeof(Header), 1, in);
     fread(_chars, sizeof(Char), _header.count, in);
@@ -54,11 +46,17 @@ void FontTexture::init(std::string const& fontname)
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
+
+    initialised = true;
 }
 
 void FontTexture::destroy()
 {
-    glDeleteTextures(1, &_glyphs);
+    if (initialised) {
+        glDeleteTextures(1, &_glyphs);
+
+        initialised = false;
+    }
 }
 
 void FontTexture::bind(GLint position, GLuint textureUnit)
