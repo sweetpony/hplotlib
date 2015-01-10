@@ -55,6 +55,7 @@ protected:
     void setCurrentGeometry(const Geometry& geometry, double xmin, double xmax, double ymin, double ymax);
     void setCurrentZLimits(double zmin, double zmax);
     Pixel transformCoordinates(double x, double y) const;
+    double transformLength(double l) const;
 
     unsigned int pixelX = 595, pixelY = 842, pixelBoundary = 00;
     double sizefactor = 4.0;

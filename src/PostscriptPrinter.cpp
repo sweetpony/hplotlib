@@ -58,8 +58,24 @@ void PostscriptPrinter::update()
         }
         Text* t = dynamic_cast<Text*>(i->second);
         if (t != 0) {
-            //! @todo calculate fontsize properly, determine if width or height has to be used
-            unsigned int fontSize = 11 * currentGeometry.width;
+            unsigned int fontSize = 11;
+
+            FontTexture ft;
+            ft.read(t->getFontName());
+            float textWidth = 0.0f;
+            float textHeight = ft.header().lineHeight;
+            for (auto it = t->text.cbegin(); it != t->text.cend(); ++it) {
+                textWidth += ft.ch(*it).xadvance;
+            }
+            float xscale = t->width / textWidth;
+            float yscale = t->height / textHeight;
+            if (xscale < yscale) {
+                fontSize *= t->width / 0.108 * currentGeometry.width / (currentXMax - currentXMin);
+            } else {
+                //! @todo find a case where text is height dominated and insert a fraction to t->height
+                fontSize *= currentGeometry.height / (currentYMax - currentYMin);
+            }
+
             setFont(t->getFontName(), fontSize);
             setColor(t->getColor());
             writeTextCentered(t->x + 0.5 * t->width, t->y + 0.5 * t->height, t->text);
