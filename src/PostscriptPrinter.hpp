@@ -39,6 +39,7 @@ private:
     void drawPoint(double x, double y);
     void fillShape(std::vector<double> x, std::vector<double> y);
     void writeText(double x, double y, std::string const& text);
+    void writeTextCentered(double x, double y, std::string const& text);
 
     inline bool isfinite(double x, double y) const {
         return std::isfinite(x) && std::isfinite(y);

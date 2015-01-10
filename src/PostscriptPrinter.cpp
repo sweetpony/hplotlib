@@ -58,29 +58,26 @@ void PostscriptPrinter::update()
         }
         Text* t = dynamic_cast<Text*>(i->second);
         if (t != 0) {
+            unsigned int fontSize = 11;
             //! @todo refactor this, this is basically taken from OGLPlotter -> Pull into Text probably
-            FontTexture* fnt = fontLoader->getFont(t->getFontName());
-
-            Header header = fnt->header();
+            FontTexture* ft = fontLoader->getFont(t->getFontName());
             float textWidth = 0.0f;
-            float textHeight = header.lineHeight;
+            float textHeight = ft->header().lineHeight;
             for (auto it = t->text.cbegin(); it != t->text.cend(); ++it) {
-                textWidth += fnt->ch(*it).xadvance;
+                textWidth += ft->ch(*it).xadvance;
             }
             float xscale = t->width / textWidth;
             float yscale = t->height / textHeight;
-            float scale = (xscale < yscale) ? xscale : yscale;
+            if (xscale < yscale) {
+                fontSize *= t->width / 0.108 * currentGeometry.width / (currentXMax - currentXMin);
+            } else {
+                //! @todo find a case where text is height dominated and insert a fraction to t->height
+                fontSize *= currentGeometry.height / (currentYMax - currentYMin);
+            }
 
-            Char ch = fnt->ch(t->text[0]);
-
-            float x = t->x + 0.5 * (t->width - scale * textWidth) + scale * ch.xoffset;
-            float y = t->y + 0.5 * (t->height - scale * textHeight) + scale * (textHeight - ch.yoffset - ch.height);
-
-            //! @todo calculate fontsize properly
-            unsigned int fontSize = 10;
             setFont(t->getFontName(), fontSize);
             setColor(t->getColor());
-            writeText(x, y, t->text);
+            writeTextCentered(t->x + 0.5 * t->width, t->y + 0.5 * t->height, t->text);
             continue;
         }
     }
@@ -207,5 +204,12 @@ void PostscriptPrinter::writeText(double x, double y, std::string const& text)
     Pixel p = transformCoordinates(x, y);
     out << p.first << " " << p.second << " moveto" << std::endl;
     out << "(" << text << ") show" << std::endl;
+}
+
+void PostscriptPrinter::writeTextCentered(double x, double y, std::string const& text)
+{
+    Pixel p = transformCoordinates(x, y);
+    out << "save " << p.first << " " << p.second << " moveto (" << text << ") dup true charpath pathbbox 3 -1 roll sub 2 div neg 3 1 roll sub 2 div exch "
+        << p.first << " " << p.second << " moveto rmoveto show restore" << std::endl;
 }
 }

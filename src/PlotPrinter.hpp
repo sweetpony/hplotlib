@@ -4,6 +4,8 @@
 #include <string>
 #include <map>
 
+#include <iostream>
+
 #include "Drawable.hpp"
 #include "Lines.hpp"
 #include "Points.hpp"
@@ -53,13 +55,13 @@ protected:
     void setCurrentGeometry(const Geometry& geometry, double xmin, double xmax, double ymin, double ymax);
     void setCurrentZLimits(double zmin, double zmax);
     Pixel transformCoordinates(double x, double y) const;
+    double transformLength(double l) const;
 
     unsigned int pixelX = 595, pixelY = 842, pixelBoundary = 00;
     double sizefactor = 4.0;
     Orientation orientation = Landscape;
 
     double currentXMin = 0.0, currentXMax = 1.0, currentYMin = 0.0, currentYMax = 1.0, currentZMin = 0.0, currentZMax = 1.0;
-private:
     Geometry currentGeometry;
 
 };

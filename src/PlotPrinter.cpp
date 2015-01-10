@@ -75,4 +75,11 @@ PlotPrinter::Pixel PlotPrinter::transformCoordinates(double x, double y) const
     p.second = (((y - currentYMin) / (currentYMax - currentYMin) * currentGeometry.height + currentGeometry.topOffset) * pixelY + pixelBoundary) * sizefactor;
     return p;
 }
+
+double PlotPrinter::transformLength(double l) const
+{
+    // data -> interleave -> in geometry -> in output window
+    l = l / (currentXMax - currentXMin) * currentGeometry.width * pixelX * sizefactor;
+    return l;
+}
 }
