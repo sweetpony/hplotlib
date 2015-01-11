@@ -4,6 +4,7 @@
 #include <string>
 
 #include "Drawable.hpp"
+#include "FontLoader.hpp"
 
 namespace hpl
 {
@@ -40,6 +41,10 @@ public:
     }
 
     inline virtual void recalculateData() {}
+
+    double calculateXScale(FontLoader& fontLoader) const;
+    double calculateYScale(FontLoader& fontLoader) const;
+    bool xScaleDominated(FontLoader& fontLoader) const;
 
     std::string text;
     const double x, y, width, height;

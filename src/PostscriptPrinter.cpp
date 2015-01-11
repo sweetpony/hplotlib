@@ -59,16 +59,7 @@ void PostscriptPrinter::update()
         Text* t = dynamic_cast<Text*>(i->second);
         if (t != 0) {
             unsigned int fontSize = 11;
-            //! @todo refactor this, this is basically taken from OGLPlotter -> Pull into Text probably
-            FontTexture* ft = fontLoader->getFont(t->getFontName());
-            float textWidth = 0.0f;
-            float textHeight = ft->header().lineHeight;
-            for (auto it = t->text.cbegin(); it != t->text.cend(); ++it) {
-                textWidth += ft->ch(*it).xadvance;
-            }
-            float xscale = t->width / textWidth;
-            float yscale = t->height / textHeight;
-            if (xscale < yscale) {
+            if (t->xScaleDominated(*fontLoader)) {
                 fontSize *= t->width / 0.108 * currentGeometry.width / (currentXMax - currentXMin);
             } else {
                 //! @todo find a case where text is height dominated and insert a fraction to t->height
