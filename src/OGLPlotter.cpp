@@ -1,188 +1,6 @@
 #include "OGLPlotter.hpp"
 
 namespace hpl {
-	
-void OGLPlotter::del(OGLLines& target)
-{
-	glDeleteBuffers(1, &target.lineBuffer);
-}
-	
-void OGLPlotter::syn(Lines const& ref, OGLLines& target)
-{
-	float* interleave = new float[2 * ref.n()];
-	for (int i = 0; i < ref.n(); i++) {
-		interleave[(i << 1)] = (ref.x()[i] - ref.xmin()) / (ref.xmax() - ref.xmin());
-		interleave[(i << 1) + 1] = (ref.y()[i] - ref.ymin()) / (ref.ymax() - ref.ymin());
-	}
-
-	glGenBuffers(1, &target.lineBuffer);
-	glBindBuffer(GL_ARRAY_BUFFER, target.lineBuffer);
-	glBufferData(GL_ARRAY_BUFFER, 2 * ref.n() * sizeof(float), interleave, GL_STATIC_DRAW);
-	glBindBuffer(GL_ARRAY_BUFFER, 0);
-
-	target.pos = glGetAttribLocation(programsDatabase.getLineProgram(), "Position");
-	target.rect = glGetUniformLocation(programsDatabase.getLineProgram(), "Rect");
-	target.color = glGetUniformLocation(programsDatabase.getLineProgram(), "Color");
-	target.linemvp = glGetUniformLocation(programsDatabase.getLineProgram(), "MVP");
-	
-	target.n = ref.n();
-	target.g = ref.getGeometry();
-	target.c = ref.getColor();
-	target.size = ref.getThickness();
-	target.type = convert(ref.getDataType());
-
-	delete[] interleave;
-}
-
-void OGLPlotter::del(OGLPoints& target)
-{
-	glDeleteBuffers(1, &target.pointBuffer);
-}
-
-void OGLPlotter::syn(Points const& ref, OGLPoints& target)
-{
-	float* interleave = new float[2 * ref.n()];
-	for (int i = 0; i < ref.n(); i++) {
-		interleave[(i << 1)] = (ref.x()[i] - ref.xmin()) / (ref.xmax() - ref.xmin());
-		interleave[(i << 1) + 1] = (ref.y()[i] - ref.ymin()) / (ref.ymax() - ref.ymin());
-	}
-
-	glGenBuffers(1, &target.pointBuffer);
-	glBindBuffer(GL_ARRAY_BUFFER, target.pointBuffer);
-	glBufferData(GL_ARRAY_BUFFER, 2 * ref.n() * sizeof(float), interleave, GL_STATIC_DRAW);
-	glBindBuffer(GL_ARRAY_BUFFER, 0);
-
-	target.pos = glGetAttribLocation(programsDatabase.getLineProgram(), "Position");
-	target.rect = glGetUniformLocation(programsDatabase.getLineProgram(), "Rect");
-	target.color = glGetUniformLocation(programsDatabase.getLineProgram(), "Color");
-	target.pointmvp = glGetUniformLocation(programsDatabase.getLineProgram(), "MVP");
-		
-	target.n = ref.n();
-	target.g = ref.getGeometry();
-	target.c = ref.getColor();
-	target.size = ref.getSymbolSize();
-	target.type = convert(ref.getDataType());
-
-	delete[] interleave;
-}
-
-void OGLPlotter::del(OGLContour& target)
-{
-	glDeleteBuffers(1, &target.mapBuffer);
-	glDeleteTextures(1, &target.textureid);
-}
-
-void OGLPlotter::syn(Contour const& ref, OGLContour& target)
-{
-    GLfloat quad_triangle_strip[] = {
-		0.0f, 0.0f, // BL
-		1.0f, 0.0f, // BR
-		0.0f,  1.0f, // TL
-		1.0f,  1.0f, // TR
-    };
-
-	glGenBuffers(1, &target.mapBuffer);
-	glBindBuffer(GL_ARRAY_BUFFER, target.mapBuffer);
-    glBufferData(GL_ARRAY_BUFFER, sizeof(quad_triangle_strip), quad_triangle_strip, GL_STATIC_DRAW);
-	glBindBuffer(GL_ARRAY_BUFFER, 0);
-
-	target.pos = glGetAttribLocation(programsDatabase.getMapProgram(), "Position");
-	target.uv = glGetAttribLocation(programsDatabase.getMapProgram(), "UV");
-	target.rect = glGetUniformLocation(programsDatabase.getMapProgram(), "Rect");
-	target.colorMap = glGetUniformLocation(programsDatabase.getMapProgram(), "ColorMap");
-	target.contourmvp = glGetUniformLocation(programsDatabase.getMapProgram(), "MVP");
-
-	target.g = ref.getGeometry();
-
-	glGenTextures(1, &target.textureid);
-
-	glBindTexture(GL_TEXTURE_2D, target.textureid);
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
-
-	float* data = new float[3 * ref.n * ref.n];
-	for(int i = 0; i < ref.n*ref.n; ++i) {
-		Color col = ref.getColorAtIndex(i);
-		data[i*3] = col.r;
-		data[i*3+1] = col.g;
-		data[i*3+2] = col.b;
-	}
-
-	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB8, ref.n, ref.n, 0, GL_RGB, GL_FLOAT, data);
-
-	delete[] data;
-}
-
-
-void OGLPlotter::del(OGLText& target)
-{
-	glDeleteBuffers(1, &target.textBuffer);
-}
-
-void OGLPlotter::syn(Text const& ref, OGLText& target)
-{	
-    FontTexture* fnt = fontLoader->getFont(ref.getFontName());
-    fnt->init();
-
-	Header header = fnt->header();
-	target.n = 4 * ref.text.length(); // 4 Vertices per char
-	int bufferSize = 4 * target.n; // x,y,u,v per Vertex
-	float* text = new float[bufferSize];
-	float textWidth = 0.0f;
-	float textHeight = header.lineHeight;
-	for (auto it = ref.text.cbegin(); it != ref.text.cend(); ++it) {
-		textWidth += fnt->ch(*it).xadvance;
-	}
-	float xscale = ref.width / textWidth;
-    float yscale = ref.height / textHeight;
-	float scale = (xscale < yscale) ? xscale : yscale;
-	
-	float xadv = 0.0f;
-    for (unsigned int c = 0; c < ref.text.length(); ++c) {
-		Char ch = fnt->ch(ref.text[c]);
-		
-		float x = ref.x + 0.5 * (ref.width - scale * textWidth) + scale * (xadv + ch.xoffset);
-		float y = ref.y + 0.5 * (ref.height - scale * textHeight) + scale * (textHeight - ch.yoffset - ch.height);
-		xadv += ch.xadvance;
-		text[4*4*c + 0] = x;
-		text[4*4*c + 1] = y;
-		text[4*4*c + 2] = ch.x / header.width;
-		text[4*4*c + 3] = (ch.y + ch.height) / header.height;
-		
-		text[4*4*c + 4] = x;
-		text[4*4*c + 5] = y + ch.height*scale;
-		text[4*4*c + 6] = ch.x / header.width;
-		text[4*4*c + 7] = ch.y / header.height;
-		
-		text[4*4*c + 8] = x + ch.width*scale;
-		text[4*4*c + 9] = y + ch.height*scale;
-		text[4*4*c + 10] = (ch.x + ch.width) / header.width;
-		text[4*4*c + 11] = ch.y / header.height;
-		
-		text[4*4*c + 12] = x + ch.width*scale;
-		text[4*4*c + 13] = y;
-		text[4*4*c + 14] = (ch.x + ch.width) / header.width;
-		text[4*4*c + 15] = (ch.y + ch.height) / header.height;
-	}
-
-	glGenBuffers(1, &target.textBuffer);
-	glBindBuffer(GL_ARRAY_BUFFER, target.textBuffer);
-	glBufferData(GL_ARRAY_BUFFER, bufferSize * sizeof(float), text, GL_STATIC_DRAW);
-	glBindBuffer(GL_ARRAY_BUFFER, 0);
-
-	target.pos = glGetAttribLocation(programsDatabase.getTextProgram(), "Position");
-	target.uv = glGetAttribLocation(programsDatabase.getTextProgram(), "UV");
-	target.rect = glGetUniformLocation(programsDatabase.getTextProgram(), "Rect");
-	target.color = glGetUniformLocation(programsDatabase.getTextProgram(), "Color");
-	target.textmvp = glGetUniformLocation(programsDatabase.getTextProgram(), "MVP");
-	target.glyphs = glGetUniformLocation(programsDatabase.getTextProgram(), "Glyphs");
-
-	target.g = ref.getGeometry();
-	target.c = ref.getColor();
-	target.font = fnt;
-
-	delete[] text;
-}
 
 OGLPlotter::OGLPlotter(std::string const& title) : AbstractPlotter(), Window(title)
 {
@@ -190,7 +8,6 @@ OGLPlotter::OGLPlotter(std::string const& title) : AbstractPlotter(), Window(tit
 
 OGLPlotter::~OGLPlotter()
 {
-    fontLoader->deleteTextures();
 }
 
 void OGLPlotter::init()
@@ -218,6 +35,10 @@ void OGLPlotter::destroy()
     }
 
     programsDatabase.destroy();
+
+    for (auto it = boundTextures.begin(); it != boundTextures.end(); ++it) {
+        fontLoader->deleteFont(*it);
+    }
 }
 
 void OGLPlotter::processDrawables()
@@ -451,5 +272,189 @@ GLenum OGLPlotter::convert(Drawable::Type type)
             return GL_TRIANGLE_STRIP;
     }
     return 0;
+}
+
+void OGLPlotter::del(OGLLines& target)
+{
+    glDeleteBuffers(1, &target.lineBuffer);
+}
+
+void OGLPlotter::syn(Lines const& ref, OGLLines& target)
+{
+    float* interleave = new float[2 * ref.n()];
+    for (int i = 0; i < ref.n(); i++) {
+        interleave[(i << 1)] = (ref.x()[i] - ref.xmin()) / (ref.xmax() - ref.xmin());
+        interleave[(i << 1) + 1] = (ref.y()[i] - ref.ymin()) / (ref.ymax() - ref.ymin());
+    }
+
+    glGenBuffers(1, &target.lineBuffer);
+    glBindBuffer(GL_ARRAY_BUFFER, target.lineBuffer);
+    glBufferData(GL_ARRAY_BUFFER, 2 * ref.n() * sizeof(float), interleave, GL_STATIC_DRAW);
+    glBindBuffer(GL_ARRAY_BUFFER, 0);
+
+    target.pos = glGetAttribLocation(programsDatabase.getLineProgram(), "Position");
+    target.rect = glGetUniformLocation(programsDatabase.getLineProgram(), "Rect");
+    target.color = glGetUniformLocation(programsDatabase.getLineProgram(), "Color");
+    target.linemvp = glGetUniformLocation(programsDatabase.getLineProgram(), "MVP");
+
+    target.n = ref.n();
+    target.g = ref.getGeometry();
+    target.c = ref.getColor();
+    target.size = ref.getThickness();
+    target.type = convert(ref.getDataType());
+
+    delete[] interleave;
+}
+
+void OGLPlotter::del(OGLPoints& target)
+{
+    glDeleteBuffers(1, &target.pointBuffer);
+}
+
+void OGLPlotter::syn(Points const& ref, OGLPoints& target)
+{
+    float* interleave = new float[2 * ref.n()];
+    for (int i = 0; i < ref.n(); i++) {
+        interleave[(i << 1)] = (ref.x()[i] - ref.xmin()) / (ref.xmax() - ref.xmin());
+        interleave[(i << 1) + 1] = (ref.y()[i] - ref.ymin()) / (ref.ymax() - ref.ymin());
+    }
+
+    glGenBuffers(1, &target.pointBuffer);
+    glBindBuffer(GL_ARRAY_BUFFER, target.pointBuffer);
+    glBufferData(GL_ARRAY_BUFFER, 2 * ref.n() * sizeof(float), interleave, GL_STATIC_DRAW);
+    glBindBuffer(GL_ARRAY_BUFFER, 0);
+
+    target.pos = glGetAttribLocation(programsDatabase.getLineProgram(), "Position");
+    target.rect = glGetUniformLocation(programsDatabase.getLineProgram(), "Rect");
+    target.color = glGetUniformLocation(programsDatabase.getLineProgram(), "Color");
+    target.pointmvp = glGetUniformLocation(programsDatabase.getLineProgram(), "MVP");
+
+    target.n = ref.n();
+    target.g = ref.getGeometry();
+    target.c = ref.getColor();
+    target.size = ref.getSymbolSize();
+    target.type = convert(ref.getDataType());
+
+    delete[] interleave;
+}
+
+void OGLPlotter::del(OGLContour& target)
+{
+    glDeleteBuffers(1, &target.mapBuffer);
+    glDeleteTextures(1, &target.textureid);
+}
+
+void OGLPlotter::syn(Contour const& ref, OGLContour& target)
+{
+    GLfloat quad_triangle_strip[] = {
+        0.0f, 0.0f, // BL
+        1.0f, 0.0f, // BR
+        0.0f,  1.0f, // TL
+        1.0f,  1.0f, // TR
+    };
+
+    glGenBuffers(1, &target.mapBuffer);
+    glBindBuffer(GL_ARRAY_BUFFER, target.mapBuffer);
+    glBufferData(GL_ARRAY_BUFFER, sizeof(quad_triangle_strip), quad_triangle_strip, GL_STATIC_DRAW);
+    glBindBuffer(GL_ARRAY_BUFFER, 0);
+
+    target.pos = glGetAttribLocation(programsDatabase.getMapProgram(), "Position");
+    target.uv = glGetAttribLocation(programsDatabase.getMapProgram(), "UV");
+    target.rect = glGetUniformLocation(programsDatabase.getMapProgram(), "Rect");
+    target.colorMap = glGetUniformLocation(programsDatabase.getMapProgram(), "ColorMap");
+    target.contourmvp = glGetUniformLocation(programsDatabase.getMapProgram(), "MVP");
+
+    target.g = ref.getGeometry();
+
+    glGenTextures(1, &target.textureid);
+
+    glBindTexture(GL_TEXTURE_2D, target.textureid);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
+
+    float* data = new float[3 * ref.n * ref.n];
+    for(int i = 0; i < ref.n*ref.n; ++i) {
+        Color col = ref.getColorAtIndex(i);
+        data[i*3] = col.r;
+        data[i*3+1] = col.g;
+        data[i*3+2] = col.b;
+    }
+
+    glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB8, ref.n, ref.n, 0, GL_RGB, GL_FLOAT, data);
+
+    delete[] data;
+}
+
+
+void OGLPlotter::del(OGLText& target)
+{
+    glDeleteBuffers(1, &target.textBuffer);
+}
+
+void OGLPlotter::syn(Text const& ref, OGLText& target)
+{
+    FontTexture* fnt = fontLoader->getFont(ref.getFontName());
+    if (fnt->init()) {
+        boundTextures.push_back(ref.getFontName());
+    }
+
+    Header header = fnt->header();
+    target.n = 4 * ref.text.length(); // 4 Vertices per char
+    int bufferSize = 4 * target.n; // x,y,u,v per Vertex
+    float* text = new float[bufferSize];
+    float textWidth = 0.0f;
+    float textHeight = header.lineHeight;
+    for (auto it = ref.text.cbegin(); it != ref.text.cend(); ++it) {
+        textWidth += fnt->ch(*it).xadvance;
+    }
+    float xscale = ref.width / textWidth;
+    float yscale = ref.height / textHeight;
+    float scale = (xscale < yscale) ? xscale : yscale;
+
+    float xadv = 0.0f;
+    for (unsigned int c = 0; c < ref.text.length(); ++c) {
+        Char ch = fnt->ch(ref.text[c]);
+
+        float x = ref.x + 0.5 * (ref.width - scale * textWidth) + scale * (xadv + ch.xoffset);
+        float y = ref.y + 0.5 * (ref.height - scale * textHeight) + scale * (textHeight - ch.yoffset - ch.height);
+        xadv += ch.xadvance;
+        text[4*4*c + 0] = x;
+        text[4*4*c + 1] = y;
+        text[4*4*c + 2] = ch.x / header.width;
+        text[4*4*c + 3] = (ch.y + ch.height) / header.height;
+
+        text[4*4*c + 4] = x;
+        text[4*4*c + 5] = y + ch.height*scale;
+        text[4*4*c + 6] = ch.x / header.width;
+        text[4*4*c + 7] = ch.y / header.height;
+
+        text[4*4*c + 8] = x + ch.width*scale;
+        text[4*4*c + 9] = y + ch.height*scale;
+        text[4*4*c + 10] = (ch.x + ch.width) / header.width;
+        text[4*4*c + 11] = ch.y / header.height;
+
+        text[4*4*c + 12] = x + ch.width*scale;
+        text[4*4*c + 13] = y;
+        text[4*4*c + 14] = (ch.x + ch.width) / header.width;
+        text[4*4*c + 15] = (ch.y + ch.height) / header.height;
+    }
+
+    glGenBuffers(1, &target.textBuffer);
+    glBindBuffer(GL_ARRAY_BUFFER, target.textBuffer);
+    glBufferData(GL_ARRAY_BUFFER, bufferSize * sizeof(float), text, GL_STATIC_DRAW);
+    glBindBuffer(GL_ARRAY_BUFFER, 0);
+
+    target.pos = glGetAttribLocation(programsDatabase.getTextProgram(), "Position");
+    target.uv = glGetAttribLocation(programsDatabase.getTextProgram(), "UV");
+    target.rect = glGetUniformLocation(programsDatabase.getTextProgram(), "Rect");
+    target.color = glGetUniformLocation(programsDatabase.getTextProgram(), "Color");
+    target.textmvp = glGetUniformLocation(programsDatabase.getTextProgram(), "MVP");
+    target.glyphs = glGetUniformLocation(programsDatabase.getTextProgram(), "Glyphs");
+
+    target.g = ref.getGeometry();
+    target.c = ref.getColor();
+    target.font = fnt;
+
+    delete[] text;
 }
 }

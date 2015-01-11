@@ -16,13 +16,13 @@ public:
     FontLoader();
     ~FontLoader();
 
-    void deleteTextures();
-
     inline void addSearchPath(const std::string& path) {
         fileBrowser.addSearchPath(path);
     }
 
     FontTexture* getFont(const std::string& name);
+
+    void deleteFont(const std::string& name);
 
 private:
     FileBrowser fileBrowser;

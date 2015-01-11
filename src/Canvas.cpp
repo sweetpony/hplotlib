@@ -10,6 +10,8 @@
 
 namespace hpl
 {
+FontLoader Canvas::fontLoader;
+
 Canvas::Canvas()
 {
 }

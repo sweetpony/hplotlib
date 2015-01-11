@@ -26,7 +26,7 @@ FontTexture::~FontTexture()
 }
 
 //! @todo make sure this also works if two OGLPlotter are used, nescessary?
-void FontTexture::init()
+bool FontTexture::init()
 {
     if (!initialised) {
         glGenTextures(1, &_glyphs);
@@ -39,6 +39,9 @@ void FontTexture::init()
         glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
 
         initialised = true;
+        return true;
+    } else {
+        return false;
     }
 }
 

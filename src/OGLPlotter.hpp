@@ -66,6 +66,16 @@ protected:
 
     GLenum convert(Drawable::Type type);
 
+    void del(OGLLines& target);
+    void del(OGLPoints& target);
+    void del(OGLContour& target);
+    void del(OGLText& target);
+
+    void syn(Lines const& refthread, OGLLines& target);
+    void syn(Points const& ref, OGLPoints& target);
+    void syn(Contour const& ref, OGLContour& target);
+    void syn(Text const& ref, OGLText& target);
+
     ProgramDatabase programsDatabase;
 
     float mvp[9] = {
@@ -78,16 +88,8 @@ protected:
     std::map<Drawable::ID, OGLPoints> pointCollection;
     std::map<Drawable::ID, OGLContour> contourCollection;
     std::map<Drawable::ID, OGLText> textCollection;
-    
-    void del(OGLLines& target);
-    void del(OGLPoints& target);
-    void del(OGLContour& target);
-    void del(OGLText& target);
 
-    void syn(Lines const& refthread, OGLLines& target);
-    void syn(Points const& ref, OGLPoints& target);
-    void syn(Contour const& ref, OGLContour& target);
-    void syn(Text const& ref, OGLText& target);
+    std::vector<std::string> boundTextures;
 };
 }
 

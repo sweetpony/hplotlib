@@ -31,8 +31,8 @@ public:
     FontTexture(std::string const& path);
     ~FontTexture();
 
-    void init();
-	void destroy();    
+    bool init();
+    void destroy();
     void bind(GLint position, GLuint textureUnit);
     
     inline Header const& header() const { return _header; }

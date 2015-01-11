@@ -109,7 +109,7 @@ private:
 
     std::vector<AbstractPlotter*> connectedPlotters;
 
-    FontLoader fontLoader;
+    static FontLoader fontLoader;
 };
 }
 
