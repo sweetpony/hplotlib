@@ -9,6 +9,8 @@ PostscriptPrinter::PostscriptPrinter(Orientation orientation) : AbstractPlotter(
 PostscriptPrinter::~PostscriptPrinter()
 {
     out.close();
+    delete lastColor;
+    delete lastFont;
 }
 
 bool PostscriptPrinter::saveToFile(const std::string& fileName)
@@ -82,6 +84,13 @@ void PostscriptPrinter::writeHeader()
     out << "%%PageOrientation: " << (orientation == Portrait ? "Portrait" : "Landscape") << std::endl;
     out << "%%PageBoundingBox 0 0 " << (pixelX+2*pixelBoundary) << " " << (pixelY+2*pixelBoundary) << std::endl;
     out << "%%EndPageSetup" << std::endl;
+
+    out << "/myline { gsave newpath moveto lineto stroke grestore } def" << std::endl;
+    out << "/mypoint { gsave newpath moveto gsave currentpoint lineto 1 setlinecap stroke grestore grestore } def" << std::endl;
+    out << "/mybox { gsave 1 dict begin /n exch def newpath moveto 1 1 n { /i exch def lineto } for closepath gsave fill grestore end grestore } def" << std::endl;
+    out << "/mytext { gsave moveto show grestore } def" << std::endl;
+    out << "/mytextcentered { gsave 3 dict begin /y exch def /x exch def /t exch def x y moveto t dup true charpath pathbbox 3 -1 roll sub 2 div neg 3 1 roll sub 2 div exch x y moveto rmoveto show end grestore } def" << std::endl;
+
     double s = 1.0 / sizefactor;
     out << s << " " << s << " scale" << std::endl;
 }
@@ -95,14 +104,21 @@ void PostscriptPrinter::writeFooter()
 void PostscriptPrinter::setFont(std::string fontname, unsigned int size)
 {
     fontname[0] = toupper(fontname[0]);
-    out << "/" << fontname << " findfont" << std::endl;
-    out << size * sizefactor << " scalefont" << std::endl;
-    out << "setfont" << std::endl;
+    if (lastFont == nullptr || fontname != *lastFont || lastFontSize == 0.0 || size != lastFontSize) {
+        out << "/" << fontname << " findfont " << size * sizefactor << " scalefont setfont" << std::endl;
+        delete lastFont;
+        lastFont = new std::string(fontname);
+        lastFontSize = size;
+    }
 }
 
 void PostscriptPrinter::setColor(const Color& color)
 {
-    out << color.r << " " << color.g << " " << color.b << " setrgbcolor" << std::endl;
+    if (lastColor == nullptr || color != *lastColor) {
+        out << color.r << " " << color.g << " " << color.b << " setrgbcolor" << std::endl;
+        delete lastColor;
+        lastColor = new Color(color);
+    }
 }
 
 void PostscriptPrinter::setLineWidth(unsigned int width)
@@ -159,48 +175,36 @@ void PostscriptPrinter::draw(int n, double const* x, double const* y, Color cons
 void PostscriptPrinter::drawLine(double x1, double y1, double x2, double y2)
 {
     Pixel p1 = transformCoordinates(x1, y1), p2 = transformCoordinates(x2, y2);
-    out << "newpath" << std::endl;
-    out << p1.first << " " << p1.second << " moveto" << std::endl;
-    out << p2.first << " " << p2.second << " lineto" << std::endl;
-    out << "stroke" << std::endl;
+    out << p1.first << " " << p1.second << " " << p2.first << " " << p2.second << " myline" << std::endl;
 }
 
 void PostscriptPrinter::drawPoint(double x, double y)
 {
     Pixel p = transformCoordinates(x, y);
-    out << "newpath" << std::endl;
-    out << p.first << " " << p.second << " moveto" << std::endl;
-    out << "gsave currentpoint lineto 1 setlinecap stroke grestore" << std::endl;
+    out << p.first << " " << p.second << " mypoint" << std::endl;
 }
 
 void PostscriptPrinter::fillShape(std::vector<double> x, std::vector<double> y)
 {
-    if (x.size() == 0 || y.size() == 0) {
-        return;
+    unsigned int n = (x.size() < y.size() ? x.size() : y.size());
+    if (n > 0) {
+        for (unsigned int i = 0; i < n; i++) {
+            Pixel p = transformCoordinates(x[i], y[i]);
+            out << p.first << " " << p.second << " ";
+        }
+        out << (n-1) << " mybox" << std::endl;
     }
-
-    out << "newpath" << std::endl;
-    Pixel p = transformCoordinates(x[0], y[0]);
-    out << p.first << " " << p.second << " moveto" << std::endl;
-    for (unsigned int i = 1; i < x.size() && i < y.size(); i++) {
-        p = transformCoordinates(x[i], y[i]);
-        out << p.first << " " << p.second << " lineto" << std::endl;
-    }
-    out << "closepath" << std::endl;
-    out << "gsave fill grestore" << std::endl;
 }
 
 void PostscriptPrinter::writeText(double x, double y, std::string const& text)
 {
     Pixel p = transformCoordinates(x, y);
-    out << p.first << " " << p.second << " moveto" << std::endl;
-    out << "(" << text << ") show" << std::endl;
+    out << "(" << text << ") " << p.first << " " << p.second << " mytext" << std::endl;
 }
 
 void PostscriptPrinter::writeTextCentered(double x, double y, std::string const& text)
 {
     Pixel p = transformCoordinates(x, y);
-    out << "save " << p.first << " " << p.second << " moveto (" << text << ") dup true charpath pathbbox 3 -1 roll sub 2 div neg 3 1 roll sub 2 div exch "
-        << p.first << " " << p.second << " moveto rmoveto show restore" << std::endl;
+    out << "(" << text << ") " << p.first << " " << p.second << " mytextcentered" << std::endl;
 }
 }

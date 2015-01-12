@@ -48,6 +48,10 @@ private:
     std::ofstream out;
     std::string fileName;
 
+    Color const* lastColor = nullptr;
+    std::string* lastFont = nullptr;
+    unsigned int lastFontSize = 0;
+
 };
 }
 

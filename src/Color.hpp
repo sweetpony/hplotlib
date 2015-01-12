@@ -11,6 +11,13 @@ namespace hpl
         
         static Color fromHSV(float H, float S, float V);
 
+        inline bool operator==(const Color& c) const {
+            return r == c.r && g == c.g && b == c.b;
+        }
+        inline bool operator!=(const Color& c) const {
+            return r != c.r || g != c.g || b != c.b;
+        }
+
         float r, g, b;
     };
 }
