@@ -53,6 +53,8 @@ int main()
     hpl::Lines& plot1 = cs1.addPlot<hpl::Lines>(NUM_POINTS, x, y, true);
     plot1.setColor(hpl::Color(1.0f, 0.0f, 0.0f));
     plot1.setThickness(5.0);
+    hpl::Text& text1 = cs1.addText("Hi Pony!", 0.36, 0.7, 0.25, 0.3);
+    text1.setColor(hpl::Color(0.0f, 0.6f, 0.0f));
 
     hpl::CoordinateSystem& cs2 = canvas->addCoordinateSystem();
     hpl::Contour& plot2 = cs2.addPlot<hpl::Contour>(NUM_POINTS, x, x, m, true);

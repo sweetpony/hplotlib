@@ -58,6 +58,7 @@ public:
     T& addPlot(int n, double const* x, double const* y, double copyData = false);
     template<typename T>
     T& addPlot(int n, double const* x, double const* y, double const* z, double copyData = false);
+    Text& addText(std::string const& text, double x, double y, double width, double height);
 
     void setLimits(double xmin, double xmax, double ymin, double ymax);
 

@@ -47,6 +47,13 @@ void CoordinateSystem::setGeometry(Geometry geom)
     }
 }
 
+Text& CoordinateSystem::addText(std::string const& text, double x, double y, double width, double height)
+{
+    Text* plot = new Text(text, x, y, width, height, limits);
+    addNewPlot(plot);
+    return *plot;
+}
+
 void CoordinateSystem::setLimits(double xmin, double xmax, double ymin, double ymax)
 {
     originalLimits.setLimits(xmin, xmax, ymin, ymax);
