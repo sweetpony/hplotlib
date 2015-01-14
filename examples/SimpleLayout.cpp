@@ -62,6 +62,7 @@ int main()
     hpl::CoordinateSystem& cs3 = canvas->addCoordinateSystem();
     cs3.setAxisProperties(hpl::AxisFlags::PaintPrimary | hpl::AxisFlags::PaintMinorTicks | hpl::AxisFlags::PaintLabelsPrimary);
     cs3.setTickMode(hpl::AxisFlags::Smart);
+    cs3.setMargins(0.2, 0.0, 0.1, 0.0);
     hpl::Points& plot3 = cs3.addPlot<hpl::Points>(NUM_POINTS, x, z, true);
     plot3.setColor(hpl::Color(0.0f, 0.0f, 1.0f));
     hpl::Lines& plot4 = cs3.addPlot<hpl::Lines>(NUM_POINTS, x, y, true);

@@ -28,11 +28,8 @@ public:
         return coordLinesColor;
     }
 
-    inline void setGeometry(Geometry geom) {
-        geometry = geom;
-        setUpCoordLines();
-        changed.invoke(Drawable::ID());
-    }
+    void setGeometry(Geometry geom);
+    void setMargins(float leftOffset, float rightOffset, float bottomOffset, float topOffset);
 
     inline float getOffset() {
         return primaryParallelOffset();

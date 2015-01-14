@@ -29,6 +29,26 @@ void CoordinateAxis<orientation>::setColor(const Color& c)
 }
 
 template<AxisFlags::AxisOrientation orientation>
+void CoordinateAxis<orientation>::setGeometry(Geometry geom) {
+    geometry = geom;
+    setUpCoordLines();
+    changed.invoke(Drawable::ID());
+}
+
+template<AxisFlags::AxisOrientation orientation>
+void CoordinateAxis<orientation>::setMargins(float leftOffset, float rightOffset, float bottomOffset, float topOffset)
+
+{
+    this->leftOffset = leftOffset;
+    this->rightOffset = rightOffset;
+    this->bottomOffset = bottomOffset;
+    this->topOffset = topOffset;
+
+    setUpCoordLines();
+    changed.invoke(Drawable::ID());
+}
+
+template<AxisFlags::AxisOrientation orientation>
 void CoordinateAxis<orientation>::setLimits(double xmin, double xmax, double ymin, double ymax)
 {
     originalLimits.setLimits(xmin, xmax, ymin, ymax);

@@ -47,6 +47,29 @@ void CoordinateSystem::setGeometry(Geometry geom)
     }
 }
 
+void CoordinateSystem::setMargins(float leftOffset, float rightOffset, float bottomOffset, float topOffset)
+{
+    Geometry geom(geometry);
+    geom.leftOffset = xAxis.getOffset() * geom.width;
+    geom.topOffset -= yAxis.getOffset() * geom.height;
+    geom.width /= (1.0 - xAxis.getTotalOffset());
+    geom.height /= (1.0 - yAxis.getTotalOffset());
+
+    xAxis.setMargins(leftOffset, rightOffset, bottomOffset, topOffset);
+    yAxis.setMargins(leftOffset, rightOffset, bottomOffset, topOffset);
+
+    geom.leftOffset += xAxis.getOffset() * geom.width;
+    geom.topOffset += yAxis.getOffset() * geom.height;
+    geom.width *= (1.0 - xAxis.getTotalOffset());
+    geom.height *= (1.0 - yAxis.getTotalOffset());
+
+    geometry = geom;
+
+    for (auto it = myPlots.begin(); it != myPlots.end(); ++it) {
+        data.lookup(*it).setGeometry(geom);
+    }
+}
+
 Text& CoordinateSystem::addText(std::string const& text, double x, double y, double width, double height)
 {
     Text* plot = new Text(text, x, y, width, height, limits);
