@@ -37,8 +37,8 @@ void CoordinateSystem::setGeometry(Geometry geom)
 
     geom.leftOffset += xAxis.getOffset() * geom.width;
     geom.topOffset += yAxis.getOffset() * geom.height;
-    geom.width *= (1.0 - xAxis.getOffset());
-    geom.height *= (1.0 - yAxis.getOffset());
+    geom.width *= (1.0 - xAxis.getTotalOffset());
+    geom.height *= (1.0 - yAxis.getTotalOffset());
 
     geometry = geom;
 

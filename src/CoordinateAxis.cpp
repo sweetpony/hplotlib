@@ -36,31 +36,51 @@ double CoordinateAxis<AxisFlags::Vertical>::max() {
 }
 
 template<>
-float CoordinateAxis<AxisFlags::Horizontal>::offset() {
-    return xOffset;
+float CoordinateAxis<AxisFlags::Horizontal>::primaryParallelOffset() {
+    return leftOffset;
 }
 
 template<>
-float CoordinateAxis<AxisFlags::Vertical>::offset() {
-    return yOffset;
+float CoordinateAxis<AxisFlags::Vertical>::primaryParallelOffset() {
+    return bottomOffset;
 }
 
 template<>
-float CoordinateAxis<AxisFlags::Horizontal>::otherOffset() {
-    return yOffset;
+float CoordinateAxis<AxisFlags::Horizontal>::secondaryParallelOffset() {
+    return rightOffset;
 }
 
 template<>
-float CoordinateAxis<AxisFlags::Vertical>::otherOffset() {
-    return xOffset;
+float CoordinateAxis<AxisFlags::Vertical>::secondaryParallelOffset() {
+    return topOffset;
+}
+
+template<>
+float CoordinateAxis<AxisFlags::Horizontal>::primaryPerpendicularOffset() {
+    return bottomOffset;
+}
+
+template<>
+float CoordinateAxis<AxisFlags::Vertical>::primaryPerpendicularOffset() {
+    return leftOffset;
+}
+
+template<>
+float CoordinateAxis<AxisFlags::Horizontal>::secondaryPerpendicularOffset() {
+    return topOffset;
+}
+
+template<>
+float CoordinateAxis<AxisFlags::Vertical>::secondaryPerpendicularOffset() {
+    return rightOffset;
 }
 
 template<>
 void CoordinateAxis<AxisFlags::Horizontal>::setUpAxis(unsigned int indexOffset, double mean, bool primary)
 {
-    rawDataX[indexOffset] = 1.0;
+    rawDataX[indexOffset] = 1.0 - secondaryParallelOffset();
     rawDataY[indexOffset] = mean;
-    rawDataX[indexOffset + 1] = offset();
+    rawDataX[indexOffset + 1] = primaryParallelOffset();
     rawDataY[indexOffset + 1] = mean;
 
     setUpTicksAndLabels(indexOffset, mean, primary);
@@ -70,9 +90,9 @@ template<>
 void CoordinateAxis<AxisFlags::Vertical>::setUpAxis(unsigned int indexOffset, double mean, bool primary)
 {
     rawDataX[indexOffset] = mean;
-    rawDataY[indexOffset] = 1.0;
+    rawDataY[indexOffset] = 1.0 - secondaryParallelOffset();
     rawDataX[indexOffset + 1] = mean;
-    rawDataY[indexOffset + 1] = offset();
+    rawDataY[indexOffset + 1] = primaryParallelOffset();
 
     setUpTicksAndLabels(indexOffset, mean, primary);
 }
@@ -98,11 +118,11 @@ void CoordinateAxis<AxisFlags::Vertical>::setUpTick(unsigned int indexOffset, do
 template<>
 void CoordinateAxis<AxisFlags::Horizontal>::addLabelToTick(double pos, double value, bool primary)
 {
-    float spacing = (1.0 - offset()) / (max() - min());
+    float spacing = (1.0 - totalParallelOffset()) / (max() - min());
     double width = 0.9 * tickdelta * spacing;
-    double height = 0.9 * otherOffset();
+    double height = 0.8 * (primary ? primaryPerpendicularOffset() : secondaryPerpendicularOffset());
     double x = pos - 0.5 * width;
-    double y = primary ? (0.5 * otherOffset() - 0.5 * height) : (1.0);
+    double y = primary ? (0.5 * primaryPerpendicularOffset() - 0.5 * height) : (1.0 - secondaryPerpendicularOffset());
 
     Text* label = new Text(getLabelForTick(value), x, y, width, height, axisLimits);
     addNewLabelToSystem(label);
@@ -111,12 +131,12 @@ void CoordinateAxis<AxisFlags::Horizontal>::addLabelToTick(double pos, double va
 template<>
 void CoordinateAxis<AxisFlags::Vertical>::addLabelToTick(double pos, double value, bool primary)
 {
-	float spacing = (1.0 - offset()) / (max() - min());
-	double width = 0.9 * otherOffset();
+    float spacing = (1.0 - totalParallelOffset()) / (max() - min());
+    double width = 0.8 * (primary ? primaryPerpendicularOffset() : secondaryPerpendicularOffset());
     double height = 0.9 * tickdelta * spacing;
-    double x = 0.5 * otherOffset() - 0.5 * width;
+    double x = 0.5 * primaryPerpendicularOffset() - 0.5 * width;
     if (! primary) {
-        x += 1.0;
+        x += 1.0 - secondaryPerpendicularOffset();
     }
     double y = pos -  0.5 * height;
 

@@ -35,7 +35,10 @@ public:
     }
 
     inline float getOffset() {
-        return offset();
+        return primaryParallelOffset();
+    }
+    inline float getTotalOffset() {
+        return totalParallelOffset();
     }
 
     void setLimits(double xmin, double xmax, double ymin, double ymax);
@@ -53,8 +56,16 @@ public:
 private:
     double min();
     double max();
-    float offset();
-    float otherOffset();
+    float primaryParallelOffset();
+    float secondaryParallelOffset();
+    float primaryPerpendicularOffset();
+    float secondaryPerpendicularOffset();
+    inline float totalParallelOffset() {
+        return primaryParallelOffset() + secondaryParallelOffset();
+    }
+    inline float totalPerpendicularOffset() {
+        return primaryPerpendicularOffset() + secondaryPerpendicularOffset();
+    }
 
     void setUpCoordLines();
     
@@ -80,7 +91,7 @@ private:
 
     void removeOwnDrawable(Drawable::ID id);
 
-    float xOffset = 0.12f, yOffset = 0.08f;
+    float leftOffset = 0.12f, rightOffset = 0.12f, bottomOffset = 0.08f, topOffset = 0.08f;
     int nrTicks = 8;
     float tickLength = 0.02f;
     int nrMinorTicks = 4;

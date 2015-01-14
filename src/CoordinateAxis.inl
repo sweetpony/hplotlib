@@ -86,13 +86,21 @@ double CoordinateAxis<AxisFlags::Horizontal>::max();
 template<>
 double CoordinateAxis<AxisFlags::Vertical>::max();
 template<>
-float CoordinateAxis<AxisFlags::Horizontal>::offset();
+float CoordinateAxis<AxisFlags::Horizontal>::primaryParallelOffset();
 template<>
-float CoordinateAxis<AxisFlags::Vertical>::offset();
+float CoordinateAxis<AxisFlags::Vertical>::primaryParallelOffset();
 template<>
-float CoordinateAxis<AxisFlags::Horizontal>::otherOffset();
+float CoordinateAxis<AxisFlags::Horizontal>::secondaryParallelOffset();
 template<>
-float CoordinateAxis<AxisFlags::Vertical>::otherOffset();
+float CoordinateAxis<AxisFlags::Vertical>::secondaryParallelOffset();
+template<>
+float CoordinateAxis<AxisFlags::Horizontal>::primaryPerpendicularOffset();
+template<>
+float CoordinateAxis<AxisFlags::Vertical>::primaryPerpendicularOffset();
+template<>
+float CoordinateAxis<AxisFlags::Horizontal>::secondaryPerpendicularOffset();
+template<>
+float CoordinateAxis<AxisFlags::Vertical>::secondaryPerpendicularOffset();
 
 template<AxisFlags::AxisOrientation orientation>
 void CoordinateAxis<orientation>::setUpCoordLines()
@@ -123,20 +131,20 @@ void CoordinateAxis<orientation>::setUpCoordLines()
         unsigned int o = 0;
 
         if (flags & AxisFlags::PaintPrimary) {
-            setUpAxis(o, otherOffset(), true);
+            setUpAxis(o, primaryPerpendicularOffset(), true);
             o += 2 + 2 * ticks.size();
 
             if (flags & AxisFlags::PaintMinorTicks) {
-                setUpMinorAxis(o, otherOffset());
+                setUpMinorAxis(o, primaryPerpendicularOffset());
                 o += 2 * minorTicks.size();
             }
         }
         if (flags & AxisFlags::PaintSecondary) {
-            setUpAxis(o, 1.0, false);
+            setUpAxis(o, 1.0 - secondaryPerpendicularOffset(), false);
             o += 2 + 2 * ticks.size();
 
             if (flags & AxisFlags::PaintMinorTicks) {
-                setUpMinorAxis(o, 1.0);
+                setUpMinorAxis(o, 1.0 - secondaryPerpendicularOffset());
                 o += 2 * minorTicks.size();
             }
         }
@@ -322,11 +330,11 @@ bool CoordinateAxis<orientation>::ticksAreMagnitudes() const
 template<AxisFlags::AxisOrientation orientation>
 void CoordinateAxis<orientation>::setUpTicksAndLabels(unsigned int indexOffset, double mean, bool primary)
 {
-    float spacing = (1.0 - offset()) / (max() - min());
+    float spacing = (1.0 - totalParallelOffset()) / (max() - min());
     bool paintLabels = flags & (primary ? AxisFlags::PaintLabelsPrimary : AxisFlags::PaintLabelsSecondary);
 
     for (unsigned int i = 0, o = indexOffset+2+2*i; i < ticks.size(); o = indexOffset+2+2*(++i)) {
-        double pos = offset()+(ticks[i]-min())*spacing;
+        double pos = primaryParallelOffset()+(ticks[i]-min())*spacing;
         setUpTick(o, pos, mean, tickLength);
         if (paintLabels) {
             addLabelToTick(pos, ticks[i], primary);
@@ -342,9 +350,9 @@ void CoordinateAxis<AxisFlags::Vertical>::setUpTick(unsigned int indexOffset, do
 template<AxisFlags::AxisOrientation orientation>
 void CoordinateAxis<orientation>::setUpMinorAxis(unsigned int indexOffset, double mean)
 {
-    float spacing = (1.0 - offset()) / (max() - min());
+    float spacing = (1.0 - totalParallelOffset()) / (max() - min());
     for (unsigned int i = 0, o = indexOffset+2*i; i < minorTicks.size(); o = indexOffset+2*(++i)) {
-        setUpTick(o, offset()+(minorTicks[i]-min())*spacing, mean, minorTickLength);
+        setUpTick(o, primaryParallelOffset()+(minorTicks[i]-min())*spacing, mean, minorTickLength);
     }
 }
 template<>
