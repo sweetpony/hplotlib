@@ -27,12 +27,11 @@ int main()
     cs.setColor(hpl::Color(0.0f, 0.0f, 1.0f));
     cs.setAxisProperties(hpl::AxisFlags::PaintPrimary | hpl::AxisFlags::PaintSecondary | hpl::AxisFlags::PaintMinorTicks |
                          hpl::AxisFlags::Logscale | hpl::AxisFlags::PaintLabelsPrimary | hpl::AxisFlags::PaintLabelsSecondary);
-    //! @todo adjust
-    //cs.getXAxis().setTickMode(hpl::AxisFlags::Smart);
-    /*cs.getYAxis().setTickMode(hpl::AxisFlags::Fixed);
-    cs.getYAxis().setLimits(-0.3, 1.3);
-    cs.getYAxis().setMajorTicks({0.0, 0.25, 0.5, 0.75, 1.0, 1.25});
-    cs.getYAxis().setMinorTicks({0.125, 0.375, 0.615, 0.875, 1.125});*/
+    //! @todo enable this to see bug
+    //cs.getXAxis().setLimits(-2.5, 0.5);
+    cs.getXAxis().setTickMode(hpl::AxisFlags::Smart);
+    cs.getYAxis().setTickMode(hpl::AxisFlags::Fixed);
+    cs.getYAxis().setMajorTicks({-4.0, -3.0, -2.0, -1.0, 0.0});
 
     hpl::Lines& plot = cs.addPlot<hpl::Lines>(NUM_POINTS, x, y, true);
     plot.setColor(hpl::Color(1.0f, 0.0f, 0.0f));
