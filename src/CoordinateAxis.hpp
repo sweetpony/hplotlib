@@ -8,6 +8,8 @@
 #include <sstream>
 #include <iomanip>
 
+#include <iostream>
+
 #include "Lines.hpp"
 #include "Text.hpp"
 #include "AxisFlags.hpp"

@@ -27,6 +27,7 @@ int main()
     cs.setColor(hpl::Color(0.0f, 0.0f, 1.0f));
     cs.setAxisProperties(hpl::AxisFlags::PaintPrimary | hpl::AxisFlags::PaintSecondary | hpl::AxisFlags::PaintMinorTicks | hpl::AxisFlags::Logscale);
     //! @todo adjust
+    //cs.getXAxis().setTickMode(hpl::AxisFlags::Smart);
     /*cs.getYAxis().setTickMode(hpl::AxisFlags::Fixed);
     cs.getYAxis().setLimits(-0.3, 1.3);
     cs.getYAxis().setMajorTicks({0.0, 0.25, 0.5, 0.75, 1.0, 1.25});

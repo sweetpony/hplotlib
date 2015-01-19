@@ -218,6 +218,12 @@ void CoordinateAxis<orientation>::calculateSimpleDataPointsForTicks()
     for (int i = 0; i < nrTicks; ++i) {
         ticks.push_back(min() + (i+1) * tickdelta);
     }
+
+    std::cout << this << ": FixedAmount ticks: delta = " << tickdelta << "; ";
+    for (auto it = ticks.begin(); it != ticks.end(); ++it) {
+        std::cout << *it << " ";
+    }
+    std::cout << std::endl;
 }
 
 template<AxisFlags::AxisOrientation orientation>
@@ -263,6 +269,12 @@ void CoordinateAxis<orientation>::calculateSmartDataPointsForTicks(bool log)
             todo = false;
         }
     }
+
+    std::cout << this << ": Smart ticks: delta = " << tickdelta << "; ";
+    for (auto it = ticks.begin(); it != ticks.end(); ++it) {
+        std::cout << *it << " ";
+    }
+    std::cout << std::endl;
 
     delete[] steps;
 }
@@ -323,13 +335,19 @@ void CoordinateAxis<orientation>::calculateMinorDataTicks()
                 }
             }
         }
+
+        std::cout << this << ": Minor ticks: " << (flags & AxisFlags::Logscale) << " " << (tickMode == AxisFlags::Smart) << " " << ticksAreMagnitudes() << "; ";
+        for (auto it = minorTicks.begin(); it != minorTicks.end(); ++it) {
+            std::cout << *it << " ";
+        }
+        std::cout << std::endl;
     }
 }
 
 template<AxisFlags::AxisOrientation orientation>
 bool CoordinateAxis<orientation>::canDoNiceLogMinorTicks() const
 {
-    return ((flags & AxisFlags::Logscale) && ((flags & AxisFlags::Smart) || ticksAreMagnitudes()));
+    return ((flags & AxisFlags::Logscale) && ((tickMode == AxisFlags::Smart) || ticksAreMagnitudes()));
 }
 
 template<AxisFlags::AxisOrientation orientation>
