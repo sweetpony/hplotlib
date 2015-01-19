@@ -393,8 +393,6 @@ void OGLPlotter::del(OGLText& target)
 
 void OGLPlotter::syn(Text const& ref, OGLText& target)
 {
-    std::cout << "Plot text at " << ref.x() << ", " << ref.y() << " with box " << ref.width() << ", " << ref.height() << std::endl << std::flush;
-
     FontTexture* fnt = fontLoader->getFont(ref.getFontName());
     if (fnt->init()) {
         boundTextures.push_back(ref.getFontName());

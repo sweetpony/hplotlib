@@ -23,9 +23,6 @@ void Text::recalculateData()
 
     double w = _width;
     double h = _height;
-    //! @todo or?
-    //double w = (xlog ? log10(_x + _width) - x : _width);
-    //double h = (ylog ? log10(_y + _height) - y : _height);
 
     stext = new SimpleText(x, y, w, h);
 
