@@ -20,3 +20,6 @@ target_link_libraries (BigGrid hplotlib)
 add_executable (ManualSettings ManualSettings.cpp)
 target_link_libraries (ManualSettings hplotlib)
 
+add_executable (LogPlot LogPlot.cpp)
+target_link_libraries (LogPlot hplotlib)
+
