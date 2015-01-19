@@ -6,6 +6,8 @@
 #include "ProgramDatabase.hpp"
 #include "FontTexture.hpp"
 
+#include <iostream>
+
 namespace hpl {
 class OGLPlotter : public AbstractPlotter, public Window
 {

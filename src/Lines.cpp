@@ -1,6 +1,17 @@
 #include "Lines.hpp"
 
 namespace hpl {
+
+Lines::Lines(int n, double const* x, double const* y, const Limits& limits, bool separate, bool ownsData) :
+    Drawable((separate ? Type_Lines : Type_LineStrips), limits), SimpleLines(n, x, y, separate, ownsData, ownsData), lines(new SimpleLines(n, x, y, separate, false, false))
+{
+}
+
+Lines::~Lines()
+{
+    delete lines;
+}
+
 void Lines::setThickness(double thick)
 {
     thickness = thick;

@@ -62,7 +62,7 @@ void PostscriptPrinter::update()
         if (t != 0) {
             unsigned int fontSize = 11;
             if (t->xScaleDominated(*fontLoader)) {
-                fontSize *= t->width / 0.108 * currentGeometry.width / (currentXMax - currentXMin);
+                fontSize *= t->width() / 0.108 * currentGeometry.width / (currentXMax - currentXMin);
             } else {
                 //! @todo find a case where text is height dominated and insert a fraction to t->height
                 fontSize *= currentGeometry.height / (currentYMax - currentYMin);
@@ -70,7 +70,7 @@ void PostscriptPrinter::update()
 
             setFont(t->getFontName(), fontSize);
             setColor(t->getColor());
-            writeTextCentered(t->x + 0.5 * t->width, t->y + 0.5 * t->height, t->text);
+            writeTextCentered(t->x() + 0.5 * t->width(), t->y() + 0.5 * t->height(), t->text);
             continue;
         }
     }

@@ -393,6 +393,8 @@ void OGLPlotter::del(OGLText& target)
 
 void OGLPlotter::syn(Text const& ref, OGLText& target)
 {
+    std::cout << "Plot text at " << ref.x() << ", " << ref.y() << " with box " << ref.width() << ", " << ref.height() << std::endl << std::flush;
+
     FontTexture* fnt = fontLoader->getFont(ref.getFontName());
     if (fnt->init()) {
         boundTextures.push_back(ref.getFontName());
@@ -407,16 +409,16 @@ void OGLPlotter::syn(Text const& ref, OGLText& target)
     for (auto it = ref.text.cbegin(); it != ref.text.cend(); ++it) {
         textWidth += fnt->ch(*it).xadvance;
     }
-    float xscale = ref.width / textWidth;
-    float yscale = ref.height / textHeight;
+    float xscale = ref.width() / textWidth;
+    float yscale = ref.height() / textHeight;
     float scale = (xscale < yscale) ? xscale : yscale;
 
     float xadv = 0.0f;
     for (unsigned int c = 0; c < ref.text.length(); ++c) {
         Char ch = fnt->ch(ref.text[c]);
 
-        float x = ref.x + 0.5 * (ref.width - scale * textWidth) + scale * (xadv + ch.xoffset);
-        float y = ref.y + 0.5 * (ref.height - scale * textHeight) + scale * (textHeight - ch.yoffset - ch.height);
+        float x = ref.x() + 0.5 * (ref.width() - scale * textWidth) + scale * (xadv + ch.xoffset);
+        float y = ref.y() + 0.5 * (ref.height() - scale * textHeight) + scale * (textHeight - ch.yoffset - ch.height);
         xadv += ch.xadvance;
         text[4*4*c + 0] = x;
         text[4*4*c + 1] = y;
