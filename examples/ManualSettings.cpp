@@ -22,7 +22,7 @@ int main()
     canvas.connectToPlotter(&plotter);
     plotter.setBackgroundColor(hpl::Color(0.9f, 0.9f, 0.9f));
 
-    hpl::GridLayout& layout = canvas.addLayout<hpl::GridLayout>();
+    //hpl::GridLayout& layout = canvas.addLayout<hpl::GridLayout>();
 
     hpl::CoordinateSystem& cs = canvas.addCoordinateSystem();
     cs.setColor(hpl::Color(0.0f, 0.0f, 1.0f));
@@ -36,7 +36,7 @@ int main()
     plot.setColor(hpl::Color(1.0f, 0.0f, 0.0f));
     plot.setThickness(5.0);
 
-    canvas.addCoordinateSystemToLayout(cs.id(), layout.id());
+    //canvas.addCoordinateSystemToLayout(cs.id(), layout.id());
 
     hpl::PostscriptPrinter ps(hpl::PlotPrinter::Portrait);
     canvas.connectToPlotter(&ps);

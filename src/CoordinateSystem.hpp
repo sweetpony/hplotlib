@@ -81,6 +81,8 @@ private:
 
     double* copyData(int n, double const* dat);
 
+    void adjustGeometryForPlots(Geometry geom);
+
     Registry<Drawable>& data;
     std::map<Drawable::ID, unsigned int>& dataRevisions;
     std::vector<Drawable::ID> myPlots;

@@ -24,6 +24,8 @@ CoordinateSystem::CoordinateSystem(Registry<Drawable>& dataContainer, std::map<D
     limits.changed.template bind<CoordinateAxis<AxisFlags::Vertical>, &CoordinateAxis<AxisFlags::Vertical>::recalculate>(&yAxis);
 
     originalLimits.changed.template bind<CoordinateSystem, &CoordinateSystem::setLimitsFromOriginal>(this);
+
+    adjustGeometryForPlots(geometry);
 }
 
 CoordinateSystem::~CoordinateSystem()
@@ -35,16 +37,7 @@ void CoordinateSystem::setGeometry(Geometry geom)
     xAxis.setGeometry(geom);
     yAxis.setGeometry(geom);
 
-    geom.leftOffset += xAxis.getOffset() * geom.width;
-    geom.topOffset += yAxis.getOffset() * geom.height;
-    geom.width *= (1.0 - xAxis.getTotalOffset());
-    geom.height *= (1.0 - yAxis.getTotalOffset());
-
-    geometry = geom;
-
-    for (auto it = myPlots.begin(); it != myPlots.end(); ++it) {
-        data.lookup(*it).setGeometry(geom);
-    }
+    adjustGeometryForPlots(geom);
 }
 
 void CoordinateSystem::setMargins(float leftOffset, float rightOffset, float bottomOffset, float topOffset)
@@ -58,16 +51,7 @@ void CoordinateSystem::setMargins(float leftOffset, float rightOffset, float bot
     xAxis.setMargins(leftOffset, rightOffset, bottomOffset, topOffset);
     yAxis.setMargins(leftOffset, rightOffset, bottomOffset, topOffset);
 
-    geom.leftOffset += xAxis.getOffset() * geom.width;
-    geom.topOffset += yAxis.getOffset() * geom.height;
-    geom.width *= (1.0 - xAxis.getTotalOffset());
-    geom.height *= (1.0 - yAxis.getTotalOffset());
-
-    geometry = geom;
-
-    for (auto it = myPlots.begin(); it != myPlots.end(); ++it) {
-        data.lookup(*it).setGeometry(geom);
-    }
+    adjustGeometryForPlots(geom);
 }
 
 Text& CoordinateSystem::addText(std::string const& text, double x, double y, double width, double height)
@@ -186,5 +170,19 @@ double* CoordinateSystem::copyData(int n, double const* dat)
     double* ret = new double[n];
     std::copy(dat, dat+n, ret);
     return ret;
+}
+
+void CoordinateSystem::adjustGeometryForPlots(Geometry geom)
+{
+    geom.leftOffset += xAxis.getOffset() * geom.width;
+    geom.topOffset += yAxis.getOffset() * geom.height;
+    geom.width *= (1.0 - xAxis.getTotalOffset());
+    geom.height *= (1.0 - yAxis.getTotalOffset());
+
+    geometry = geom;
+
+    for (auto it = myPlots.begin(); it != myPlots.end(); ++it) {
+        data.lookup(*it).setGeometry(geom);
+    }
 }
 }
