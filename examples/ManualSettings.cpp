@@ -22,9 +22,8 @@ int main()
     canvas.connectToPlotter(&plotter);
     plotter.setBackgroundColor(hpl::Color(0.9f, 0.9f, 0.9f));
 
-    //hpl::GridLayout& layout = canvas.addLayout<hpl::GridLayout>();
-
     hpl::CoordinateSystem& cs = canvas.addCoordinateSystem();
+    cs.setGeometry(hpl::Geometry(0.1, 0.1, 0.8, 0.8));
     cs.setColor(hpl::Color(0.0f, 0.0f, 1.0f));
     cs.setAxisProperties(hpl::AxisFlags::PaintPrimary | hpl::AxisFlags::PaintSecondary | hpl::AxisFlags::PaintMinorTicks | hpl::AxisFlags::PaintLabelsPrimary | hpl::AxisFlags::PaintLabelsSecondary);
     cs.getXAxis().setTickMode(hpl::AxisFlags::Fixed);
@@ -35,8 +34,6 @@ int main()
     hpl::Lines& plot = cs.addPlot<hpl::Lines>(NUM_POINTS, x, y, true);
     plot.setColor(hpl::Color(1.0f, 0.0f, 0.0f));
     plot.setThickness(5.0);
-
-    //canvas.addCoordinateSystemToLayout(cs.id(), layout.id());
 
     hpl::PostscriptPrinter ps(hpl::PlotPrinter::Portrait);
     canvas.connectToPlotter(&ps);
