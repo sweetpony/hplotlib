@@ -17,10 +17,12 @@ public:
     virtual inline void update() {
         Window::update();
     }
-    
     virtual inline void synchronise() {
 		Window::synchronise();
 	}
+    virtual inline void wait() {
+        Window::wait();
+    }
 
 protected:
 	virtual void processDrawables();

@@ -52,8 +52,7 @@ public:
         OGLPlotter plotter;
         CoordinateSystem& cosy = canvas.setUpEasySystem(&plotter);
         cosy.addPlot<T>(n, x, y, copyData);
-        canvas.synchronise();
-        plotter.wait();
+        canvas.synchroniseAndWait();
     }
 
     template<typename T>
@@ -62,11 +61,12 @@ public:
         OGLPlotter plotter;
         CoordinateSystem& cosy = canvas.setUpEasySystem(&plotter);
         cosy.addPlot<T>(n, x, y, z, copyData);
-        canvas.synchronise();
-        plotter.wait();
+        canvas.synchroniseAndWait();
     }
     
     void synchronise();
+    void synchroniseAndSleep(unsigned int useconds);
+    void synchroniseAndWait();
 
     inline void addFontSearchPath(const std::string& path) {
         fontLoader.addSearchPath(path);

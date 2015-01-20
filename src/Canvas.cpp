@@ -7,6 +7,7 @@
 #include "Canvas.hpp"
 #include "GL/glld.h"
 #include <cmath>
+#include <chrono>
 
 namespace hpl
 {
@@ -96,6 +97,25 @@ void Canvas::synchronise()
 	for (auto it = connectedPlotters.begin(); it != connectedPlotters.end(); it++) {
         (*it)->synchronise();
         (*it)->update();
+    }
+}
+
+void Canvas::synchroniseAndSleep(unsigned int useconds)
+{
+    auto s =  std::chrono::system_clock::now();
+    synchronise();
+    auto e =  std::chrono::system_clock::now();
+    unsigned int usec = std::chrono::duration_cast<std::chrono::microseconds>(e-s).count();
+    if (usec <  useconds) {
+        sleep(useconds - usec);
+    }
+}
+
+void Canvas::synchroniseAndWait()
+{
+    synchronise();
+    for (auto it = connectedPlotters.begin(); it != connectedPlotters.end(); it++) {
+        (*it)->wait();
     }
 }
 }

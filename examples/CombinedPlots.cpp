@@ -75,15 +75,13 @@ int main()
     canvas.addCoordinateSystemToLayout(cs2.id(), layout2.id());
     canvas.addCoordinateSystemToLayout(cs3.id(), layout2.id());
 
-	canvas.synchronise();
-    hpl::sleep(1e6);
+    canvas.synchroniseAndSleep(1e6);
 
     plot2.setColorTable<hpl::ColorTable::BlueRed>(256);
     plot3.setSymbol(hpl::Points::FilledCircle);
     plot3.setSymbolSize(2.0);
 
-	canvas.synchronise();
-    hpl::sleep(1e6);
+    canvas.synchroniseAndSleep(1e6);
 
     layout2.changeOrientation(hpl::VerticalLayout::BottomToTop);
 
@@ -93,8 +91,7 @@ int main()
     plot4.setStyle(hpl::Lines::Dotted);
     plot4.setThickness(3.0);
 
-	canvas.synchronise();
-    hpl::sleep(1e6);
+    canvas.synchroniseAndSleep(1e6);
 
     layout1.changeOrientation(hpl::HorizontalLayout::RightToLeft);
     plot2.setColorTable<hpl::ColorTable::RainbowBlack>(256);
@@ -105,13 +102,11 @@ int main()
     hpl::Lines& plot5 = cs4.addPlot<hpl::Lines>(NUM_POINTS, x, n);
     canvas.addCoordinateSystemToLayout(cs4.id(), layout1.id());
 
-    canvas.synchronise();
-
     hpl::PostscriptPrinter ps(hpl::PlotPrinter::Portrait);
     canvas.connectToPlotter(&ps);
     ps.saveToFile("combinedplots");
 
-    plotter.wait();
+    canvas.synchroniseAndWait();
 
     return 0;
 }

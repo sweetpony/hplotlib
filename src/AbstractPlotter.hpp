@@ -35,6 +35,7 @@ public:
 
     virtual void update() = 0;
     virtual void synchronise() = 0;
+    virtual void wait() = 0;
 
 protected:    
     const Registry<Drawable>* plots = nullptr;

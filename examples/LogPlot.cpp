@@ -43,8 +43,7 @@ int main()
     canvas.connectToPlotter(&ps);
     ps.saveToFile("logplot");
 
-    canvas.synchronise();
-    plotter.wait();
+    canvas.synchroniseAndWait();
 
     return 0;
 }

@@ -19,7 +19,7 @@ namespace hpl
 	class Window {
 		friend WindowPlatformStuff;
 	public:
-        void wait() {
+        virtual void wait() {
             needsRepaint = true;
 			pthread_join(windowThread, nullptr);			
 		}

@@ -81,8 +81,7 @@ int main()
     delete[] z;
     delete[] m;
 
-    canvas->synchronise();
-    plotter->wait();
+    canvas->synchroniseAndWait();
 
     delete canvas;
     delete plotter;

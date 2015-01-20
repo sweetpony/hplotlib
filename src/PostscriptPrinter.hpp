@@ -24,6 +24,7 @@ public:
     virtual void update();
     
     virtual void synchronise() {}
+    virtual void wait() {}
 
 private:
     void writeHeader();

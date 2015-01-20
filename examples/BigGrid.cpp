@@ -36,8 +36,7 @@ int main()
     canvas.connectToPlotter(&ps);
     ps.saveToFile("biggrid");
 
-    canvas.synchronise();
-    plotter.wait();
+    canvas.synchroniseAndWait();
 
     return 0;
 }
