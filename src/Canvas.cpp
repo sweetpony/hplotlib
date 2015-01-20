@@ -21,12 +21,16 @@ Canvas::~Canvas()
 {
 }
 
-CoordinateSystem& Canvas::addCoordinateSystem()
+CoordinateSystem& Canvas::addCoordinateSystem(hpl::Layout::ID id)
 {
     CoordinateSystem* cs = new CoordinateSystem(rawData, dataRevisions);
     cs->changed.template bind<Canvas, &Canvas::processUpdate>(this);
 
     csystems.add(cs);
+
+    if (id != hpl::Layout::ID()) {
+        addCoordinateSystemToLayout(cs->id(), id);
+    }
 
     processUpdate();
 

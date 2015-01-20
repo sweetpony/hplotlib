@@ -38,7 +38,7 @@ public:
 		return *layout;
 	}
 
-    CoordinateSystem& addCoordinateSystem();
+    CoordinateSystem& addCoordinateSystem(hpl::Layout::ID id = hpl::Layout::ID());
 
     inline void connectToPlotter(AbstractPlotter* plotter) {
         plotter->setPlots(&rawData, &dataRevisions);

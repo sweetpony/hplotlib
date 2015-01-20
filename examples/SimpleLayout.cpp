@@ -43,7 +43,7 @@ int main()
 
     hpl::GridLayout& layout = canvas->addLayout<hpl::GridLayout>();
 
-    hpl::CoordinateSystem& cs1 = canvas->addCoordinateSystem();
+    hpl::CoordinateSystem& cs1 = canvas->addCoordinateSystem(layout.id());
     cs1.setColor(hpl::Color(0.6f, 0.6f, 0.6f));
     cs1.setAxisProperties(hpl::AxisFlags::PaintPrimary | hpl::AxisFlags::PaintSecondary | hpl::AxisFlags::PaintMinorTicks | hpl::AxisFlags::PaintLabelsPrimary | hpl::AxisFlags::PaintLabelsSecondary);
     cs1.getXAxis().setTickMode(hpl::AxisFlags::Fixed);
@@ -56,10 +56,10 @@ int main()
     hpl::Text& text1 = cs1.addText("Hi Pony!", 0.36, 0.7, 0.25, 0.3);
     text1.setColor(hpl::Color(0.0f, 0.6f, 0.0f));
 
-    hpl::CoordinateSystem& cs2 = canvas->addCoordinateSystem();
+    hpl::CoordinateSystem& cs2 = canvas->addCoordinateSystem(layout.id());
     hpl::Contour& plot2 = cs2.addPlot<hpl::Contour>(NUM_POINTS, x, x, m, true);
 
-    hpl::CoordinateSystem& cs3 = canvas->addCoordinateSystem();
+    hpl::CoordinateSystem& cs3 = canvas->addCoordinateSystem(layout.id());
     cs3.setAxisProperties(hpl::AxisFlags::PaintPrimary | hpl::AxisFlags::PaintMinorTicks | hpl::AxisFlags::PaintLabelsPrimary);
     cs3.setTickMode(hpl::AxisFlags::Smart);
     cs3.setMargins(0.2, 0.0, 0.1, 0.0);
@@ -67,10 +67,6 @@ int main()
     plot3.setColor(hpl::Color(0.0f, 0.0f, 1.0f));
     hpl::Lines& plot4 = cs3.addPlot<hpl::Lines>(NUM_POINTS, x, y, true);
     plot4.setColor(hpl::Color(0.0f, 0.0f, 0.0f));
-
-    canvas->addCoordinateSystemToLayout(cs1.id(), layout.id());
-    canvas->addCoordinateSystemToLayout(cs2.id(), layout.id());
-    canvas->addCoordinateSystemToLayout(cs3.id(), layout.id());
 
     hpl::PostscriptPrinter ps(hpl::PlotPrinter::Portrait);
     canvas->connectToPlotter(&ps);

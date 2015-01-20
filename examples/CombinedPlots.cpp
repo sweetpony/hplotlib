@@ -47,8 +47,9 @@ int main()
 
     hpl::HorizontalLayout& layout1 = canvas.addLayout<hpl::HorizontalLayout>();
     hpl::VerticalLayout& layout2 = canvas.addLayout<hpl::VerticalLayout>();
+    canvas.addLayoutToLayout(layout2.id(), layout1.id());
 
-    hpl::CoordinateSystem& cs1 = canvas.addCoordinateSystem();
+    hpl::CoordinateSystem& cs1 = canvas.addCoordinateSystem(layout1.id());
     cs1.setColor(hpl::Color(0.6f, 0.6f, 0.6f));
     cs1.setAxisProperties(hpl::AxisFlags::PaintPrimary | hpl::AxisFlags::PaintSecondary | hpl::AxisFlags::PaintMinorTicks | hpl::AxisFlags::PaintLabelsPrimary | hpl::AxisFlags::PaintLabelsSecondary);
     cs1.getXAxis().setTickMode(hpl::AxisFlags::Fixed);
@@ -58,22 +59,17 @@ int main()
     plot1.setColor(hpl::Color(1.0f, 0.0f, 0.0f));
     plot1.setThickness(5.0);
 
-    hpl::CoordinateSystem& cs2 = canvas.addCoordinateSystem();
+    hpl::CoordinateSystem& cs2 = canvas.addCoordinateSystem(layout2.id());
     cs2.setAxisProperties(hpl::AxisFlags::PaintNothing);
     hpl::Contour& plot2 = cs2.addPlot<hpl::Contour>(NUM_POINTS, x, x, m);
 
-    hpl::CoordinateSystem& cs3 = canvas.addCoordinateSystem();
+    hpl::CoordinateSystem& cs3 = canvas.addCoordinateSystem(layout2.id());
     cs3.setAxisProperties(hpl::AxisFlags::PaintPrimary | hpl::AxisFlags::Logscale | hpl::AxisFlags::PaintMinorTicks | hpl::AxisFlags::PaintLabelsPrimary);
     cs3.setTickMode(hpl::AxisFlags::Smart);
     hpl::Points& plot3 = cs3.addPlot<hpl::Points>(NUM_POINTS, x, z);
     plot3.setColor(hpl::Color(0.0f, 0.0f, 1.0f));
     hpl::Lines& plot4 = cs3.addPlot<hpl::Lines>(NUM_POINTS, x, y);
     plot4.setColor(hpl::Color(0.0f, 0.0f, 0.0f));
-
-    canvas.addCoordinateSystemToLayout(cs1.id(), layout1.id());
-    canvas.addLayoutToLayout(layout2.id(), layout1.id());
-    canvas.addCoordinateSystemToLayout(cs2.id(), layout2.id());
-    canvas.addCoordinateSystemToLayout(cs3.id(), layout2.id());
 
     canvas.synchroniseAndSleep(1e6);
 

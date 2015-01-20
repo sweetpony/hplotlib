@@ -26,11 +26,9 @@ int main()
 
     hpl::GridLayout& layout = canvas.addLayout<hpl::GridLayout>();
 
-    hpl::CoordinateSystem& cs = canvas.addCoordinateSystem();
+    hpl::CoordinateSystem& cs = canvas.addCoordinateSystem(layout.id());
     cs.setAxisProperties(hpl::AxisFlags::PaintPrimary | hpl::AxisFlags::PaintSecondary | hpl::AxisFlags::PaintMinorTicks | hpl::AxisFlags::PaintLabelsPrimary);
     hpl::Contour& plot = cs.addPlot<hpl::Contour>(NUM_POINTS, x, x, y);
-
-    canvas.addCoordinateSystemToLayout(cs.id(), layout.id());
 
     hpl::PostscriptPrinter ps(hpl::PlotPrinter::Landscape);
     canvas.connectToPlotter(&ps);

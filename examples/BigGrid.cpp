@@ -24,10 +24,8 @@ int main()
     hpl::GridLayout& layout = canvas.addLayout<hpl::GridLayout>();
 
     for (int i = 0; i < 4*4; ++i) {
-        hpl::CoordinateSystem& cs = canvas.addCoordinateSystem();
+        hpl::CoordinateSystem& cs = canvas.addCoordinateSystem(layout.id());
         hpl::Lines& plot = cs.addPlot<hpl::Lines>(NUM_POINTS, x, y, true);
-
-        canvas.addCoordinateSystemToLayout(cs.id(), layout.id());
 
         canvas.synchronise();
     }

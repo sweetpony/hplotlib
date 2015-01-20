@@ -23,7 +23,7 @@ int main()
 
     hpl::GridLayout& layout = canvas.addLayout<hpl::GridLayout>();
 
-    hpl::CoordinateSystem& cs = canvas.addCoordinateSystem();
+    hpl::CoordinateSystem& cs = canvas.addCoordinateSystem(layout.id());
     cs.setColor(hpl::Color(0.0f, 0.0f, 1.0f));
     cs.setAxisProperties(hpl::AxisFlags::PaintPrimary | hpl::AxisFlags::PaintSecondary | hpl::AxisFlags::PaintMinorTicks |
                          hpl::AxisFlags::Logscale | hpl::AxisFlags::PaintLabelsPrimary | hpl::AxisFlags::PaintLabelsSecondary);
@@ -36,8 +36,6 @@ int main()
     hpl::Lines& plot = cs.addPlot<hpl::Lines>(NUM_POINTS, x, y, true);
     plot.setColor(hpl::Color(1.0f, 0.0f, 0.0f));
     plot.setThickness(5.0);
-
-    canvas.addCoordinateSystemToLayout(cs.id(), layout.id());
 
     hpl::PostscriptPrinter ps(hpl::PlotPrinter::Portrait);
     canvas.connectToPlotter(&ps);
