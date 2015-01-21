@@ -1,6 +1,9 @@
 #ifndef FLAGSHPP
 #define FLAGSHPP
 
+#include <initializer_list>
+#include <numeric>
+
 namespace hpl
 {
 
@@ -12,7 +15,15 @@ public:
     typedef decltype(Enum()|Enum()) StoredEnum;
 
     Flags();
-    Flags(StoredEnum flags);
+    //! @todo need to make it work without this to ensure typesafety
+    //Flags(StoredEnum flags);
+    Flags(Enum e);
+    //! @todo how to pull this outside into .inl?
+    template <typename ...T>
+    Flags(Enum e, T... t) : Flags(t...) {
+        flags = flags | e;
+    }
+    Flags(const std::initializer_list<Enum>& initList);
 
     inline operator StoredEnum() const {
         return flags;

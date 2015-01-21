@@ -3,13 +3,24 @@
 namespace hpl {
 
 template <typename Enum>
-Flags<Enum>::Flags() : Flags(StoredEnum(0))
+Flags<Enum>::Flags() : flags(StoredEnum(0))
+{
+}
+
+/*template <typename Enum>
+Flags<Enum>::Flags(StoredEnum flags) : flags(flags)
+{
+}*/
+
+template <typename Enum>
+Flags<Enum>::Flags(Enum e) : flags(e)
 {
 }
 
 template <typename Enum>
-Flags<Enum>::Flags(StoredEnum flags) : flags(flags)
+Flags<Enum>::Flags(const std::initializer_list<Enum>& initList)
 {
+    flags = std::accumulate(initList.begin(), initList.end(), StoredEnum(0), [](Enum x, Enum y) { return x | y; });
 }
 
 template <typename Enum>
@@ -34,7 +45,7 @@ Flags<Enum> operator&(const Flags<Enum>& lhs, const Flags<Enum>& rhs)
 template<typename Enum>
 Flags<Enum>& Flags<Enum>::operator&=(const Flags<Enum>& rhs)
 {
-    *this = Flags<Enum>(Flags<Enum>::StoredEnum(*this) & Flags<Enum>::StoredEnum(rhs));
+    *this = Flags<Enum>(this->flags & rhs.flags);
     return *this;
 }
 

@@ -21,7 +21,7 @@ TEST(Flags, DefaultConstructor)
 
 TEST(Flags, NormalConstructor)
 {
-    Flags<FlagEnum> flags(F1 | F2);
+    Flags<FlagEnum> flags(F1, F2);
 
     EXPECT_TRUE(flags[F1]);
     EXPECT_TRUE(flags[F2]);
@@ -30,7 +30,7 @@ TEST(Flags, NormalConstructor)
 
 TEST(Flags, GetInternals)
 {
-    Flags<FlagEnum> flags(F1 | F2);
+    Flags<FlagEnum> flags(F1, F2);
     int internal = flags.operator StoredEnum();
 
     EXPECT_TRUE(internal & F1);
@@ -85,7 +85,7 @@ TEST(Flags, BitwiseChangeFlags)
 
 TEST(Flags, OperatorChangeFlags)
 {
-    Flags<FlagEnum> flags(F1 | F2);
+    Flags<FlagEnum> flags(F1, F2);
 
     ASSERT_TRUE(flags[F1]);
     ASSERT_TRUE(flags[F2]);
@@ -101,7 +101,7 @@ TEST(Flags, OperatorChangeFlags)
 
 TEST(Flags, Reset)
 {
-    Flags<FlagEnum> flags(F1 | F2);
+    Flags<FlagEnum> flags(F1, F2);
 
     ASSERT_TRUE(flags[F1]);
     ASSERT_TRUE(flags[F2]);
@@ -116,7 +116,7 @@ TEST(Flags, Reset)
 
 TEST(Flags, Invert)
 {
-    Flags<FlagEnum> flags(F1 | F2);
+    Flags<FlagEnum> flags(F1, F2);
 
     ASSERT_TRUE(flags[F1]);
     ASSERT_TRUE(flags[F2]);
@@ -137,8 +137,13 @@ TEST(Flags, Invert)
 
 TEST(Flags, HighOrderGetter)
 {
-    Flags<FlagEnum> flags(F1 | F2);
+    Flags<FlagEnum> flags(F1, F2);
 
     EXPECT_TRUE(flags.any());
     EXPECT_FALSE(flags.none());
+
+    //! @todo make these three not compile!
+    /*Flags<FlagEnum> f(2);
+    f[2];
+    f(2);*/
 }
