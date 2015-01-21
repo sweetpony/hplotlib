@@ -35,11 +35,6 @@ Flags<Enum>::Flags() : flags(StoredEnum(0))
 {
 }
 
-/*template <typename Enum>
-Flags<Enum>::Flags(StoredEnum flags) : flags(flags)
-{
-}*/
-
 template <typename Enum>
 Flags<Enum>::Flags(Enum e) : flags(e)
 {
@@ -48,7 +43,7 @@ Flags<Enum>::Flags(Enum e) : flags(e)
 template <typename Enum>
 Flags<Enum>::Flags(const std::initializer_list<Enum>& initList)
 {
-    flags = std::accumulate(initList.begin(), initList.end(), StoredEnum(0), [](Enum x, Enum y) { return x | y; });
+    flags = std::accumulate(initList.begin(), initList.end(), StoredEnum(0), [](StoredEnum x, StoredEnum y) { return x | y; });
 }
 
 template <typename Enum>

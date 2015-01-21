@@ -19,9 +19,27 @@ TEST(Flags, DefaultConstructor)
     EXPECT_FALSE(flags[F3]);
 }
 
+TEST(Flags, SimpleConstructor)
+{
+    Flags<FlagEnum> flags(F1);
+
+    EXPECT_TRUE(flags[F1]);
+    EXPECT_FALSE(flags[F2]);
+    EXPECT_FALSE(flags[F3]);
+}
+
 TEST(Flags, NormalConstructor)
 {
     Flags<FlagEnum> flags(F1, F2);
+
+    EXPECT_TRUE(flags[F1]);
+    EXPECT_TRUE(flags[F2]);
+    EXPECT_FALSE(flags[F3]);
+}
+
+TEST(Flags, InitListConstructor)
+{
+    Flags<FlagEnum> flags({F1, F2});
 
     EXPECT_TRUE(flags[F1]);
     EXPECT_TRUE(flags[F2]);
