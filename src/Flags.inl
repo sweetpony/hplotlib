@@ -37,42 +37,66 @@ Flags<Enum>& Flags<Enum>::operator()(Enum flag, bool val)
 }
 
 template<typename Enum>
-Flags<Enum> operator&(const Flags<Enum>& lhs, const Flags<Enum>& rhs)
-{
-    return Flags<Enum>(Flags<Enum>::StoredEnum(lhs) & Flags<Enum>::StoredEnum(rhs));
-}
-
-template<typename Enum>
 Flags<Enum>& Flags<Enum>::operator&=(const Flags<Enum>& rhs)
 {
-    *this = Flags<Enum>(this->flags & rhs.flags);
+    this->flags = this->flags & rhs.flags;
     return *this;
 }
 
 template<typename Enum>
-Flags<Enum> operator|(const Flags<Enum>& lhs, const Flags<Enum>& rhs)
+Flags<Enum> Flags<Enum>::operator&(const Flags<Enum>& rhs) const
 {
-    return Flags<Enum>(Flags<Enum>::StoredEnum(lhs) | Flags<Enum>::StoredEnum(rhs));
+    Flags<Enum> res(*this);
+    res &= rhs;
+    return res;
+}
+
+template<typename Enum>
+Flags<Enum> Flags<Enum>::operator&(const Enum& rhs) const
+{
+    return (*this) & Flags<Enum>(rhs);
 }
 
 template<typename Enum>
 Flags<Enum>& Flags<Enum>::operator|=(const Flags<Enum>& rhs)
 {
-    *this = Flags<Enum>(Flags<Enum>::StoredEnum(*this) | Flags<Enum>::StoredEnum(rhs));
+    this->flags = this->flags | rhs.flags;
     return *this;
 }
 
 template<typename Enum>
-Flags<Enum> operator^(const Flags<Enum>& lhs, const Flags<Enum>& rhs)
+Flags<Enum> Flags<Enum>::operator|(const Flags<Enum>& rhs) const
 {
-    return Flags<Enum>(Flags<Enum>::StoredEnum(lhs) ^ Flags<Enum>::StoredEnum(rhs));
+    Flags<Enum> res(*this);
+    res |= rhs;
+    return res;
+}
+
+template<typename Enum>
+Flags<Enum> Flags<Enum>::operator|(const Enum& rhs) const
+{
+    return (*this) | Flags<Enum>(rhs);
 }
 
 template<typename Enum>
 Flags<Enum>& Flags<Enum>::operator^=(const Flags<Enum>& rhs)
 {
-    *this = Flags<Enum>(Flags<Enum>::StoredEnum(*this) ^ Flags<Enum>::StoredEnum(rhs));
+    this->flags = this->flags ^ rhs.flags;
     return *this;
+}
+
+template<typename Enum>
+Flags<Enum> Flags<Enum>::operator^(const Flags<Enum>& rhs) const
+{
+    Flags<Enum> res(*this);
+    res ^= rhs;
+    return res;
+}
+
+template<typename Enum>
+Flags<Enum> Flags<Enum>::operator^(const Enum& rhs) const
+{
+    return (*this) ^ Flags<Enum>(rhs);
 }
 
 template<typename Enum>

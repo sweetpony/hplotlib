@@ -31,9 +31,18 @@ public:
     bool operator[](Enum flag) const;
 
     Flags& operator()(Enum flag, bool val = true);
+
     Flags<Enum>& operator&=(const Flags<Enum>& rhs);
+    Flags<Enum> operator&(const Flags<Enum>& rhs) const;
+    Flags<Enum> operator&(const Enum& rhs) const;
+
     Flags<Enum>& operator|=(const Flags<Enum>& rhs);
+    Flags<Enum> operator|(const Flags<Enum>& rhs) const;
+    Flags<Enum> operator|(const Enum& rhs) const;
+
     Flags<Enum>& operator^=(const Flags<Enum>& rhs);
+    Flags<Enum> operator^(const Flags<Enum>& rhs) const;
+    Flags<Enum> operator^(const Enum& rhs) const;
 
     Flags& reset();
 

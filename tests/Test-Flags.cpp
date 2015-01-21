@@ -141,8 +141,11 @@ TEST(Flags, HighOrderGetter)
 
     EXPECT_TRUE(flags.any());
     EXPECT_FALSE(flags.none());
+}
 
-    //! @todo make these three not compile!
+TEST(Flags, TypeSafety)
+{
+    // make sure these three do not compile!
     /*Flags<FlagEnum> f(2);
     f[2];
     f(2);*/
