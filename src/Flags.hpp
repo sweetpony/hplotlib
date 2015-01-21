@@ -15,8 +15,6 @@ public:
     typedef decltype(Enum()|Enum()) StoredEnum;
 
     Flags();
-    //! @todo need to make it work without this to ensure typesafety
-    //Flags(StoredEnum flags);
     Flags(Enum e);
     //! @todo how to pull this outside into .inl?
     template <typename ...T>

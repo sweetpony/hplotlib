@@ -81,6 +81,24 @@ TEST(Flags, BitwiseChangeFlags)
     EXPECT_FALSE(flags[F1]);
     EXPECT_FALSE(flags[F2]);
     EXPECT_FALSE(flags[F3]);
+
+    flags = F2 | flags;
+
+    EXPECT_FALSE(flags[F1]);
+    EXPECT_TRUE(flags[F2]);
+    EXPECT_FALSE(flags[F3]);
+
+    flags = F1 & flags;
+
+    EXPECT_FALSE(flags[F1]);
+    EXPECT_FALSE(flags[F2]);
+    EXPECT_FALSE(flags[F3]);
+
+    flags = F1 ^ flags;
+
+    EXPECT_TRUE(flags[F1]);
+    EXPECT_FALSE(flags[F2]);
+    EXPECT_FALSE(flags[F3]);
 }
 
 TEST(Flags, OperatorChangeFlags)

@@ -2,6 +2,34 @@
 
 namespace hpl {
 
+// Macro to define function bodies for binary operators
+#define FlagsOperator(OP) \
+    template<typename Enum> \
+    Flags<Enum>& Flags<Enum>::operator OP ## =(const Flags<Enum>& rhs) \
+    { \
+        this->flags = this->flags OP rhs.flags; \
+        return *this; \
+    } \
+\
+    template<typename Enum> \
+    Flags<Enum> Flags<Enum>::operator OP(const Flags<Enum>& rhs) const \
+    { \
+        Flags<Enum> res(*this); \
+        return res OP ## = rhs; \
+    } \
+\
+    template<typename Enum> \
+    Flags<Enum> Flags<Enum>::operator OP(const Enum& rhs) const \
+    { \
+        return (*this) OP Flags<Enum>(rhs); \
+    } \
+\
+    template<typename Enum> \
+    Flags<Enum> operator OP(const Enum& lhs, const Flags<Enum>& rhs) \
+    { \
+        return rhs OP Flags<Enum>(lhs); \
+    }
+
 template <typename Enum>
 Flags<Enum>::Flags() : flags(StoredEnum(0))
 {
@@ -36,68 +64,9 @@ Flags<Enum>& Flags<Enum>::operator()(Enum flag, bool val)
     return *this;
 }
 
-template<typename Enum>
-Flags<Enum>& Flags<Enum>::operator&=(const Flags<Enum>& rhs)
-{
-    this->flags = this->flags & rhs.flags;
-    return *this;
-}
-
-template<typename Enum>
-Flags<Enum> Flags<Enum>::operator&(const Flags<Enum>& rhs) const
-{
-    Flags<Enum> res(*this);
-    res &= rhs;
-    return res;
-}
-
-template<typename Enum>
-Flags<Enum> Flags<Enum>::operator&(const Enum& rhs) const
-{
-    return (*this) & Flags<Enum>(rhs);
-}
-
-template<typename Enum>
-Flags<Enum>& Flags<Enum>::operator|=(const Flags<Enum>& rhs)
-{
-    this->flags = this->flags | rhs.flags;
-    return *this;
-}
-
-template<typename Enum>
-Flags<Enum> Flags<Enum>::operator|(const Flags<Enum>& rhs) const
-{
-    Flags<Enum> res(*this);
-    res |= rhs;
-    return res;
-}
-
-template<typename Enum>
-Flags<Enum> Flags<Enum>::operator|(const Enum& rhs) const
-{
-    return (*this) | Flags<Enum>(rhs);
-}
-
-template<typename Enum>
-Flags<Enum>& Flags<Enum>::operator^=(const Flags<Enum>& rhs)
-{
-    this->flags = this->flags ^ rhs.flags;
-    return *this;
-}
-
-template<typename Enum>
-Flags<Enum> Flags<Enum>::operator^(const Flags<Enum>& rhs) const
-{
-    Flags<Enum> res(*this);
-    res ^= rhs;
-    return res;
-}
-
-template<typename Enum>
-Flags<Enum> Flags<Enum>::operator^(const Enum& rhs) const
-{
-    return (*this) ^ Flags<Enum>(rhs);
-}
+FlagsOperator(&)
+FlagsOperator(|)
+FlagsOperator(^)
 
 template<typename Enum>
 Flags<Enum>& Flags<Enum>::reset()
