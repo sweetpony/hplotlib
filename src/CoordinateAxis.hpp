@@ -16,8 +16,6 @@
 
 namespace hpl {
 
-using namespace AxisFlags;
-
 template<AxisOrientation orientation>
 class CoordinateAxis
 {
@@ -43,7 +41,7 @@ public:
 
     void setLimits(double xmin, double xmax, double ymin, double ymax);
     void setLimits(double min, double max);
-    void setAxisProperties(Flags<AxisFlags::AxisFlags> flags);
+    void setAxisProperties(Flags<AxisFlags> flags);
     void setTickMode(TickMode mode);
     void setMajorTicks(const std::vector<double>& ticks);
     void setMinorTicks(const std::vector<double>& minorTicks);
@@ -108,8 +106,8 @@ private:
     std::vector<Drawable::ID> labelsIDs;
     Color coordLinesColor = Color(0.0f ,0.0f, 0.0f);
 
-    Flags<AxisFlags::AxisFlags> flags = Flags<AxisFlags::AxisFlags>(PaintPrimary, PaintLabelsPrimary);
-    TickMode tickMode = FixedAmount;
+    Flags<AxisFlags> flags = Flags<AxisFlags>(PaintPrimary, PaintLabelsPrimary);
+    TickMode tickMode = TickMode::FixedAmount;
 
     Registry<Drawable>& data;
     std::map<Drawable::ID, unsigned int>& dataRevisions;

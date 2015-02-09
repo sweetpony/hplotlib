@@ -32,10 +32,10 @@ public:
     CoordinateSystem(Registry<Drawable>& dataContainer, std::map<Drawable::ID, unsigned int>& dataRevisions);
     ~CoordinateSystem();
 
-    inline CoordinateAxis<AxisFlags::Horizontal>& getXAxis() {
+    inline CoordinateAxis<AxisOrientation::Horizontal>& getXAxis() {
         return xAxis;
     }
-    inline CoordinateAxis<AxisFlags::Vertical>& getYAxis() {
+    inline CoordinateAxis<AxisOrientation::Vertical>& getYAxis() {
         return yAxis;
     }
 
@@ -43,11 +43,11 @@ public:
         xAxis.setColor(c);
         yAxis.setColor(c);
     }
-    inline void setAxisProperties(Flags<AxisFlags::AxisFlags> flags) {
+    inline void setAxisProperties(Flags<AxisFlags> flags) {
         xAxis.setAxisProperties(flags);
         yAxis.setAxisProperties(flags);
     }
-    inline void setTickMode(AxisFlags::TickMode mode) {
+    inline void setTickMode(TickMode mode) {
         xAxis.setTickMode(mode);
         yAxis.setTickMode(mode);
     }
@@ -92,8 +92,8 @@ private:
 
     Limits originalLimits, originalPosLimits, limits;
 
-    CoordinateAxis<AxisFlags::Horizontal> xAxis;
-    CoordinateAxis<AxisFlags::Vertical> yAxis;
+    CoordinateAxis<AxisOrientation::Horizontal> xAxis;
+    CoordinateAxis<AxisOrientation::Vertical> yAxis;
 };
 
 template<typename T>

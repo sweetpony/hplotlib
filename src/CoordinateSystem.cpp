@@ -20,8 +20,8 @@ CoordinateSystem::CoordinateSystem(Registry<Drawable>& dataContainer, std::map<D
     yAxis.changed.template bind<Delegate<Drawable::ID>, &Delegate<Drawable::ID>::invoke>(&changed);
     yAxis.changedLogscale.template bind<CoordinateSystem, &CoordinateSystem::updateYlogOnPlots>(this);
 
-    limits.changed.template bind<CoordinateAxis<AxisFlags::Horizontal>, &CoordinateAxis<AxisFlags::Horizontal>::recalculate>(&xAxis);
-    limits.changed.template bind<CoordinateAxis<AxisFlags::Vertical>, &CoordinateAxis<AxisFlags::Vertical>::recalculate>(&yAxis);
+    limits.changed.template bind<CoordinateAxis<AxisOrientation::Horizontal>, &CoordinateAxis<AxisOrientation::Horizontal>::recalculate>(&xAxis);
+    limits.changed.template bind<CoordinateAxis<AxisOrientation::Vertical>, &CoordinateAxis<AxisOrientation::Vertical>::recalculate>(&yAxis);
 
     originalLimits.changed.template bind<CoordinateSystem, &CoordinateSystem::setLimitsFromOriginal>(this);
 

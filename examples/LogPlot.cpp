@@ -25,12 +25,12 @@ int main()
 
     hpl::CoordinateSystem& cs = canvas.addCoordinateSystem(layout.id());
     cs.setColor(hpl::Color(0.0f, 0.0f, 1.0f));
-    cs.setAxisProperties(hpl::Flags<hpl::AxisFlags::AxisFlags>(hpl::AxisFlags::PaintPrimary, hpl::AxisFlags::PaintSecondary, hpl::AxisFlags::PaintMinorTicks,
-                         hpl::AxisFlags::Logscale, hpl::AxisFlags::PaintLabelsPrimary, hpl::AxisFlags::PaintLabelsSecondary));
+    cs.setAxisProperties(hpl::Flags<hpl::AxisFlags>(hpl::PaintPrimary, hpl::PaintSecondary, hpl::PaintMinorTicks,
+                         hpl::Logscale, hpl::PaintLabelsPrimary, hpl::PaintLabelsSecondary));
     //! @todo enable this to see bug
     //cs.getXAxis().setLimits(-2.5, 0.5);
-    cs.getXAxis().setTickMode(hpl::AxisFlags::Smart);
-    cs.getYAxis().setTickMode(hpl::AxisFlags::Fixed);
+    cs.getXAxis().setTickMode(hpl::TickMode::Smart);
+    cs.getYAxis().setTickMode(hpl::TickMode::Fixed);
     cs.getYAxis().setMajorTicks({-4.0, -3.0, -2.0, -1.0, 0.0});
 
     hpl::Lines& plot = cs.addPlot<hpl::Lines>(NUM_POINTS, x, y, true);
