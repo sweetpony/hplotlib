@@ -51,7 +51,8 @@ int main()
 
     hpl::CoordinateSystem& cs1 = canvas.addCoordinateSystem(layout1.id());
     cs1.setColor(hpl::Color(0.6f, 0.6f, 0.6f));
-    cs1.setAxisProperties(hpl::AxisFlags::PaintPrimary | hpl::AxisFlags::PaintSecondary | hpl::AxisFlags::PaintMinorTicks | hpl::AxisFlags::PaintLabelsPrimary | hpl::AxisFlags::PaintLabelsSecondary);
+    cs1.setAxisProperties(hpl::Flags<hpl::AxisFlags::AxisFlags>(hpl::AxisFlags::PaintPrimary, hpl::AxisFlags::PaintSecondary, hpl::AxisFlags::PaintMinorTicks,
+                                                                hpl::AxisFlags::PaintLabelsPrimary, hpl::AxisFlags::PaintLabelsSecondary));
     cs1.getXAxis().setTickMode(hpl::AxisFlags::Fixed);
     cs1.getXAxis().setMajorTicks({0.0, 0.25, 0.5, 0.75, 1.0});
     cs1.getXAxis().setMinorTicks({0.125, 0.375, 0.615, 0.875});
@@ -64,7 +65,7 @@ int main()
     hpl::Contour& plot2 = cs2.addPlot<hpl::Contour>(NUM_POINTS, x, x, m);
 
     hpl::CoordinateSystem& cs3 = canvas.addCoordinateSystem(layout2.id());
-    cs3.setAxisProperties(hpl::AxisFlags::PaintPrimary | hpl::AxisFlags::Logscale | hpl::AxisFlags::PaintMinorTicks | hpl::AxisFlags::PaintLabelsPrimary);
+    cs3.setAxisProperties(hpl::Flags<hpl::AxisFlags::AxisFlags>(hpl::AxisFlags::PaintPrimary, hpl::AxisFlags::Logscale, hpl::AxisFlags::PaintMinorTicks, hpl::AxisFlags::PaintLabelsPrimary));
     cs3.setTickMode(hpl::AxisFlags::Smart);
     hpl::Points& plot3 = cs3.addPlot<hpl::Points>(NUM_POINTS, x, z);
     plot3.setColor(hpl::Color(0.0f, 0.0f, 1.0f));
@@ -82,7 +83,7 @@ int main()
     layout2.changeOrientation(hpl::VerticalLayout::BottomToTop);
 
     //! @todo Interpolation (Dotted) with log and negative values not working
-    cs3.getYAxis().setAxisProperties(hpl::AxisFlags::PaintPrimary | hpl::AxisFlags::PaintMinorTicks | hpl::AxisFlags::PaintLabelsPrimary);
+    cs3.getYAxis().setAxisProperties(hpl::Flags<hpl::AxisFlags::AxisFlags>(hpl::AxisFlags::PaintPrimary, hpl::AxisFlags::PaintMinorTicks, hpl::AxisFlags::PaintLabelsPrimary));
     plot1.setStyle(hpl::Lines::Dashed);
     plot4.setStyle(hpl::Lines::Dotted);
     plot4.setThickness(3.0);
@@ -94,7 +95,7 @@ int main()
 
     hpl::CoordinateSystem& cs4 = canvas.addCoordinateSystem();
     cs4.setTickMode(hpl::AxisFlags::Smart);
-    cs4.setAxisProperties(hpl::AxisFlags::PaintPrimary | hpl::AxisFlags::Logscale | hpl::AxisFlags::PaintMinorTicks | hpl::AxisFlags::PaintLabelsPrimary);
+    cs4.setAxisProperties(hpl::Flags<hpl::AxisFlags::AxisFlags>(hpl::AxisFlags::PaintPrimary, hpl::AxisFlags::Logscale, hpl::AxisFlags::PaintMinorTicks, hpl::AxisFlags::PaintLabelsPrimary));
     hpl::Lines& plot5 = cs4.addPlot<hpl::Lines>(NUM_POINTS, x, n);
     canvas.addCoordinateSystemToLayout(cs4.id(), layout1.id());
 

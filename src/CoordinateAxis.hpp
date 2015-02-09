@@ -10,12 +10,15 @@
 
 #include "Lines.hpp"
 #include "Text.hpp"
+#include "Flags.hpp"
 #include "AxisFlags.hpp"
 #include "Limits.hpp"
 
 namespace hpl {
 
-template<AxisFlags::AxisOrientation orientation>
+using namespace AxisFlags;
+
+template<AxisOrientation orientation>
 class CoordinateAxis
 {
 
@@ -40,8 +43,8 @@ public:
 
     void setLimits(double xmin, double xmax, double ymin, double ymax);
     void setLimits(double min, double max);
-    void setAxisProperties(int flags);
-    void setTickMode(AxisFlags::TickMode mode);
+    void setAxisProperties(Flags<AxisFlags::AxisFlags> flags);
+    void setTickMode(TickMode mode);
     void setMajorTicks(const std::vector<double>& ticks);
     void setMinorTicks(const std::vector<double>& minorTicks);
 
@@ -105,8 +108,8 @@ private:
     std::vector<Drawable::ID> labelsIDs;
     Color coordLinesColor = Color(0.0f ,0.0f, 0.0f);
 
-    int flags = AxisFlags::PaintPrimary | AxisFlags::PaintLabelsPrimary;
-    AxisFlags::TickMode tickMode = AxisFlags::FixedAmount;
+    Flags<AxisFlags::AxisFlags> flags = Flags<AxisFlags::AxisFlags>(PaintPrimary, PaintLabelsPrimary);
+    TickMode tickMode = FixedAmount;
 
     Registry<Drawable>& data;
     std::map<Drawable::ID, unsigned int>& dataRevisions;

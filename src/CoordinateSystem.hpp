@@ -43,7 +43,7 @@ public:
         xAxis.setColor(c);
         yAxis.setColor(c);
     }
-    inline void setAxisProperties(int flags) {
+    inline void setAxisProperties(Flags<AxisFlags::AxisFlags> flags) {
         xAxis.setAxisProperties(flags);
         yAxis.setAxisProperties(flags);
     }

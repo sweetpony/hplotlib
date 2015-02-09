@@ -45,7 +45,8 @@ int main()
 
     hpl::CoordinateSystem& cs1 = canvas->addCoordinateSystem(layout.id());
     cs1.setColor(hpl::Color(0.6f, 0.6f, 0.6f));
-    cs1.setAxisProperties(hpl::AxisFlags::PaintPrimary | hpl::AxisFlags::PaintSecondary | hpl::AxisFlags::PaintMinorTicks | hpl::AxisFlags::PaintLabelsPrimary | hpl::AxisFlags::PaintLabelsSecondary);
+    cs1.setAxisProperties(hpl::Flags<hpl::AxisFlags::AxisFlags>(hpl::AxisFlags::PaintPrimary, hpl::AxisFlags::PaintSecondary, hpl::AxisFlags::PaintMinorTicks,
+                                                                hpl::AxisFlags::PaintLabelsPrimary, hpl::AxisFlags::PaintLabelsSecondary));
     cs1.getXAxis().setTickMode(hpl::AxisFlags::Fixed);
     cs1.getXAxis().setLimits(-0.3, 1.3);
     cs1.getXAxis().setMajorTicks({0.0, 0.25, 0.5, 0.75, 1.0, 1.25});
@@ -60,7 +61,7 @@ int main()
     hpl::Contour& plot2 = cs2.addPlot<hpl::Contour>(NUM_POINTS, x, x, m, true);
 
     hpl::CoordinateSystem& cs3 = canvas->addCoordinateSystem(layout.id());
-    cs3.setAxisProperties(hpl::AxisFlags::PaintPrimary | hpl::AxisFlags::PaintMinorTicks | hpl::AxisFlags::PaintLabelsPrimary);
+    cs3.setAxisProperties(hpl::Flags<hpl::AxisFlags::AxisFlags>(hpl::AxisFlags::PaintPrimary, hpl::AxisFlags::PaintMinorTicks, hpl::AxisFlags::PaintLabelsPrimary));
     cs3.setTickMode(hpl::AxisFlags::Smart);
     cs3.setMargins(0.2, 0.0, 0.1, 0.0);
     hpl::Points& plot3 = cs3.addPlot<hpl::Points>(NUM_POINTS, x, z, true);

@@ -55,7 +55,7 @@ void CoordinateAxis<orientation>::setLimits(double xmin, double xmax, double ymi
 }
 
 template<AxisFlags::AxisOrientation orientation>
-void CoordinateAxis<orientation>::setAxisProperties(int flags) {
+void CoordinateAxis<orientation>::setAxisProperties(Flags<AxisFlags::AxisFlags> flags) {
     if ((this->flags & AxisFlags::Logscale) != (flags & AxisFlags::Logscale)) {
         this->flags = flags;
         changedLogscale.invoke(flags & AxisFlags::Logscale);

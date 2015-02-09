@@ -25,7 +25,8 @@ int main()
     hpl::CoordinateSystem& cs = canvas.addCoordinateSystem();
     cs.setGeometry(hpl::Geometry(0.1, 0.1, 0.8, 0.8));
     cs.setColor(hpl::Color(0.0f, 0.0f, 1.0f));
-    cs.setAxisProperties(hpl::AxisFlags::PaintPrimary | hpl::AxisFlags::PaintSecondary | hpl::AxisFlags::PaintMinorTicks | hpl::AxisFlags::PaintLabelsPrimary | hpl::AxisFlags::PaintLabelsSecondary);
+    cs.setAxisProperties(hpl::Flags<hpl::AxisFlags::AxisFlags>(hpl::AxisFlags::PaintPrimary, hpl::AxisFlags::PaintSecondary, hpl::AxisFlags::PaintMinorTicks,
+                                                               hpl::AxisFlags::PaintLabelsPrimary, hpl::AxisFlags::PaintLabelsSecondary));
     cs.getXAxis().setTickMode(hpl::AxisFlags::Fixed);
     cs.getXAxis().setLimits(-0.3, 1.3);
     cs.getXAxis().setMajorTicks({0.0, 0.25, 0.5, 0.75, 1.0, 1.25});

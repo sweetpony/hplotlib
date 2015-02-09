@@ -3,13 +3,16 @@
 
 namespace hpl {
 namespace AxisFlags {
-    constexpr int PaintNothing = 0;
-    constexpr int PaintPrimary = 1 << 0;
-    constexpr int PaintSecondary = 1 << 1;
-    constexpr int Logscale = 1 << 2;
-    constexpr int PaintMinorTicks = 1 << 3;
-    constexpr int PaintLabelsPrimary = 1 << 4;
-    constexpr int PaintLabelsSecondary = 1 << 5;
+
+    enum AxisFlags {
+        PaintNothing = 0,
+        PaintPrimary = 1 << 0,
+        PaintSecondary = 1 << 1,
+        Logscale = 1 << 2,
+        PaintMinorTicks = 1 << 3,
+        PaintLabelsPrimary = 1 << 4,
+        PaintLabelsSecondary = 1 << 5
+    };
 
     enum AxisOrientation {
         Horizontal,
