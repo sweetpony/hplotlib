@@ -23,3 +23,6 @@ target_link_libraries (ManualSettings hplotlib)
 add_executable (LogPlot LogPlot.cpp)
 target_link_libraries (LogPlot hplotlib)
 
+add_executable (MultiplePlots MultiplePlots.cpp)
+target_link_libraries (MultiplePlots hplotlib)
+

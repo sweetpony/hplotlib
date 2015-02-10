@@ -25,6 +25,12 @@
 
 namespace hpl
 {
+
+enum class LimitMode {
+    FixedAfterFirstPlot,
+    RecalculateForEachPlot
+};
+
 class CoordinateSystem {
 public:
     typedef IDBase<CoordinateSystem> ID;
@@ -61,6 +67,7 @@ public:
     T& addPlot(int n, double const* x, double const* y, double const* z, double copyData = false);
     Text& addText(std::string const& text, double x, double y, double width, double height);
 
+    void setLimitMode(LimitMode mode);
     void setLimits(double xmin, double xmax, double ymin, double ymax);
 
     Delegate<Drawable::ID> changed;
@@ -90,6 +97,7 @@ private:
 	Geometry geometry;
     bool xlog = false, ylog = false;
 
+    LimitMode limitMode = LimitMode::FixedAfterFirstPlot;
     Limits originalLimits, originalPosLimits, limits;
 
     CoordinateAxis<AxisOrientation::Horizontal> xAxis;

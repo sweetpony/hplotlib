@@ -61,6 +61,13 @@ Text& CoordinateSystem::addText(std::string const& text, double x, double y, dou
     return *plot;
 }
 
+void CoordinateSystem::setLimitMode(LimitMode mode)
+{
+    if (limitMode != mode) {
+        limitMode = mode;
+    }
+}
+
 void CoordinateSystem::setLimits(double xmin, double xmax, double ymin, double ymax)
 {
     originalLimits.setLimits(xmin, xmax, ymin, ymax);
@@ -69,13 +76,13 @@ void CoordinateSystem::setLimits(double xmin, double xmax, double ymin, double y
 
 void CoordinateSystem::setLimitsFromAddedPlotIfNeeded(int n, double const* x, double const* y)
 {
-    if (! originalPosLimits.valid()) {
+    if (limitMode == LimitMode::RecalculateForEachPlot || !originalPosLimits.valid()) {
         originalPosLimits.setLimits(minPos(n, x), maxPos(n, x), minPos(n, y), maxPos(n, y));
     }
-    if (! originalLimits.xValid()) {
+    if (limitMode == LimitMode::RecalculateForEachPlot || !originalLimits.xValid()) {
         originalLimits.setXLimits(hpl::min(n, x), hpl::max(n, x));
     }
-    if (! originalLimits.yValid()) {
+    if (limitMode == LimitMode::RecalculateForEachPlot || !originalLimits.yValid()) {
         originalLimits.setYLimits(hpl::min(n, y), hpl::max(n, y));
     }
 }
