@@ -42,14 +42,30 @@ void CoordinateSystem::setGeometry(Geometry geom)
 
 void CoordinateSystem::setMargins(float leftOffset, float rightOffset, float bottomOffset, float topOffset)
 {
-    Geometry geom(geometry);
-    geom.leftOffset = xAxis.getOffset() * geom.width;
-    geom.topOffset -= yAxis.getOffset() * geom.height;
-    geom.width /= (1.0 - xAxis.getTotalOffset());
-    geom.height /= (1.0 - yAxis.getTotalOffset());
+    Geometry geom = getGeometryFromAxisOffsets();
 
     xAxis.setMargins(leftOffset, rightOffset, bottomOffset, topOffset);
     yAxis.setMargins(leftOffset, rightOffset, bottomOffset, topOffset);
+
+    adjustGeometryForPlots(geom);
+}
+
+void CoordinateSystem::resetMargins()
+{
+    Geometry geom = getGeometryFromAxisOffsets();
+
+    xAxis.resetMargins();
+    yAxis.resetMargins();
+
+    adjustGeometryForPlots(geom);
+}
+
+void CoordinateSystem::resetMarginsOnlyPrimary()
+{
+    Geometry geom = getGeometryFromAxisOffsets();
+
+    xAxis.resetMarginsOnlyPrimary();
+    yAxis.resetMarginsOnlyPrimary();
 
     adjustGeometryForPlots(geom);
 }
@@ -177,6 +193,16 @@ double* CoordinateSystem::copyData(int n, double const* dat)
     double* ret = new double[n];
     std::copy(dat, dat+n, ret);
     return ret;
+}
+
+Geometry CoordinateSystem::getGeometryFromAxisOffsets()
+{
+    Geometry geom(geometry);
+    geom.leftOffset = xAxis.getOffset() * geom.width;
+    geom.topOffset -= yAxis.getOffset() * geom.height;
+    geom.width /= (1.0 - xAxis.getTotalOffset());
+    geom.height /= (1.0 - yAxis.getTotalOffset());
+    return geom;
 }
 
 void CoordinateSystem::adjustGeometryForPlots(Geometry geom)

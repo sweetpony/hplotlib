@@ -92,6 +92,7 @@ CoordinateSystem& Canvas::setUpEasySystem(AbstractPlotter* plotter)
     connectToPlotter(plotter);
     GridLayout& layout = addLayout<GridLayout>();
     CoordinateSystem& cosy = addCoordinateSystem();
+    cosy.resetMarginsOnlyPrimary();
     addCoordinateSystemToLayout(cosy.id(), layout.id());
     return cosy;
 }

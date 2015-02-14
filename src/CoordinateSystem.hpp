@@ -60,6 +60,8 @@ public:
 
     void setGeometry(Geometry geom);
     void setMargins(float leftOffset, float rightOffset, float bottomOffset, float topOffset);
+    void resetMargins();
+    void resetMarginsOnlyPrimary();
     
     template<typename T>
     T& addPlot(int n, double const* x, double const* y, double copyData = false);
@@ -88,6 +90,7 @@ private:
 
     double* copyData(int n, double const* dat);
 
+    Geometry getGeometryFromAxisOffsets();
     void adjustGeometryForPlots(Geometry geom);
 
     Registry<Drawable>& data;

@@ -31,6 +31,12 @@ public:
 
     void setGeometry(Geometry geom);
     void setMargins(float leftOffset, float rightOffset, float bottomOffset, float topOffset);
+    inline void resetMargins() {
+        setMargins(0.12f, 0.12f, 0.08f, 0.08f);
+    }
+    inline void resetMarginsOnlyPrimary() {
+        setMargins(0.12f, 0.0f, 0.08, 0.0f);
+    }
 
     inline float getOffset() {
         return primaryParallelOffset();
