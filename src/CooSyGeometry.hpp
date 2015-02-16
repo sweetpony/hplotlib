@@ -42,6 +42,7 @@ public:
 
     MultiDelegate<Drawable::ID> changed;
     Flags<GeometryFlags> flags =  Flags<GeometryFlags>(XTicksPrimary, YTicksPrimary);
+    float maxResetXMargin = 0.2f, maxResetYMargin = 0.2f;
 
 private:
     void setPlotGeometryFromBase();

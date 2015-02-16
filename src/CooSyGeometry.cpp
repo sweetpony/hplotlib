@@ -37,8 +37,19 @@ void CooSyGeometry::resetMargins()
 {
     float left = resetXMargins(flags[XTicksPrimary], flags[XTitlePrimary]);
     float right = resetXMargins(flags[XTicksSecondary], flags[XTitleSecondary]);
+    if (left + right > maxResetXMargin) {
+        float frac = left / (left + right);
+        left = frac * maxResetXMargin;
+        right = (1.0f - frac) * maxResetXMargin;
+    }
+
     float bottom = resetYMargins(flags[YTicksPrimary], flags[YTitlePrimary], false);
     float top = resetYMargins(flags[YTicksSecondary], flags[YTitleSecondary], flags[PlotTitle]);
+    if (bottom + top > maxResetYMargin) {
+        float frac = bottom / (bottom + top);
+        bottom = frac * maxResetYMargin;
+        top = (1.0f - frac) * maxResetYMargin;
+    }
 
     setMargins(left, right, bottom, top);
 }
