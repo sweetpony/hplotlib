@@ -35,8 +35,12 @@ void CooSyGeometry::setMargins(float leftOffset, float rightOffset, float bottom
 
 void CooSyGeometry::resetMargins()
 {
-    //! @todo use flags
-    setMargins(0.12f, 0.12f, 0.08f, 0.08f);
+    float left = resetXMargins(flags[XTicksPrimary], flags[XTitlePrimary]);
+    float right = resetXMargins(flags[XTicksSecondary], flags[XTitleSecondary]);
+    float bottom = resetYMargins(flags[YTicksPrimary], flags[YTitlePrimary], false);
+    float top = resetYMargins(flags[YTicksSecondary], flags[YTitleSecondary], flags[PlotTitle]);
+
+    setMargins(left, right, bottom, top);
 }
 
 void CooSyGeometry::setPlotGeometryFromBase()
@@ -49,6 +53,56 @@ void CooSyGeometry::setPlotGeometryFromBase()
     geom.height *= (1.0 - bottomOffset - topOffset);
 
     plotGeometry = baseGeometry;
+}
+
+float CooSyGeometry::resetXMargins(bool ticks, bool title)
+{
+    if (ticks) {
+        if (title) {
+            return 0.2f;
+        } else {
+            return 0.12f;
+        }
+    } else {
+        if (title) {
+            return 0.12f;
+        } else {
+            return 0.0f;
+        }
+    }
+}
+
+float CooSyGeometry::resetYMargins(bool ticks, bool title, bool plotTitle)
+{
+    if (ticks) {
+        if (title) {
+            if (plotTitle) {
+                return 0.2f;
+            } else {
+                return 0.15f;
+            }
+        } else {
+            if (plotTitle) {
+                return 0.15f;
+            } else {
+                return 0.08f;
+            }
+        }
+    } else {
+        if (title) {
+            if (plotTitle) {
+                return 0.15f;
+            } else {
+                return 0.08f;
+            }
+        } else {
+            if (plotTitle) {
+                return 0.08f;
+            } else {
+                return 0.0f;
+            }
+        }
+    }
 }
 
 }

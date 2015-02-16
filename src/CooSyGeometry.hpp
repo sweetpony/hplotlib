@@ -46,6 +46,9 @@ public:
 private:
     void setPlotGeometryFromBase();
 
+    float resetXMargins(bool ticks, bool title);
+    float resetYMargins(bool ticks, bool title, bool plotTitle);
+
     Geometry baseGeometry, plotGeometry;
     float leftOffset = 0.12f, rightOffset = 0.0f, bottomOffset = 0.08f, topOffset = 0.0f;
 
