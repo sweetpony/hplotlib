@@ -15,15 +15,15 @@ CoordinateSystem::CoordinateSystem(Registry<Drawable>& dataContainer, std::map<D
     : data(dataContainer), dataRevisions(dataRevisions),
       xAxis(dataContainer, dataRevisions, originalLimits, limits), yAxis(dataContainer, dataRevisions, originalLimits, limits)
 {
-    xAxis.changed.template bind<Delegate<Drawable::ID>, &Delegate<Drawable::ID>::invoke>(&changed);
-    xAxis.changedLogscale.template bind<CoordinateSystem, &CoordinateSystem::updateXlogOnPlots>(this);
-    yAxis.changed.template bind<Delegate<Drawable::ID>, &Delegate<Drawable::ID>::invoke>(&changed);
-    yAxis.changedLogscale.template bind<CoordinateSystem, &CoordinateSystem::updateYlogOnPlots>(this);
+    xAxis.changed.bind<Delegate<Drawable::ID>, &Delegate<Drawable::ID>::invoke>(&changed);
+    xAxis.changedLogscale.bind<CoordinateSystem, &CoordinateSystem::updateXlogOnPlots>(this);
+    yAxis.changed.bind<Delegate<Drawable::ID>, &Delegate<Drawable::ID>::invoke>(&changed);
+    yAxis.changedLogscale.bind<CoordinateSystem, &CoordinateSystem::updateYlogOnPlots>(this);
 
-    limits.changed.template bind<CoordinateAxis<AxisOrientation::Horizontal>, &CoordinateAxis<AxisOrientation::Horizontal>::recalculate>(&xAxis);
-    limits.changed.template bind<CoordinateAxis<AxisOrientation::Vertical>, &CoordinateAxis<AxisOrientation::Vertical>::recalculate>(&yAxis);
+    limits.changed.bind<CoordinateAxis<AxisOrientation::Horizontal>, &CoordinateAxis<AxisOrientation::Horizontal>::recalculate>(&xAxis);
+    limits.changed.bind<CoordinateAxis<AxisOrientation::Vertical>, &CoordinateAxis<AxisOrientation::Vertical>::recalculate>(&yAxis);
 
-    originalLimits.changed.template bind<CoordinateSystem, &CoordinateSystem::setLimitsFromOriginal>(this);
+    originalLimits.changed.bind<CoordinateSystem, &CoordinateSystem::setLimitsFromOriginal>(this);
 
     adjustGeometryForPlots(geometry);
 }
@@ -95,8 +95,8 @@ Drawable::ID CoordinateSystem::addNewPlot(Drawable* plot)
     myPlots.push_back(id);
     plot->setGeometry(geometry);
     plot->setLog(xlog, ylog);
-    plot->changed.template bind<Delegate<Drawable::ID>, &Delegate<Drawable::ID>::invoke>(&changed);
-    limits.changed.template bind<Drawable, &Drawable::recalculateData>(plot);
+    plot->changed.bind<Delegate<Drawable::ID>, &Delegate<Drawable::ID>::invoke>(&changed);
+    limits.changed.bind<Drawable, &Drawable::recalculateData>(plot);
     changed.invoke(id);
     return id;
 }

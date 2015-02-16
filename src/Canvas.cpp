@@ -24,7 +24,7 @@ Canvas::~Canvas()
 CoordinateSystem& Canvas::addCoordinateSystem(hpl::Layout::ID id)
 {
     CoordinateSystem* cs = new CoordinateSystem(rawData, dataRevisions);
-    cs->changed.template bind<Canvas, &Canvas::processUpdate>(this);
+    cs->changed.bind<Canvas, &Canvas::processUpdate>(this);
 
     csystems.add(cs);
 

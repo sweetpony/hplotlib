@@ -231,10 +231,14 @@ void CoordinateAxis<orientation>::calculateSmartDataPointsForTicks(bool log)
 
     if (log) {
         size = 1;
-        steps = new double[1] {1.0};
+        steps = new double[1];
+		steps[0] = 1.0;
     } else {
         size = 3;
-        steps = new double[3] {1.0, 2.0, 5.0};
+        steps = new double[3];
+		steps[0] = 1.0;
+		steps[1] = 2.0;
+		steps[2] = 5.0;
     }
 
     while (todo) {
