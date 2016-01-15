@@ -16,11 +16,21 @@ Color* Contour::getColors() const
 Color Contour::getColorAtIndex(int i) const
 {
     double zi = (z[i] - zmin) / (zmax - zmin);
-    unsigned int imin = static_cast<unsigned int>(zi * colorTable.num);
-    unsigned int imax = static_cast<unsigned int>(ceil(zi * colorTable.num));
-    if (imax >= colorTable.num) {
+
+    int imin = static_cast<unsigned int>(zi * colorTable.num);
+    if (imin < 0) {
+        imin = 0;
+    } else if (imin >= colorTable.num) {
+        imin = colorTable.num - 1;
+    }
+
+    int imax = static_cast<unsigned int>(ceil(zi * colorTable.num));
+    if (imax < 0) {
+        imax = 0;
+    } else if (imax >= colorTable.num) {
         imax = colorTable.num - 1;
     }
+
     double delta = zi * colorTable.num - imin;
 
     float r = colorTable.r[imin] * delta + colorTable.r[imax] * (1.0 - delta);
