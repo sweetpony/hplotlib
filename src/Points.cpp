@@ -28,7 +28,7 @@ void Points::recalculateData()
     }
 
     std::vector<std::pair<double, double> > vert = getSymbolVertices();
-    if (vert.size() == 1 && vert[0].first == 0.0 && vert[1].second == 0.0) {
+    if (vert.size() == 1 && vert[0].first == 0.0 && vert[0].second == 0.0) {
         limitsInCalc = false;
         points = new SimplePoints(_n, thisx, thisy, xlog, ylog);
     } else {
