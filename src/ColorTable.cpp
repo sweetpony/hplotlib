@@ -41,6 +41,21 @@ const ColorTable ColorTable::getPredefinedTable<ColorTable::Tables::RainbowBlack
     return readColorTableFromFile("../colortables/RainbowBlack.ctbl");
 }
 
+template<>
+const ColorTable ColorTable::getPredefinedTable<ColorTable::Tables::RedTemperature>(unsigned int num) {
+    ColorTable ct(num);
+    unsigned int n1 = 165 * (num * 1.0 / 256);
+    ct.interpolateLinear(0, 0.0, 1.0, 0, n1);
+    ct.interpolateLinear(0, 1.0, 1.0, n1, num - n1);
+    unsigned int n2 = 128 * (num * 1.0 / 256);
+    ct.interpolateLinear(1, 0.0, 0.0, 0, n2);
+    ct.interpolateLinear(1, 0.0, 1.0, n2, num - n2);
+    unsigned int n3 = 169 * (num * 1.0 / 256);
+    ct.interpolateLinear(2, 0.0, 0.0, 0, n3);
+    ct.interpolateLinear(2, 0.0, 1.0, n3, num - n3);
+    return ct;
+}
+
 ColorTable& ColorTable::operator=(const ColorTable& ct) {
     num = ct.num;
     delete[] r;
@@ -57,6 +72,34 @@ ColorTable& ColorTable::operator=(const ColorTable& ct) {
     }
     return *this;
 }
+
+
+void ColorTable::interpolateLinear(unsigned int component, float v1, float v2, unsigned int offset, unsigned int length)
+{
+    if (length == 0) {
+        length = num;
+    }
+
+    float* v;
+    switch(component) {
+    case 0:
+        v = r;
+        break;
+    case 1:
+        v = g;
+        break;
+    case 2:
+        v = b;
+        break;
+    default:
+        break;
+    }
+
+    for (unsigned int i = offset, j = 0; j < length; i++, j++) {
+        v[i] = v1 + j * (v2 - v1) / length;
+    }
+}
+
 
 void ColorTable::interpolateLinear(float r1, float g1, float b1, float r2, float g2, float b2, unsigned int offset, unsigned int length) {
     if (length == 0) {
