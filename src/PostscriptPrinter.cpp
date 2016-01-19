@@ -74,7 +74,8 @@ void PostscriptPrinter::replot()
         if (t != 0) {
             unsigned int fontSize = 11;
             if (t->xScaleDominated(*fontLoader)) {
-                fontSize *= t->width() / 0.108 * currentGeometry.width / (currentXMax - currentXMin);
+                // 1.5 is heuristic
+                fontSize *= t->width() / 0.108 * currentGeometry.width / (currentXMax - currentXMin) * 1.5;
             } else {
                 //! @todo find a case where text is height dominated and insert a fraction to t->height
                 fontSize *= currentGeometry.height / (currentYMax - currentYMin);
