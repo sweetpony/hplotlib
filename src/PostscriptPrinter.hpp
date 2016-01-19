@@ -17,7 +17,7 @@ class PostscriptPrinter : public AbstractPlotter, public PlotPrinter
 {
 
 public:
-    PostscriptPrinter(Orientation orientation = Landscape);
+    PostscriptPrinter(bool append = false, Orientation orientation = Landscape);
     virtual ~PostscriptPrinter();
 
     virtual bool saveToFile(const std::string& fileName);
@@ -27,6 +27,8 @@ public:
     virtual void wait() {}
 
 private:
+    void replot();
+
     void writeHeader();
     void writeFooter();
     void setFont(std::string fontname, unsigned int size);
@@ -46,6 +48,7 @@ private:
         return std::isfinite(x) && std::isfinite(y);
     }
 
+    std::ios_base::openmode mode;
     std::ofstream out;
     std::string fileName;
 

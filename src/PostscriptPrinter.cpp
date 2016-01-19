@@ -2,7 +2,8 @@
 
 namespace hpl
 {
-PostscriptPrinter::PostscriptPrinter(Orientation orientation) : AbstractPlotter(), PlotPrinter(orientation)
+PostscriptPrinter::PostscriptPrinter(bool append, Orientation orientation) : AbstractPlotter(), PlotPrinter(orientation),
+    mode(append ? std::ios_base::out | std::ios_base::app : std::ios_base::out | std::ios_base::trunc)
 {
 }
 
@@ -16,15 +17,26 @@ PostscriptPrinter::~PostscriptPrinter()
 bool PostscriptPrinter::saveToFile(const std::string& fileName)
 {
     this->fileName = fileName + ".ps";
+    // Open and close shortly just to check if possible and to truncate
     out.open(this->fileName);
     if (! out.is_open()) {
         return false;
     }
+    out.close();
     update();
     return true;
 }
 
 void PostscriptPrinter::update()
+{
+    out.open(fileName, mode);
+    if (out.is_open()) {
+        replot();
+        out.close();
+    }
+}
+
+void PostscriptPrinter::replot()
 {
     if (plots == nullptr) {
         return;
