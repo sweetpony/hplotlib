@@ -65,6 +65,8 @@ protected:
     virtual void moveEvent(int deltax, int deltay);
     virtual void mouseWheelEvent(int x, int y, double delta);
     virtual void resetEvent();
+    virtual void toggleBackColorTable();
+    virtual void toggleColorTable();
 
     GLenum convert(Drawable::Type type);
 

@@ -2,6 +2,8 @@
 
 namespace hpl {
 
+std::list<ColorTable> Contour::colorTableRotation;
+
 Color* Contour::getColors() const
 {
     Color* colors = new Color[n*n];
@@ -38,6 +40,31 @@ Color Contour::getColorAtIndex(int i) const
     float b = colorTable.b[imin] * delta + colorTable.b[imax] * (1.0 - delta);
 
     return Color(r, g, b);
+}
+
+void Contour::toggleColorTable()
+{
+    auto it = std::find(colorTableRotation.begin(), colorTableRotation.end(), colorTable);
+    if (it != colorTableRotation.end()) {
+        ++it;
+        auto jt = (it == colorTableRotation.end() ? colorTableRotation.begin() : it);
+        setColorTable(*jt);
+    } else {
+        setColorTable(colorTableRotation.front());
+    }
+}
+
+void Contour::toggleBackColorTable()
+{
+    auto it = std::list<ColorTable>::reverse_iterator(std::find(colorTableRotation.begin(), colorTableRotation.end(), colorTable));
+    --it;
+    if (it != colorTableRotation.rend()) {
+        ++it;
+        auto jt = (it == colorTableRotation.rend() ? colorTableRotation.rbegin() : it);
+        setColorTable(*jt);
+    } else {
+        setColorTable(colorTableRotation.front());
+    }
 }
 
 }

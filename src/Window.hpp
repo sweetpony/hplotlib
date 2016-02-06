@@ -38,6 +38,8 @@ namespace hpl
 		virtual void resetEvent() = 0;
 		virtual void moveEvent(int deltax, int deltay) = 0;
 		virtual void mouseWheelEvent(int x, int y, double delta) = 0;
+        virtual void toggleBackColorTable() = 0;
+        virtual void toggleColorTable() = 0;
 		
 		double width = 0.0;
 		double height = 0.0;

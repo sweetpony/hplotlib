@@ -101,6 +101,20 @@ void ColorTable::interpolateLinear(unsigned int component, float v1, float v2, u
 }
 
 
+bool ColorTable::operator==(const ColorTable& ct) const
+{
+    if (num != ct.num) {
+        return false;
+    } else {
+        for (unsigned int i = 0; i < num; ++i) {
+            if (r[i] != ct.r[i] || g[i] != ct.g[i] || b[i] != ct.b[i]) {
+                return false;
+            }
+        }
+        return true;
+    }
+}
+
 void ColorTable::interpolateLinear(float r1, float g1, float b1, float r2, float g2, float b2, unsigned int offset, unsigned int length) {
     if (length == 0) {
         length = num;

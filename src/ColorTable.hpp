@@ -31,6 +31,8 @@ public:
 
     ColorTable& operator=(const ColorTable& ct);
 
+    bool operator==(const ColorTable& ct) const;
+
     unsigned int num;
     float* r,* g,* b;
 

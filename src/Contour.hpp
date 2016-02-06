@@ -2,6 +2,8 @@
 #define CONTOUR_HPP
 
 #include <cmath>
+#include <list>
+#include <algorithm>
 
 #include "Drawable.hpp"
 #include "Statistics.hpp"
@@ -45,21 +47,34 @@ public:
     template<ColorTable::Tables t>
     inline void setColorTable(unsigned int length) {
         colorTable = ColorTable::getPredefinedTable<t>(length);
+        this->length = length;
+        changed.invoke(plotId);
+    }
+    inline void setColorTable(const ColorTable& colorTable) {
+        this->colorTable = colorTable;
+        this->length = length;
         changed.invoke(plotId);
     }
     inline const ColorTable& getColorTable() const {
         return colorTable;
     }
 
+    void toggleColorTable();
+    void toggleBackColorTable();
+
     inline virtual void recalculateData() {}
 
     const int n;
     const double* x, * y, * z;
 
+    //! @todo needs to be filled somewhere
+    static std::list<ColorTable> colorTableRotation;
+
 protected:
     double zmin, zmax;
     bool ownsData;
     ColorTable colorTable = ColorTable::getPredefinedTable<ColorTable::RainbowBlack>(256);
+    unsigned int length = 256;
 };
 }
 

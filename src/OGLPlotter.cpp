@@ -235,6 +235,21 @@ void OGLPlotter::resetEvent()
     mvp[7] = 0.0;
 }
 
+
+void OGLPlotter::toggleBackColorTable()
+{
+    for (auto it = contourCollection.begin(); it != contourCollection.end(); ++it) {
+        (dynamic_cast<Contour&>(plots->lookup(it->first))).toggleBackColorTable();
+    }
+}
+
+void OGLPlotter::toggleColorTable()
+{
+    for (auto it = contourCollection.begin(); it != contourCollection.end(); ++it) {
+        (dynamic_cast<Contour&>(plots->lookup(it->first))).toggleColorTable();
+    }
+}
+
 void OGLPlotter::moveEvent(int deltax, int deltay)
 {
     mvp[6] += deltax / static_cast<double>(width);

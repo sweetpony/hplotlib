@@ -1,6 +1,7 @@
 #include <cmath>
 
 #include <Canvas.hpp>
+#include <ColorTable.hpp>
 
 #define NUM_POINTS 100
 
@@ -29,6 +30,11 @@ int main()
     hpl::CoordinateSystem& cs = canvas.addCoordinateSystem(layout.id());
     cs.setAxisProperties(hpl::Flags<hpl::AxisFlags>(hpl::PaintPrimary, hpl::PaintSecondary, hpl::PaintMinorTicks, hpl::PaintLabelsPrimary));
     hpl::Contour& plot = cs.addPlot<hpl::Contour>(NUM_POINTS, x, x, y);
+
+    hpl::Contour::colorTableRotation.push_back(hpl::ColorTable::getPredefinedTable<hpl::ColorTable::BlueRed>(256));
+    hpl::Contour::colorTableRotation.push_back(hpl::ColorTable::getPredefinedTable<hpl::ColorTable::Rainbow>(256));
+    hpl::Contour::colorTableRotation.push_back(hpl::ColorTable::getPredefinedTable<hpl::ColorTable::RainbowBlack>(256));
+    hpl::Contour::colorTableRotation.push_back(hpl::ColorTable::getPredefinedTable<hpl::ColorTable::RedTemperature>(256));
 
     hpl::PostscriptPrinter ps(hpl::PlotPrinter::Landscape);
     canvas.connectToPlotter(&ps);

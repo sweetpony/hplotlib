@@ -151,6 +151,16 @@ void Window::poll()
 						resetEvent();
 						update();
 						break;
+                    case XK_n:
+                        toggleBackColorTable();
+                        processDrawables();
+                        update();
+                        break;
+                    case XK_m:
+                        toggleColorTable();
+                        processDrawables();
+                        update();
+                        break;
 					default:
 						break;
 				}

@@ -19,7 +19,7 @@ public:
     AbstractPlotter() {}
     virtual ~AbstractPlotter() {}
 
-    inline void setPlots(const Registry<Drawable>* plots, const std::map<Drawable::ID, unsigned int>* actualRevision) {
+    inline void setPlots(Registry<Drawable>* plots, const std::map<Drawable::ID, unsigned int>* actualRevision) {
         this->plots = plots;
         this->actualRevision = actualRevision;
     }
@@ -38,7 +38,7 @@ public:
     virtual void wait() = 0;
 
 protected:    
-    const Registry<Drawable>* plots = nullptr;
+    Registry<Drawable>* plots = nullptr;
     std::map<Drawable::ID, unsigned int> revision;
     const std::map<Drawable::ID, unsigned int>* actualRevision = nullptr;
     Color backgroundColor = Color(1.0f, 1.0f, 1.0f);

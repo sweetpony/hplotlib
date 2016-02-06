@@ -99,6 +99,16 @@ LRESULT CALLBACK WindowPlatformStuff::WndProc(HWND hWnd, UINT message, WPARAM wP
 					win->resetEvent();
 					win->update();
 					break;
+                case 0x4e: // N
+                    win->toggleBackColorTable();
+                    processDrawables();
+                    update();
+                    break;
+                case 0x4d: // M
+                    win->toggleColorTable();
+                    processDrawables();
+                    update();
+                    break;
 				default:
 					break;
             }
