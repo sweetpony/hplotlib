@@ -18,7 +18,8 @@ public:
         BlueRed,
         Rainbow,
         RainbowBlack,
-        RedTemperature
+        RedTemperature,
+        BlueWhite
     };
 
     ColorTable(unsigned int num);

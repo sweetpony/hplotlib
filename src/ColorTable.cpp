@@ -56,6 +56,11 @@ const ColorTable ColorTable::getPredefinedTable<ColorTable::Tables::RedTemperatu
     return ct;
 }
 
+template<>
+const ColorTable ColorTable::getPredefinedTable<ColorTable::Tables::BlueWhite>(unsigned int num) {
+    return readColorTableFromFile("../colortables/BlueWhite.ctbl");
+}
+
 ColorTable& ColorTable::operator=(const ColorTable& ct) {
     num = ct.num;
     delete[] r;
