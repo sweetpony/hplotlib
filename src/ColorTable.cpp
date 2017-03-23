@@ -1,5 +1,7 @@
 #include "ColorTable.hpp"
 
+#include <iostream>
+
 namespace hpl {
 ColorTable::ColorTable(unsigned int num) : num(num), r(new float[num]), g(new float[num]), b(new float[num]) {
 }
@@ -154,6 +156,7 @@ const ColorTable ColorTable::readColorTableFromFile(const char* fileName)
 
         return ct;
     } else {
+        std::cerr << "Could not open colortable file" << std::endl;
         return ColorTable(1);
     }
 }
